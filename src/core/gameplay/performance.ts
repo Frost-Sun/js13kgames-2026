@@ -34,8 +34,6 @@ import { GraphicsDetailLevel } from "../graphics/GraphicsDetailLevel";
 declare global {
     interface Navigator {
         deviceMemory?: number;
-        // Add proper typing for GPU property
-        gpu?: unknown;
     }
 
     interface Window {
