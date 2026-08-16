@@ -22,8 +22,11 @@
  * SOFTWARE.
  */
 
-export enum GraphicsDetailLevel {
-    HIGH = "high",
-    MEDIUM = "medium",
-    LOW = "low",
-}
+export const GraphicsDetailLevel = {
+    HIGH: "high",
+    MEDIUM: "medium",
+    LOW: "low",
+} as const;
+
+export type GraphicsDetailLevel =
+    (typeof GraphicsDetailLevel)[keyof typeof GraphicsDetailLevel];
