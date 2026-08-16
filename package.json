@@ -12,15 +12,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.2",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
-    "js13k-vite-plugins": "^1.0.4",
+    "fast-xml-parser": "^5.11.0",
     "jszip": "^3.10.1",
     "prettier": "3.9.6",
     "roadroller": "^2.1.0",
+    "terser": "^5.50.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
+    "uuid": "^14.0.1",
     "vite": "^8.2.1"
   }
 }
