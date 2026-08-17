@@ -5,7 +5,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
 import { setStateIntro } from "./gamestates";
 import { canvas, cx } from "./graphics";
-import { drawLevel, updateLevel } from "./Level";
+import { drawLevel, levelHandleClick, updateLevel } from "./Level";
 
 export const IntroductionTextTime = 4000;
 
@@ -170,9 +170,20 @@ const draw = (time: TimeStep): void => {
     }
 };
 
+const handleClick = (event: MouseEvent): void => {
+    const state = getGameState();
+    if (state.type === "run") {
+        levelHandleClick(state.level, event);
+    }
+};
+
 export const start = async (): Promise<void> => {
     initializeKeyboard();
+    document.addEventListener("click", handleClick);
+
     window.requestAnimationFrame(gameLoop);
+
     await sleep(500); // TODO: load sounds here
+
     setStateIntro(time);
 };

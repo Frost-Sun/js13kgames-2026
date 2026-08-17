@@ -22,7 +22,11 @@
  * SOFTWARE.
  */
 
-import { applyCamera, type Camera } from "./core/gameplay/Camera";
+import {
+    applyCamera,
+    screenToLevel,
+    type Camera,
+} from "./core/gameplay/Camera";
 import type { TimeStep } from "./core/time/TimeStep";
 import { CHARACTER_SPEED, type GameObject } from "./GameObject";
 import type { GameStateRun } from "./GameState";
@@ -31,6 +35,7 @@ import type { TileMap } from "./core/tiles/TileMap";
 import {
     drawMap,
     getTileAt,
+    getTilePosAt,
     moveObject,
     TILE_HEIGHT,
     TILE_WIDTH,
@@ -39,7 +44,14 @@ import {
 } from "./tiles";
 import { createAi, getAiAction } from "./ai";
 import { multiply } from "./core/math/Vector";
-import { getCenter, includesArea, overlap, type Area } from "./core/math/Area";
+import {
+    getCenter,
+    includesArea,
+    includesPoint,
+    overlap,
+    type Area,
+    type Dimensions,
+} from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
@@ -48,6 +60,43 @@ interface TilePosition {
     ix: number;
     iy: number;
 }
+
+// The portion of canvas on which the map is drawn.
+const levelDrawArea: Dimensions = {
+    width: canvas.width,
+    height: canvas.height,
+};
+
+interface Button extends Area {
+    text: string;
+}
+
+let selectedActionIndex: number | null = null;
+
+const toggleActionButton = (i: number): void => {
+    if (i === selectedActionIndex) {
+        selectedActionIndex = null;
+    } else {
+        selectedActionIndex = i;
+    }
+};
+
+const actionButtons: Button[] = [
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "UP",
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "DOWN",
+    },
+];
 
 export interface Level extends TileMap<Tile> {
     number: number;
@@ -117,7 +166,11 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
 
             const center = getCenter(o);
             const tile = getTileAt(level, center);
-            if (tile?.type === "water" && includesArea(tileToArea(tile), o)) {
+            const tilePos = getTilePosAt(center);
+            if (
+                tile?.type === "water" &&
+                includesArea(tileToArea(tilePos), o)
+            ) {
                 killCharacter(time, state, o);
             }
         }
@@ -143,10 +196,66 @@ const killCharacter = (
     }
 };
 
+export const levelHandleClick = (level: Level, event: MouseEvent): void => {
+    // Check buttons
+    for (let i = 0; i < actionButtons.length; i++) {
+        const button = actionButtons[i];
+        if (includesPoint(button, event)) {
+            toggleActionButton(i);
+        }
+    }
+
+    // Check click on a tile
+    if (selectedActionIndex != null) {
+        const { camera } = level;
+        const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const tile = getTileAt(level, pointOnLevel);
+
+        if (tile && tile.type === "grass") {
+            const selectedAction = actionButtons[selectedActionIndex].text;
+            tile.type = selectedAction === "UP" ? "up" : "down";
+        }
+    }
+};
+
 export const drawLevel = (time: TimeStep, level: Level): void => {
     const { camera } = level;
 
-    applyCamera(camera, cx, canvas, level, () => {
+    const ButtonRowHeightFraction = 0.2;
+    const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
+    const buttonWidth = buttonRowHeight;
+    const buttonRowY = canvas.height - buttonRowHeight;
+
+    // Update the draw area on each draw so that it works also even when
+    // the canvas is resized.
+    levelDrawArea.width = canvas.width;
+    levelDrawArea.height = canvas.height - buttonRowHeight;
+
+    // Draw the level according to camera angle
+
+    applyCamera(camera, cx, levelDrawArea, level, () => {
         drawMap(time, level, level.objects);
     });
+
+    // Draw button row
+
+    for (let i = 0; i < actionButtons.length; i++) {
+        const button = actionButtons[i];
+        button.x = i * buttonWidth;
+        button.y = buttonRowY;
+        button.width = buttonWidth;
+        button.height = buttonRowHeight;
+
+        cx.fillStyle =
+            i === selectedActionIndex ? "rgb(120, 90, 90)" : "rgb(80, 50, 50)";
+        cx.fillRect(button.x, button.y, button.width, button.height);
+
+        cx.fillStyle = "white";
+        cx.font = "38px Courier New";
+        cx.fillText(
+            button.text,
+            button.x + button.width * 0.3,
+            button.y + button.height / 2,
+        );
+    }
 };

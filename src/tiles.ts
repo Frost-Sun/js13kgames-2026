@@ -33,17 +33,13 @@ import type { Area } from "./core/math/Area";
 export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
 
-export type TileType = "grass" | "rock" | "water" | "start" | "finish";
+export type TileType =
+    "grass" | "rock" | "water" | "start" | "finish" | "up" | "down";
 
 export interface Tile {
     type: TileType;
     object?: GameObject;
     finish?: boolean;
-}
-
-export interface TileAndPos extends Tile {
-    ix: number;
-    iy: number;
 }
 
 export const getTileCenter = (ix: number, iy: number): Vector => {
@@ -62,14 +58,10 @@ export const getTilePosAt = (position: Vector): { ix: number; iy: number } => {
 export const getTileAt = (
     map: TileMap<Tile>,
     position: Vector,
-): TileAndPos | undefined => {
+): Tile | undefined => {
     const ix = Math.floor(position.x / TILE_WIDTH);
     const iy = Math.floor(position.y / TILE_HEIGHT);
-    const tile = tileMapGet(map, ix, iy);
-    if (!tile) {
-        return undefined;
-    }
-    return { ...tile, ix, iy };
+    return tileMapGet(map, ix, iy);
 };
 
 export const tileToArea = (pos: { ix: number; iy: number }): Area => ({
@@ -236,19 +228,52 @@ export const drawMap = (
             const tile = tileMapGet(map, ix, iy);
             switch (tile?.type) {
                 case "grass":
-                    cx.fillStyle = `rgb(0, 160, 0`;
+                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
+                case "up": {
+                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                    // Draw arrow
+                    cx.fillStyle = "pink";
+                    cx.beginPath();
+                    const qw = TILE_WIDTH / 4;
+                    const qh = TILE_HEIGHT / 4;
+                    cx.moveTo(x + qw, y + 3 * qh);
+                    cx.lineTo(x + 2 * qw, y + qh);
+                    cx.lineTo(x + 3 * qw, y + 3 * qh);
+                    cx.fill();
+                    break;
+                }
+                case "down": {
+                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                    // Draw arrow
+                    cx.fillStyle = "pink";
+                    cx.beginPath();
+                    const qw = TILE_WIDTH / 4;
+                    const qh = TILE_HEIGHT / 4;
+                    cx.moveTo(x + qw, y + qh);
+                    cx.lineTo(x + 3 * qw, y + qh);
+                    cx.lineTo(x + 2 * qw, y + 3 * qh);
+                    cx.fill();
+                    break;
+                }
                 case "water":
                     cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
                 case "start":
                     cx.fillStyle = "rgb(80, 50, 150)";
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
                 default:
                     cx.fillStyle = "black";
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
             }
-            cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
             if (tile?.object) {
                 objectsToDraw.push(tile.object);

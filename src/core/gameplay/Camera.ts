@@ -23,6 +23,7 @@
  */
 
 import type { Area, Dimensions } from "../math/Area";
+import type { Vector } from "../math/Vector";
 
 export enum CameraMode {
     ShowWholeLevel,
@@ -78,6 +79,15 @@ const updateWithinLevel = (
         follow(camera, view, level, camera.target);
     }
 };
+
+export const screenToLevel = (
+    camera: Camera,
+    view: Dimensions,
+    point: Vector,
+): Vector => ({
+    x: (point.x - view.width / 2) / camera.zoom + camera.x,
+    y: (point.y - view.height / 2) / camera.zoom + camera.y,
+});
 
 export const applyCamera = (
     camera: Camera,
