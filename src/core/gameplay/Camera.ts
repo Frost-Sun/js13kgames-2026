@@ -24,20 +24,43 @@
 
 import type { Area, Dimensions } from "../math/Area";
 
+export enum CameraMode {
+    ShowWholeLevel,
+    StayInLevel,
+}
+
 export interface Camera {
+    mode: CameraMode;
     x: number;
     y: number;
     zoom: number;
-    visibleAreaHeight: number;
+    visibleAreaHeight?: number;
     target?: Area;
 }
 
-export const updateCamera = (
+const zoomToLevel = (
     camera: Camera,
     view: Dimensions,
     level: Dimensions,
 ): void => {
-    let newZoom = view.height / camera.visibleAreaHeight;
+    camera.target = undefined;
+
+    camera.x = level.width / 2;
+    camera.y = level.height / 2;
+
+    if (level.width / level.height >= view.width / view.height) {
+        camera.zoom = view.width / level.width;
+    } else {
+        camera.zoom = view.height / level.height;
+    }
+};
+
+const updateWithinLevel = (
+    camera: Camera,
+    view: Dimensions,
+    level: Dimensions,
+): void => {
+    let newZoom = view.height / (camera.visibleAreaHeight ?? level.height);
 
     // Force that the level fills the entire view area.
     const minXZoom = view.width / level.width;
@@ -54,6 +77,29 @@ export const updateCamera = (
     if (camera.target) {
         follow(camera, view, level, camera.target);
     }
+};
+
+export const applyCamera = (
+    camera: Camera,
+    cx: CanvasRenderingContext2D,
+    view: Dimensions,
+    level: Dimensions,
+    draw: () => void,
+): void => {
+    if (camera.mode === CameraMode.ShowWholeLevel) {
+        zoomToLevel(camera, view, level);
+    } else {
+        updateWithinLevel(camera, view, level);
+    }
+
+    cx.save();
+    cx.translate(view.width / 2, view.height / 2);
+    cx.scale(camera.zoom, camera.zoom);
+    cx.translate(-camera.x, -camera.y);
+
+    draw();
+
+    cx.restore();
 };
 
 const follow = (

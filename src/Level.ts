@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { updateCamera, type Camera } from "./core/gameplay/Camera";
+import { applyCamera, type Camera } from "./core/gameplay/Camera";
 import type { TimeStep } from "./core/time/TimeStep";
 import { CHARACTER_SPEED, type GameObject } from "./GameObject";
 import type { GameStateRun } from "./GameState";
@@ -145,15 +145,8 @@ const killCharacter = (
 
 export const drawLevel = (time: TimeStep, level: Level): void => {
     const { camera } = level;
-    updateCamera(camera, canvas, level);
 
-    cx.save();
-
-    cx.translate(canvas.width / 2, canvas.height / 2);
-    cx.scale(camera.zoom, camera.zoom);
-    cx.translate(-camera.x, -camera.y);
-
-    drawMap(time, level, level.objects);
-
-    cx.restore();
+    applyCamera(camera, cx, canvas, level, () => {
+        drawMap(time, level, level.objects);
+    });
 };

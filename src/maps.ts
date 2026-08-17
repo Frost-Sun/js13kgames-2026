@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import type { GameObject } from "./GameObject";
 import type { Level } from "./Level";
+import { CameraMode } from "./core/gameplay/Camera";
 import {
     carve,
     coreX,
@@ -50,14 +50,6 @@ const createLevel = (
     const width = xCount * TILE_WIDTH,
         height = yCount * TILE_HEIGHT;
 
-    const character: GameObject = {
-        type: "character",
-        x: -1000,
-        y: -1000,
-        width: TILE_WIDTH / 2,
-        height: TILE_HEIGHT / 2,
-    };
-
     const level: Level = {
         number,
         introduction,
@@ -68,14 +60,13 @@ const createLevel = (
         width,
         height,
         camera: {
+            mode: CameraMode.ShowWholeLevel,
             x: 50,
             y: 50,
             zoom: 8,
-            visibleAreaHeight: TILE_HEIGHT * 15,
-            target: character,
         },
         tiles: Array.from({ length: xCount * yCount }),
-        objects: [character],
+        objects: [],
         startTile: { ix: 0, iy: 0 },
         finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
         charactersTotal: characterCount,

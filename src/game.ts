@@ -33,15 +33,6 @@ const update = (time: TimeStep): void => {
     const state = getGameState();
 
     switch (state.type) {
-        case "load": {
-            break;
-        }
-        case "intro": {
-            break;
-        }
-        case "win": {
-            break;
-        }
         case "run": {
             updateLevel(time, state);
             break;
