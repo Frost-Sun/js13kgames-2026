@@ -28,7 +28,7 @@ const zzfxR = 44100; // sample rate
 const AudioContext = new (window.AudioContext || window.webkitAudioContext)();
 const zzfxX = AudioContext; // audio context
 
-const zzfxP = (vol, ...samples) => {
+const zzfxP = (_vol, ...samples) => {
     // create buffer and source
     let buffer = zzfxX.createBuffer(samples.length, samples[0].length, zzfxR),
         source = zzfxX.createBufferSource();

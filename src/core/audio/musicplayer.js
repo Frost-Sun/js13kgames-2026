@@ -395,7 +395,7 @@ export default function CPlayer() {
     // Get n samples of wave data at time t [s]. Wave data in range [-2,2].
     this.getData = function (t, n) {
         var i = 2 * Math.floor(t * 44100);
-        var d = new Array(n);
+        var d = Array.from({ length: n });
         for (var j = 0; j < 2 * n; j += 1) {
             var k = i + j;
             d[j] = t > 0 && k < mMixBuf.length ? mMixBuf[k] / 32768 : 0;

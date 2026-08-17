@@ -1,12 +1,16 @@
+import { initializeKeyboard } from "./core/controls/keyboard";
+import { easeOutElastic } from "./core/math/easings";
+import { sleep } from "./core/time/sleep";
+import type { TimeStep } from "./core/time/TimeStep";
+import { getGameState } from "./GameState";
+import { setStateIntro } from "./gamestates";
 import { canvas, cx } from "./graphics";
+import { drawLevel, updateLevel } from "./Level";
+
+export const IntroductionTextTime = 4000;
 
 const TIME_STEP = 1000 / 60;
 const MAX_FRAME = TIME_STEP * 5;
-
-interface TimeStep {
-    t: number;
-    dt: number;
-}
 
 let lastTime = 0;
 const time: TimeStep = {
@@ -25,25 +29,159 @@ const gameLoop = (t: number): void => {
     draw(time);
 };
 
-let x = 0;
-let y = 0;
-
 const update = (time: TimeStep): void => {
-    const newX = x + time.dt * 0.5;
-    const newY = time.t < 5000 ? (time.t / 5000) * 300 : 300;
-    x = newX < canvas.width ? newX : 0;
-    y = newY;
+    const state = getGameState();
+
+    switch (state.type) {
+        case "load": {
+            break;
+        }
+        case "intro": {
+            break;
+        }
+        case "win": {
+            break;
+        }
+        case "run": {
+            updateLevel(time, state);
+            break;
+        }
+        default:
+            break;
+    }
 };
 
 const draw = (time: TimeStep): void => {
-    cx.save();
-    cx.fillStyle = "black";
-    cx.fillRect(0, 0, canvas.width, canvas.height);
-    cx.fillStyle = `rgb(100, 100, ${200 + Math.sin(time.t / 500) * 55})`;
-    cx.fillRect(x, y, 150, 150);
-    cx.restore();
+    const state = getGameState();
+
+    switch (state.type) {
+        case "load": {
+            cx.save();
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+            cx.fillStyle = "white";
+            cx.font = "48px Courier New";
+            cx.fillText("LOADING...", canvas.width * 0.33, canvas.height / 2);
+            cx.restore();
+            break;
+        }
+        case "intro": {
+            cx.save();
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+            cx.fillStyle = "white";
+            cx.font = "96px Courier New";
+            const phase = easeOutElastic((time.t - state.start) / 1000);
+            cx.fillText(
+                "GAME TITLE",
+                canvas.width * 0.1,
+                phase * canvas.height * 0.5,
+            );
+            cx.font = "48px Courier New";
+            cx.fillText(
+                "[PRESS SPACE] ",
+                canvas.width * 0.3,
+                canvas.height * 0.7,
+            );
+            cx.restore();
+            break;
+        }
+        case "run":
+        case "finished":
+        case "lose": {
+            const { level } = state;
+            cx.save();
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawLevel(time, level);
+
+            cx.fillStyle = "white";
+            cx.font = "38px Courier New";
+            cx.fillText(
+                `Finish: ${level.charactersFinished} / ${level.charactersToFinish}`,
+                canvas.width * 0.05,
+                canvas.height * 0.05,
+            );
+
+            if (state.type === "run") {
+                if (time.t - state.start < IntroductionTextTime) {
+                    cx.fillStyle = "white";
+                    cx.font = "38px Courier New";
+                    const phase = 1;
+                    cx.fillText(
+                        level.introduction,
+                        canvas.width * 0.15,
+                        phase * canvas.height * 0.3,
+                    );
+                }
+            } else if (state.type === "finished") {
+                cx.fillStyle = "white";
+                cx.font = "96px Courier New";
+                cx.fillText(
+                    "LEVEL FINISHED",
+                    canvas.width * 0.2,
+                    canvas.height * 0.5,
+                );
+
+                cx.font = "48px Courier New";
+                cx.fillText(
+                    "[PRESS SPACE] ",
+                    canvas.width * 0.3,
+                    canvas.height * 0.7,
+                );
+            } else if (state.type === "lose") {
+                cx.fillStyle = "white";
+                cx.font = "96px Courier New";
+                const phase = 1;
+                cx.fillText(
+                    "YOU LOSE :( ",
+                    canvas.width * 0.2,
+                    phase * canvas.height * 0.5,
+                );
+
+                cx.font = "48px Courier New";
+                cx.fillText(
+                    "[PRESS SPACE] ",
+                    canvas.width * 0.3,
+                    canvas.height * 0.7,
+                );
+            }
+
+            cx.restore();
+            break;
+        }
+        case "win": {
+            cx.save();
+
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            cx.fillStyle = "white";
+            cx.font = "96px Courier New";
+            const phase = easeOutElastic((time.t - state.start) / 1000);
+            cx.fillText(
+                "YOU WIN!",
+                canvas.width * 0.2,
+                phase * canvas.height * 0.5,
+            );
+
+            cx.font = "48px Courier New";
+            cx.fillText(
+                "[PRESS SPACE] ",
+                canvas.width * 0.3,
+                canvas.height * 0.7,
+            );
+
+            cx.restore();
+            break;
+        }
+    }
 };
 
 export const start = async (): Promise<void> => {
+    initializeKeyboard();
     window.requestAnimationFrame(gameLoop);
+    await sleep(500); // TODO: load sounds here
+    setStateIntro(time);
 };
