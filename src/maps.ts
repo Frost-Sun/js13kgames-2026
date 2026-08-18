@@ -26,8 +26,9 @@ import type { Level } from "./Level";
 import { CameraMode } from "./core/gameplay/Camera";
 import {
     carve,
-    coreX,
+    core,
     coreY,
+    segment4,
     sliceLeft,
     sliceRight,
 } from "./core/tiles/TileArea";
@@ -107,10 +108,11 @@ const createMapRiver = (number: number): Level => {
     const inner = carve(level);
     fill(level, inner, "grass");
 
-    fill(level, coreX(inner), "water");
+    const [_topLeft, topRight, _bottomLeft, bottomRight] = segment4(inner);
+    fill(level, bottomRight, "water");
 
     fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, coreY(sliceRight(inner)), "finish");
+    fill(level, core(topRight), "finish");
 
     return level;
 };
