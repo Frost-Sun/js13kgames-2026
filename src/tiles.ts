@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import type { Vector } from "./core/math/Vector";
+import { ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import type { TimeStep } from "./core/time/TimeStep";
 import { type GameObject } from "./GameObject";
 import { cx } from "./graphics";
@@ -189,8 +189,9 @@ export const moveObject = (
     map: TileMap<Tile>,
     o: GameObject,
 ): void => {
-    let dx = o.velocity.x * time.dt;
-    let dy = o.velocity.y * time.dt;
+    const velocity = o.velocity ?? ZERO_VECTOR;
+    let dx = velocity.x * time.dt;
+    let dy = velocity.y * time.dt;
 
     const newX = o.x + dx;
     const newY = o.y + dy;

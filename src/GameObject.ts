@@ -40,6 +40,6 @@ export interface GameObject extends Area {
     y: number;
     width: number;
     height: number;
-    velocity: Vector;
+    velocity?: Vector;
     toDelete?: boolean;
 }
