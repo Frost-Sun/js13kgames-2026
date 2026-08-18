@@ -302,10 +302,12 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
     });
 
     // Draw button row
+    const buttonRowWidth = buttonWidth * actionButtons.length;
+    const buttonRowX = (canvas.width - buttonRowWidth) / 2;
 
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
-        button.x = i * buttonWidth;
+        button.x = buttonRowX + i * buttonWidth;
         button.y = buttonRowY;
         button.width = buttonWidth;
         button.height = buttonRowHeight;
