@@ -79,16 +79,6 @@ interface Button extends Area {
     action: Action;
 }
 
-let selectedActionIndex: number | null = null;
-
-const toggleActionButton = (i: number): void => {
-    if (i === selectedActionIndex) {
-        selectedActionIndex = null;
-    } else {
-        selectedActionIndex = i;
-    }
-};
-
 const actionButtons: Button[] = [
     {
         x: 0,
@@ -142,7 +132,16 @@ export interface Level extends TileMap<Tile> {
     charactersLost: number;
     charactersFinished: number;
     lastSpawnTime: number;
+    selectedActionIndex?: number;
 }
+
+const toggleActionButton = (level: Level, i: number): void => {
+    if (i === level.selectedActionIndex) {
+        level.selectedActionIndex = undefined;
+    } else {
+        level.selectedActionIndex = i;
+    }
+};
 
 const addCharacter = (level: Level): void => {
     const width = 5,
@@ -246,18 +245,19 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         if (includesPoint(button, event)) {
-            toggleActionButton(i);
+            toggleActionButton(level, i);
         }
     }
 
     // Check click on a tile
-    if (selectedActionIndex != null) {
+    if (level.selectedActionIndex != null) {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const tile = getTileAt(level, pointOnLevel);
 
         if (tile && tile.type === "grass") {
-            const selectedAction = actionButtons[selectedActionIndex].action;
+            const selectedAction =
+                actionButtons[level.selectedActionIndex].action;
             const tileType = actionToTileType(selectedAction);
             if (tileType) {
                 tile.type = tileType;
@@ -311,7 +311,9 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
         button.height = buttonRowHeight;
 
         cx.fillStyle =
-            i === selectedActionIndex ? "rgb(120, 90, 90)" : "rgb(80, 50, 50)";
+            i === level.selectedActionIndex
+                ? "rgb(120, 90, 90)"
+                : "rgb(80, 50, 50)";
         cx.fillRect(button.x, button.y, button.width, button.height);
 
         cx.fillStyle = "white";
