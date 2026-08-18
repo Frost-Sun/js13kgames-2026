@@ -1,6 +1,6 @@
+import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { easeOutElastic } from "./core/math/easings";
-import { sleep } from "./core/time/sleep";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
 import { setStateIntro } from "./gamestates";
@@ -183,7 +183,7 @@ export const start = async (): Promise<void> => {
 
     window.requestAnimationFrame(gameLoop);
 
-    await sleep(500); // TODO: load sounds here
+    await initializeAudio();
 
     setStateIntro(time);
 };

@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { playTune, SFX_RUNNING } from "./audio/sfx";
 import { waitForKey } from "./core/controls/keyboard";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
@@ -49,6 +50,7 @@ export const setStateRun = (time: TimeStep): void => {
             start: time.t,
             level: createMap(0),
         });
+        playTune(SFX_RUNNING);
     } else if (currentState.level.number + 1 < maps.length) {
         setGameState({
             type: "run",
