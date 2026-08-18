@@ -34,7 +34,15 @@ export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
 
 export type TileType =
-    "grass" | "rock" | "water" | "start" | "finish" | "up" | "down";
+    | "grass"
+    | "rock"
+    | "water"
+    | "start"
+    | "finish"
+    | "up"
+    | "down"
+    | "left"
+    | "right";
 
 export interface Tile {
     type: TileType;
@@ -180,10 +188,9 @@ export const moveObject = (
     time: TimeStep,
     map: TileMap<Tile>,
     o: GameObject,
-    movement: Vector,
 ): void => {
-    let dx = movement.x * time.dt;
-    let dy = movement.y * time.dt;
+    let dx = o.velocity.x * time.dt;
+    let dy = o.velocity.y * time.dt;
 
     const newX = o.x + dx;
     const newY = o.y + dy;
@@ -258,6 +265,36 @@ export const drawMap = (
                     cx.moveTo(x + qw, y + qh);
                     cx.lineTo(x + 3 * qw, y + qh);
                     cx.lineTo(x + 2 * qw, y + 3 * qh);
+                    cx.fill();
+                    break;
+                }
+                case "left": {
+                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                    // Draw arrow
+                    cx.fillStyle = "pink";
+                    cx.beginPath();
+                    const qw = TILE_WIDTH / 4;
+                    const qh = TILE_HEIGHT / 4;
+                    cx.moveTo(x + qw, y + 2 * qh);
+                    cx.lineTo(x + 3 * qw, y + qh);
+                    cx.lineTo(x + 3 * qw, y + 3 * qh);
+                    cx.fill();
+                    break;
+                }
+                case "right": {
+                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                    // Draw arrow
+                    cx.fillStyle = "pink";
+                    cx.beginPath();
+                    const qw = TILE_WIDTH / 4;
+                    const qh = TILE_HEIGHT / 4;
+                    cx.moveTo(x + qw, y + qh);
+                    cx.lineTo(x + 3 * qw, y + 2 * qh);
+                    cx.lineTo(x + qw, y + 3 * qh);
                     cx.fill();
                     break;
                 }

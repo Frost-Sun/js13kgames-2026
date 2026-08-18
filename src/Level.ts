@@ -28,7 +28,14 @@ import {
     type Camera,
 } from "./core/gameplay/Camera";
 import type { TimeStep } from "./core/time/TimeStep";
-import { CHARACTER_SPEED, type GameObject } from "./GameObject";
+import {
+    CHARACTER_SPEED,
+    VELOCITY_DOWN,
+    VELOCITY_LEFT,
+    VELOCITY_RIGHT,
+    VELOCITY_UP,
+    type GameObject,
+} from "./GameObject";
 import type { GameStateRun } from "./GameState";
 import { canvas, cx } from "./graphics";
 import type { TileMap } from "./core/tiles/TileMap";
@@ -41,9 +48,8 @@ import {
     TILE_WIDTH,
     tileToArea,
     type Tile,
+    type TileType,
 } from "./tiles";
-import { createAi, getAiAction } from "./ai";
-import { multiply } from "./core/math/Vector";
 import {
     getCenter,
     includesArea,
@@ -53,6 +59,7 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
+import { Action } from "./Action";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
@@ -69,6 +76,7 @@ const levelDrawArea: Dimensions = {
 
 interface Button extends Area {
     text: string;
+    action: Action;
 }
 
 let selectedActionIndex: number | null = null;
@@ -88,6 +96,7 @@ const actionButtons: Button[] = [
         width: 50,
         height: 50,
         text: "UP",
+        action: Action.Up,
     },
     {
         x: 0,
@@ -95,6 +104,23 @@ const actionButtons: Button[] = [
         width: 50,
         height: 50,
         text: "DOWN",
+        action: Action.Down,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "LEFT",
+        action: Action.Left,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "RIGHT",
+        action: Action.Right,
     },
 ];
 
@@ -129,7 +155,7 @@ const addCharacter = (level: Level): void => {
         y: startPos.iy * TILE_HEIGHT + (TILE_HEIGHT - height) / 2,
         width,
         height,
-        ai: createAi(),
+        velocity: { x: CHARACTER_SPEED, y: 0 },
     };
 
     level.objects.push(character);
@@ -151,9 +177,7 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
         const o = level.objects[i];
 
         if (o.type === "character") {
-            const action = getAiAction(time, level, o);
-            const movement = multiply(action, CHARACTER_SPEED);
-            moveObject(time, level, o, movement);
+            moveObject(time, level, o);
 
             if (overlap(o, level.finishArea)) {
                 o.toDelete = true;
@@ -167,11 +191,32 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
             const center = getCenter(o);
             const tile = getTileAt(level, center);
             const tilePos = getTilePosAt(center);
+
             if (
                 tile?.type === "water" &&
                 includesArea(tileToArea(tilePos), o)
             ) {
                 killCharacter(time, state, o);
+            } else if (
+                tile?.type === "up" &&
+                includesArea(tileToArea(tilePos), o)
+            ) {
+                o.velocity = VELOCITY_UP;
+            } else if (
+                tile?.type === "down" &&
+                includesArea(tileToArea(tilePos), o)
+            ) {
+                o.velocity = VELOCITY_DOWN;
+            } else if (
+                tile?.type === "left" &&
+                includesArea(tileToArea(tilePos), o)
+            ) {
+                o.velocity = VELOCITY_LEFT;
+            } else if (
+                tile?.type === "right" &&
+                includesArea(tileToArea(tilePos), o)
+            ) {
+                o.velocity = VELOCITY_RIGHT;
             }
         }
     }
@@ -212,9 +257,28 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         const tile = getTileAt(level, pointOnLevel);
 
         if (tile && tile.type === "grass") {
-            const selectedAction = actionButtons[selectedActionIndex].text;
-            tile.type = selectedAction === "UP" ? "up" : "down";
+            const selectedAction = actionButtons[selectedActionIndex].action;
+            const tileType = actionToTileType(selectedAction);
+            if (tileType) {
+                tile.type = tileType;
+            }
         }
+    }
+};
+
+const actionToTileType = (action: Action): TileType | undefined => {
+    switch (action) {
+        case Action.Up:
+            return "up";
+        case Action.Down:
+            return "down";
+        case Action.Left:
+            return "left";
+        case Action.Right:
+            return "right";
+
+        default:
+            return undefined;
     }
 };
 

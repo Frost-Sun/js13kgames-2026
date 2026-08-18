@@ -22,10 +22,15 @@
  * SOFTWARE.
  */
 
-import type { Ai } from "./ai";
 import type { Area } from "./core/math/Area";
+import type { Vector } from "./core/math/Vector";
 
-export const CHARACTER_SPEED = 0.02;
+export const CHARACTER_SPEED = 0.01;
+
+export const VELOCITY_UP: Vector = { x: 0, y: -CHARACTER_SPEED };
+export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
+export const VELOCITY_LEFT: Vector = { x: -CHARACTER_SPEED, y: 0 };
+export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
 export type GameObjectType = "rock" | "character" | "start" | "finish";
 
@@ -35,6 +40,6 @@ export interface GameObject extends Area {
     y: number;
     width: number;
     height: number;
-    ai?: Ai;
+    velocity: Vector;
     toDelete?: boolean;
 }
