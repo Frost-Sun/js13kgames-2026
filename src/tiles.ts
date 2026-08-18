@@ -29,6 +29,8 @@ import { cx } from "./graphics";
 import type { TileArea } from "./core/tiles/TileArea";
 import { tileMapGet, tileMapSet, type TileMap } from "./core/tiles/TileMap";
 import type { Area } from "./core/math/Area";
+import { renderStraw, type StrawParams } from "./animations/straw";
+import { random } from "./core/math/random";
 
 export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
@@ -48,6 +50,7 @@ export interface Tile {
     type: TileType;
     object?: GameObject;
     finish?: boolean;
+    straw?: StrawParams;
 }
 
 export const getTileCenter = (ix: number, iy: number): Vector => {
@@ -136,6 +139,21 @@ const createTile = (
                     width: TILE_WIDTH,
                     height: TILE_HEIGHT,
                 },
+            };
+        case "grass":
+            return {
+                type,
+                finish,
+                straw:
+                    random() > 0.2
+                        ? {
+                              wobblePhase: random(Math.PI),
+                              width: TILE_WIDTH / 16,
+                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                              xAdjust: random(TILE_WIDTH),
+                              yAdjust: random(TILE_HEIGHT),
+                          }
+                        : undefined,
             };
         default:
             return {
@@ -238,6 +256,11 @@ export const drawMap = (
                 case "grass":
                     cx.fillStyle = `rgb(0, 160, 0)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                    if (tile.straw) {
+                        cx.fillStyle = `rgb(0, 190, 0)`;
+                        renderStraw(x, y, tile.straw, time.t);
+                    }
                     break;
                 case "up": {
                     cx.fillStyle = `rgb(0, 160, 0)`;
