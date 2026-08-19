@@ -1,12 +1,16 @@
+import { initializeAudio } from "./audio/sfx";
+import { initializeKeyboard } from "./core/controls/keyboard";
+import type { TimeStep } from "./core/time/TimeStep";
+import { getGameState } from "./GameState";
+import { setStateIntro } from "./gamestates";
 import { canvas, cx } from "./graphics";
+import { drawLevel, levelHandleClick, updateLevel } from "./Level";
+import { renderText, renderWaitForProgressInput, TextSize } from "./text";
+
+export const IntroductionTextTime = 4000;
 
 const TIME_STEP = 1000 / 60;
 const MAX_FRAME = TIME_STEP * 5;
-
-interface TimeStep {
-    t: number;
-    dt: number;
-}
 
 let lastTime = 0;
 const time: TimeStep = {
@@ -25,25 +29,109 @@ const gameLoop = (t: number): void => {
     draw(time);
 };
 
-let x = 0;
-let y = 0;
-
 const update = (time: TimeStep): void => {
-    const newX = x + time.dt * 0.5;
-    const newY = time.t < 5000 ? (time.t / 5000) * 300 : 300;
-    x = newX < canvas.width ? newX : 0;
-    y = newY;
+    const state = getGameState();
+
+    switch (state.type) {
+        case "run": {
+            updateLevel(time, state);
+            break;
+        }
+        default:
+            break;
+    }
 };
 
 const draw = (time: TimeStep): void => {
-    cx.save();
-    cx.fillStyle = "black";
-    cx.fillRect(0, 0, canvas.width, canvas.height);
-    cx.fillStyle = `rgb(100, 100, ${200 + Math.sin(time.t / 500) * 55})`;
-    cx.fillRect(x, y, 150, 150);
-    cx.restore();
+    const state = getGameState();
+
+    switch (state.type) {
+        case "load": {
+            cx.save();
+            // Blank screen
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            renderText("LOADING...", TextSize.Huge);
+            cx.restore();
+            break;
+        }
+        case "intro": {
+            cx.save();
+
+            // Blank screen
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            renderText("GAME TITLE", TextSize.Huge);
+            renderWaitForProgressInput();
+
+            cx.restore();
+            break;
+        }
+        case "run":
+        case "finished":
+        case "lose": {
+            const { level } = state;
+            cx.save();
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawLevel(time, level);
+
+            renderText(
+                `Finish: ${level.charactersFinished} / ${level.charactersToFinish}`,
+                TextSize.Normal,
+                1,
+                3,
+                false,
+            );
+
+            if (state.type === "run") {
+                if (time.t - state.start < IntroductionTextTime) {
+                    renderText(level.introduction, TextSize.Normal, 1, -20);
+                }
+            } else if (state.type === "finished") {
+                renderText("LEVEL FINISHED", TextSize.Large);
+                renderWaitForProgressInput();
+            } else if (state.type === "lose") {
+                renderText("YOU LOSE :( ", TextSize.Large);
+                renderWaitForProgressInput();
+            }
+
+            cx.restore();
+            break;
+        }
+        case "win": {
+            cx.save();
+
+            // Blank screen
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            renderText("YOU WIN!", TextSize.Huge);
+            renderWaitForProgressInput();
+
+            cx.restore();
+            break;
+        }
+    }
+};
+
+const handleClick = (event: MouseEvent): void => {
+    const state = getGameState();
+    if (state.type === "run") {
+        levelHandleClick(state.level, event);
+    }
 };
 
 export const start = async (): Promise<void> => {
+    initializeKeyboard();
+    document.addEventListener("click", handleClick);
+
     window.requestAnimationFrame(gameLoop);
+
+    await initializeAudio();
+
+    setStateIntro(time);
 };
