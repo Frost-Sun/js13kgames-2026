@@ -154,7 +154,6 @@ const addCharacter = (level: Level): void => {
         width,
         height,
         velocity: { x: CHARACTER_SPEED, y: 0 },
-        animationPhase: 0,
     };
 
     level.objects.push(character);
