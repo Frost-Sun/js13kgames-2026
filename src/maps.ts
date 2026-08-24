@@ -27,6 +27,7 @@ import { CameraMode } from "./core/gameplay/Camera";
 import {
     carve,
     core,
+    coreX,
     coreY,
     segment4,
     sliceLeft,
@@ -87,6 +88,8 @@ const createMapInitial = (number: number): Level => {
 
     const inner = carve(level);
     fill(level, inner, "grass");
+
+    fill(level, coreX(inner), "water");
 
     fill(level, coreY(sliceLeft(inner)), "start");
     fill(level, coreY(sliceRight(inner)), "finish");

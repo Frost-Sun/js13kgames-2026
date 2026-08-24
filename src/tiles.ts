@@ -44,7 +44,8 @@ export type TileType =
     | "up"
     | "down"
     | "left"
-    | "right";
+    | "right"
+    | "rainbow";
 
 export interface Tile {
     type: TileType;
@@ -320,6 +321,29 @@ export const drawMap = (
                     cx.lineTo(x + 3 * qw, y + 2 * qh);
                     cx.lineTo(x + qw, y + 3 * qh);
                     cx.fill();
+                    break;
+                }
+                case "rainbow": {
+                    const colors = [
+                        "red",
+                        "orange",
+                        "yellow",
+                        "green",
+                        "cyan",
+                        "blue",
+                        "violet",
+                    ];
+                    const height = TILE_HEIGHT / colors.length;
+                    for (let i = 0; i < colors.length; i++) {
+                        const color = colors[i];
+                        cx.fillStyle = color;
+                        cx.fillRect(
+                            x,
+                            y + i * height,
+                            TILE_WIDTH,
+                            TILE_HEIGHT - i * height,
+                        );
+                    }
                     break;
                 }
                 case "water":
