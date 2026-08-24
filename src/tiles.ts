@@ -346,15 +346,74 @@ export const drawMap = (
 
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
+    type DrawParams = [
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        dx: number,
+        dy: number,
+        ang: number,
+        col: string | CanvasGradient | CanvasPattern,
+    ];
+
+    const draw: (params: DrawParams) => void = ([
+        x,
+        y,
+        w,
+        h,
+        dx,
+        dy,
+        ang,
+        col,
+    ]) => {
+        cx.save();
+        cx.translate(dx, dy);
+        cx.rotate(ang);
+        cx.fillStyle = col;
+        cx.fillRect(x, y, w, h);
+        cx.restore();
+    };
+
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
         switch (o.type) {
-            case "character":
-                cx.fillStyle = "rgb(30, 30, 220)";
-                cx.fillRect(o.x, o.y, o.width, o.height);
-                cx.fillStyle = "rgb(50, 50, 250)";
-                cx.fillRect(o.x, o.y - o.height / 2, o.width, o.height);
+            case "character": {
+                const age = time.t / 1000;
+                const P = Math.PI;
+                const scaleX = o.velocity && o.velocity.x < 0 ? -1 : 1;
+                const w = (Math.sin(age * P * 8) * P) / 8;
+
+                cx.save();
+                cx.translate(o.x + o.width / 2, o.y + o.height / 2);
+                cx.scale((o.height / 100) * scaleX, o.height / 100);
+                cx.translate(0, -25 + Math.sin(age * P * 4) * 2);
+
+                const parts: DrawParams[] = [
+                    [-3, 0, 6, 15, -10, 10, w, "#d1d5db"],
+                    [-3, 0, 6, 15, 10, 10, -w, "#d1d5db"],
+                    [-3, 0, 6, 15, -10, 10, -w, "#f3f4f6"],
+                    [-3, 0, 6, 15, 10, 10, w, "#f3f4f6"],
+                    [-12, 0, 12, 6, -16, -8, w / 2 - P / 8, "#f472b6"],
+                    [-16, -10, 32, 20, 0, 0, 0, "#fff"],
+                    [-5, -16, 10, 20, 14, -8, P / 6, "#fff"],
+                    [18, -32, 16, 12, 0, 0, 0, "#fff"],
+                    [26, -28, 2, 2, 0, 0, 0, "#111827"],
+                    [14, -34, 6, 18, 0, 0, 0, "#f472b6"],
+                ];
+
+                parts.forEach((p) => draw(p));
+
+                cx.fillStyle = "#fbbf24";
+                cx.beginPath();
+                cx.moveTo(21, -32);
+                cx.lineTo(26, -44);
+                cx.lineTo(27, -32);
+                cx.fill();
+
+                cx.restore();
                 break;
+            }
             case "rock": {
                 cx.fillStyle = "rgb(80, 50, 30)";
                 cx.fillRect(o.x, o.y, o.width, o.height);

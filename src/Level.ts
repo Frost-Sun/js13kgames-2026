@@ -144,8 +144,7 @@ const toggleActionButton = (level: Level, i: number): void => {
 };
 
 const addCharacter = (level: Level): void => {
-    const width = 5,
-        height = 4;
+    const width = 5, height = 4;
     const startPos = level.startTile;
 
     const character: GameObject = {
