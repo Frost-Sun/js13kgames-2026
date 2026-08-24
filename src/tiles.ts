@@ -147,12 +147,12 @@ const createTile = (
                 straw:
                     random() > 0.2
                         ? {
-                            wobblePhase: random(Math.PI),
-                            width: TILE_WIDTH / 16,
-                            height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
-                            xAdjust: random(TILE_WIDTH),
-                            yAdjust: random(TILE_HEIGHT),
-                        }
+                              wobblePhase: random(Math.PI),
+                              width: TILE_WIDTH / 16,
+                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                              xAdjust: random(TILE_WIDTH),
+                              yAdjust: random(TILE_HEIGHT),
+                          }
                         : undefined,
             };
         default:
@@ -354,10 +354,19 @@ export const drawMap = (
         dx: number,
         dy: number,
         ang: number,
-        col: string | CanvasGradient | CanvasPattern
+        col: string | CanvasGradient | CanvasPattern,
     ];
 
-    const draw: (params: DrawParams) => void = ([x, y, w, h, dx, dy, ang, col]) => {
+    const draw: (params: DrawParams) => void = ([
+        x,
+        y,
+        w,
+        h,
+        dx,
+        dy,
+        ang,
+        col,
+    ]) => {
         cx.save();
         cx.translate(dx, dy);
         cx.rotate(ang);
@@ -366,16 +375,14 @@ export const drawMap = (
         cx.restore();
     };
 
-
-
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
         switch (o.type) {
             case "character": {
-                const age = performance.now() / 1000;
+                const age = time.t / 1000;
                 const P = Math.PI;
-                const scaleX = o.facing === "right" ? -1 : 1;
-                const w = Math.sin(age * P * 8) * P / 8;
+                const scaleX = o.velocity && o.velocity.x < 0 ? -1 : 1;
+                const w = (Math.sin(age * P * 8) * P) / 8;
 
                 cx.save();
                 cx.translate(o.x + o.width / 2, o.y + o.height / 2);
@@ -383,21 +390,21 @@ export const drawMap = (
                 cx.translate(0, -25 + Math.sin(age * P * 4) * 2);
 
                 const parts: DrawParams[] = [
-                    [-3, 0, 6, 15, -10, 10, w, '#d1d5db'],
-                    [-3, 0, 6, 15, 10, 10, -w, '#d1d5db'],
-                    [-3, 0, 6, 15, -10, 10, -w, '#f3f4f6'],
-                    [-3, 0, 6, 15, 10, 10, w, '#f3f4f6'],
-                    [-12, 0, 12, 6, -16, -8, w / 2 - P / 8, '#f472b6'],
-                    [-16, -10, 32, 20, 0, 0, 0, '#fff'],
-                    [-5, -16, 10, 20, 14, -8, P / 6, '#fff'],
-                    [18, -32, 16, 12, 0, 0, 0, '#fff'],
-                    [26, -28, 2, 2, 0, 0, 0, '#111827'],
-                    [14, -34, 6, 18, 0, 0, 0, '#f472b6']
+                    [-3, 0, 6, 15, -10, 10, w, "#d1d5db"],
+                    [-3, 0, 6, 15, 10, 10, -w, "#d1d5db"],
+                    [-3, 0, 6, 15, -10, 10, -w, "#f3f4f6"],
+                    [-3, 0, 6, 15, 10, 10, w, "#f3f4f6"],
+                    [-12, 0, 12, 6, -16, -8, w / 2 - P / 8, "#f472b6"],
+                    [-16, -10, 32, 20, 0, 0, 0, "#fff"],
+                    [-5, -16, 10, 20, 14, -8, P / 6, "#fff"],
+                    [18, -32, 16, 12, 0, 0, 0, "#fff"],
+                    [26, -28, 2, 2, 0, 0, 0, "#111827"],
+                    [14, -34, 6, 18, 0, 0, 0, "#f472b6"],
                 ];
 
-                parts.forEach(p => draw(p));
+                parts.forEach((p) => draw(p));
 
-                cx.fillStyle = '#fbbf24';
+                cx.fillStyle = "#fbbf24";
                 cx.beginPath();
                 cx.moveTo(21, -32);
                 cx.lineTo(26, -44);

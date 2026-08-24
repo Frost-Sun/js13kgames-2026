@@ -42,5 +42,4 @@ export interface GameObject extends Area {
     height: number;
     velocity?: Vector;
     toDelete?: boolean;
-    facing?: "up" | "down" | "left" | "right";
 }
