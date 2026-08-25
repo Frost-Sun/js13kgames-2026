@@ -112,6 +112,14 @@ const actionButtons: Button[] = [
         text: "RIGHT",
         action: Action.Right,
     },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "RAINBOW",
+        action: Action.Rainbow,
+    },
 ];
 
 export interface Level extends TileMap<Tile> {
@@ -144,7 +152,8 @@ const toggleActionButton = (level: Level, i: number): void => {
 };
 
 const addCharacter = (level: Level): void => {
-    const width = 5, height = 4;
+    const width = 5,
+        height = 4;
     const startPos = level.startTile;
 
     const character: GameObject = {
@@ -252,14 +261,19 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
 
-        if (tile && tile.type === "grass") {
-            const selectedAction =
-                actionButtons[level.selectedActionIndex].action;
-            const tileType = actionToTileType(selectedAction);
-            if (tileType) {
-                tile.type = tileType;
+        if (selectedAction != null && tile != null) {
+            if (selectedAction === Action.Rainbow) {
+                if (tile.type === "water") {
+                    tile.type = "rainbow";
+                }
+            } else if (tile.type === "grass") {
+                const tileType = actionToTileType(selectedAction);
+                if (tileType) {
+                    tile.type = tileType;
+                }
             }
         }
     }
@@ -275,7 +289,8 @@ const actionToTileType = (action: Action): TileType | undefined => {
             return "left";
         case Action.Right:
             return "right";
-
+        case Action.Rainbow:
+            return "rainbow";
         default:
             return undefined;
     }

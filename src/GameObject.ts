@@ -25,7 +25,7 @@
 import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
 
-export const CHARACTER_SPEED = 0.01;
+export const CHARACTER_SPEED = 0.005;
 
 export const VELOCITY_UP: Vector = { x: 0, y: -CHARACTER_SPEED };
 export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };

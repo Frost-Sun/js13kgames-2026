@@ -3,4 +3,5 @@ export enum Action {
     Down,
     Left,
     Right,
+    Rainbow,
 }
