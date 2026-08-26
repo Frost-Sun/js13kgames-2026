@@ -26,12 +26,13 @@ import { Action } from "./Action";
 import { createLevel, type Level } from "./Level";
 import {
     carve,
-    core,
     coreX,
     coreY,
     segment4,
+    segment9,
     sliceLeft,
     sliceRight,
+    sliceTop,
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
@@ -67,37 +68,55 @@ const createMapInitial = (number: number): Level => {
     return level;
 };
 
-const createMapArrows = (number: number): Level => {
+const createMapIslands = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Level 2",
-        xCount: 10,
-        yCount: 10,
+        xCount: 12,
+        yCount: 12,
         characterCount: 3,
         charactersToFinish: 3,
         actionCounts: {
-            [Action.Up]: 2,
-            [Action.Down]: 2,
-            [Action.Right]: 2,
+            [Action.Up]: 1,
+            [Action.Down]: 1,
+            [Action.Left]: 1,
+            [Action.Right]: 1,
+            [Action.Rainbow]: 2,
         },
     });
     fill(level, level, "water");
 
     const inner = carve(level);
-    fill(level, inner, "grass");
 
-    const [_topLeft, topRight, _bottomLeft, bottomRight] = segment4(inner);
-    fill(level, bottomRight, "water");
+    const [
+        topLeft,
+        _top,
+        topRight,
+        _middleLeft,
+        _middle,
+        _middleRight,
+        bottomLeft,
+        _bottom,
+        bottomRight,
+    ] = segment9(inner, inner.yCount / 2, 1, inner.xCount / 2, 1);
 
-    fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, core(topRight), "finish");
+    fill(level, topLeft, "grass");
+    fill(level, topRight, "grass");
+    fill(level, bottomLeft, "grass");
+    fill(level, bottomRight, "grass");
+
+    const [a, _b, c, _d] = segment4(bottomRight);
+    fill(level, a, "water");
+
+    fill(level, coreY(sliceLeft(topLeft)), "start");
+    fill(level, sliceLeft(sliceTop(c)), "finish");
 
     return level;
 };
 
 export const maps: ((number: number) => Level)[] = [
     createMapInitial,
-    createMapArrows,
+    createMapIslands,
 ];
 
 export const createMap = (number: number): Level => {
