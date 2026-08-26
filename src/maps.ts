@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { Action } from "./Action";
 import { createLevel, type Level } from "./Level";
 import {
     carve,
@@ -42,6 +43,9 @@ const createMapInitial = (number: number): Level => {
         yCount: 10,
         characterCount: 3,
         charactersToFinish: 2,
+        actionCounts: {
+            [Action.Rainbow]: 2,
+        },
     });
     fill(level, level, "water");
 
@@ -63,7 +67,7 @@ const createMapInitial = (number: number): Level => {
     return level;
 };
 
-const createMapRiver = (number: number): Level => {
+const createMapArrows = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Level 2",
@@ -71,6 +75,11 @@ const createMapRiver = (number: number): Level => {
         yCount: 10,
         characterCount: 3,
         charactersToFinish: 3,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Right]: 2,
+        },
     });
     fill(level, level, "water");
 
@@ -88,7 +97,7 @@ const createMapRiver = (number: number): Level => {
 
 export const maps: ((number: number) => Level)[] = [
     createMapInitial,
-    createMapRiver,
+    createMapArrows,
 ];
 
 export const createMap = (number: number): Level => {

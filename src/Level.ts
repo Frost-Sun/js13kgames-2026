@@ -130,6 +130,7 @@ export interface LevelParameters {
     readonly yCount: number;
     readonly characterCount: number;
     readonly charactersToFinish: number;
+    readonly actionCounts: Partial<Record<Action, number>>;
 }
 
 export interface Level extends TileMap<Tile>, LevelParameters {
@@ -145,6 +146,7 @@ export interface Level extends TileMap<Tile>, LevelParameters {
     charactersFinished: number;
     lastSpawnTime: number;
     selectedActionIndex?: number;
+    actionsUsed: Partial<Record<Action, number>>;
 }
 
 export const createLevel = (params: LevelParameters): Level => ({
@@ -167,6 +169,7 @@ export const createLevel = (params: LevelParameters): Level => ({
     charactersLost: 0,
     charactersFinished: 0,
     lastSpawnTime: 0,
+    actionsUsed: {},
 });
 
 const toggleActionButton = (level: Level, i: number): void => {
@@ -274,6 +277,24 @@ const killCharacter = (
     }
 };
 
+const useAction = (level: Level, action: Action): boolean => {
+    if (!level.actionCounts[action]) {
+        return false;
+    }
+
+    if (level.actionsUsed[action] == null) {
+        level.actionsUsed[action] = 1;
+        return true;
+    }
+
+    if (level.actionsUsed[action] < level.actionCounts[action]) {
+        level.actionsUsed[action]++;
+        return true;
+    }
+
+    return false;
+};
+
 export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
@@ -292,10 +313,13 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
 
         if (selectedAction != null && tile != null) {
             if (selectedAction === Action.Rainbow) {
-                if (tile.type === "water") {
+                if (tile.type === "water" && useAction(level, selectedAction)) {
                     tile.type = "rainbow";
                 }
-            } else if (tile.type === "grass") {
+            } else if (
+                tile.type === "grass" &&
+                useAction(level, selectedAction)
+            ) {
                 const tileType = actionToTileType(selectedAction);
                 if (tileType) {
                     tile.type = tileType;
@@ -327,7 +351,6 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
     const ButtonRowHeightFraction = 0.2;
     const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
-    const buttonWidth = buttonRowHeight;
     const buttonRowY = canvas.height - buttonRowHeight;
 
     // Update the draw area on each draw so that it works also even when
@@ -336,17 +359,21 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
     levelDrawArea.height = canvas.height - buttonRowHeight;
 
     // Draw the level according to camera angle
-
     applyCamera(camera, cx, levelDrawArea, level, () => {
         drawMap(time, level, level.objects);
     });
 
     // Draw button row
+    const buttonWidth = buttonRowHeight;
     const buttonRowWidth = buttonWidth * actionButtons.length;
     const buttonRowX = (canvas.width - buttonRowWidth) / 2;
 
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
+        const count =
+            (level.actionCounts[button.action] ?? 0) -
+            (level.actionsUsed[button.action] ?? 0);
+
         button.x = buttonRowX + i * buttonWidth;
         button.y = buttonRowY;
         button.width = buttonWidth;
@@ -358,12 +385,18 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
                 : "rgb(80, 50, 50)";
         cx.fillRect(button.x, button.y, button.width, button.height);
 
-        cx.fillStyle = "white";
+        cx.fillStyle = count > 0 ? "white" : "grey";
         cx.font = "38px Courier New";
         cx.fillText(
             button.text,
-            button.x + button.width * 0.3,
+            button.x + button.width * 0.2,
             button.y + button.height / 2,
+        );
+        cx.font = "32px Courier New";
+        cx.fillText(
+            count.toString(),
+            button.x + button.width * 0.4,
+            button.y + button.height * 0.75,
         );
     }
 };
