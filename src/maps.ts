@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-import type { Level } from "./Level";
-import { CameraMode } from "./core/gameplay/Camera";
+import { createLevel, type Level } from "./Level";
 import {
     carve,
     core,
@@ -33,57 +32,17 @@ import {
     sliceLeft,
     sliceRight,
 } from "./core/tiles/TileArea";
-import {
-    fill,
-    findTilePosition,
-    TILE_HEIGHT,
-    TILE_WIDTH,
-    tileToArea,
-} from "./tiles";
-
-const createLevel = (
-    number: number,
-    introduction: string,
-    xCount: number,
-    yCount: number,
-    characterCount: number,
-    charactersToFinish: number,
-): Level => {
-    const width = xCount * TILE_WIDTH,
-        height = yCount * TILE_HEIGHT;
-
-    const level: Level = {
-        number,
-        introduction,
-        ix: 0,
-        iy: 0,
-        xCount,
-        yCount,
-        width,
-        height,
-        camera: {
-            mode: CameraMode.ShowWholeLevel,
-            x: 50,
-            y: 50,
-            zoom: 8,
-        },
-        tiles: Array.from({ length: xCount * yCount }),
-        objects: [],
-        startTile: { ix: 0, iy: 0 },
-        finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
-        charactersTotal: characterCount,
-        charactersToFinish,
-        charactersLeft: characterCount,
-        charactersLost: 0,
-        charactersFinished: 0,
-        lastSpawnTime: 0,
-    };
-
-    return level;
-};
+import { fill, findTilePosition, tileToArea } from "./tiles";
 
 const createMapInitial = (number: number): Level => {
-    const level = createLevel(number, "Level 1", 10, 10, 3, 2);
+    const level = createLevel({
+        number,
+        introduction: "Level 1",
+        xCount: 10,
+        yCount: 10,
+        characterCount: 3,
+        charactersToFinish: 2,
+    });
     fill(level, level, "water");
 
     const inner = carve(level);
@@ -105,7 +64,14 @@ const createMapInitial = (number: number): Level => {
 };
 
 const createMapRiver = (number: number): Level => {
-    const level = createLevel(number, "Level 2", 10, 10, 3, 3);
+    const level = createLevel({
+        number,
+        introduction: "Level 2",
+        xCount: 10,
+        yCount: 10,
+        characterCount: 3,
+        charactersToFinish: 3,
+    });
     fill(level, level, "water");
 
     const inner = carve(level);

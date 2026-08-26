@@ -24,6 +24,7 @@
 
 import {
     applyCamera,
+    CameraMode,
     screenToLevel,
     type Camera,
 } from "./core/gameplay/Camera";
@@ -122,11 +123,16 @@ const actionButtons: Button[] = [
     },
 ];
 
-export interface Level extends TileMap<Tile> {
-    number: number;
-    introduction: string;
-    xCount: number;
-    yCount: number;
+export interface LevelParameters {
+    readonly number: number;
+    readonly introduction: string;
+    readonly xCount: number;
+    readonly yCount: number;
+    readonly characterCount: number;
+    readonly charactersToFinish: number;
+}
+
+export interface Level extends TileMap<Tile>, LevelParameters {
     width: number;
     height: number;
     camera: Camera;
@@ -134,14 +140,34 @@ export interface Level extends TileMap<Tile> {
     objects: GameObject[];
     startTile: TilePosition;
     finishArea: Area;
-    charactersTotal: number;
-    charactersToFinish: number;
     charactersLeft: number;
     charactersLost: number;
     charactersFinished: number;
     lastSpawnTime: number;
     selectedActionIndex?: number;
 }
+
+export const createLevel = (params: LevelParameters): Level => ({
+    ...params,
+    ix: 0,
+    iy: 0,
+    width: params.xCount * TILE_WIDTH,
+    height: params.yCount * TILE_HEIGHT,
+    camera: {
+        mode: CameraMode.ShowWholeLevel,
+        x: 50,
+        y: 50,
+        zoom: 8,
+    },
+    tiles: Array.from({ length: params.xCount * params.yCount }),
+    objects: [],
+    startTile: { ix: 0, iy: 0 },
+    finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
+    charactersLeft: params.characterCount,
+    charactersLost: 0,
+    charactersFinished: 0,
+    lastSpawnTime: 0,
+});
 
 const toggleActionButton = (level: Level, i: number): void => {
     if (i === level.selectedActionIndex) {
@@ -241,7 +267,7 @@ const killCharacter = (
     level.charactersLost++;
 
     if (
-        level.charactersTotal - level.charactersLost <
+        level.characterCount - level.charactersLost <
         level.charactersToFinish
     ) {
         setStateLose(state, time);
