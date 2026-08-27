@@ -32,7 +32,7 @@ export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
 export const VELOCITY_LEFT: Vector = { x: -CHARACTER_SPEED, y: 0 };
 export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
-export type GameObjectType = "rock" | "character" | "start" | "finish";
+export type GameObjectType = "rock" | "character" | "finish";
 
 export interface GameObject extends Area {
     type: GameObjectType;

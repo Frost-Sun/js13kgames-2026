@@ -51,7 +51,6 @@ export type TileType =
 export interface Tile {
     type: TileType;
     object?: GameObject;
-    finish?: boolean;
     straw?: StrawParams;
 }
 
@@ -117,7 +116,6 @@ const createTile = (
     type: TileType,
     ix: number,
     iy: number,
-    finish?: boolean,
 ): Tile | undefined => {
     switch (type) {
         case "rock":
@@ -145,7 +143,6 @@ const createTile = (
         case "grass":
             return {
                 type,
-                finish,
                 straw:
                     random() > 0.2
                         ? {
@@ -160,7 +157,6 @@ const createTile = (
         default:
             return {
                 type,
-                finish,
             };
     }
 };
@@ -170,9 +166,8 @@ const setTile = (
     type: TileType | undefined,
     ix: number,
     iy: number,
-    finish?: boolean,
 ): void => {
-    const tile = type ? createTile(type, ix, iy, finish) : undefined;
+    const tile = type ? createTile(type, ix, iy) : undefined;
     tileMapSet(map, tile, ix, iy);
 };
 
@@ -180,11 +175,10 @@ export const fill = (
     map: TileMap<Tile>,
     area: TileArea,
     tile?: TileType,
-    finish?: boolean,
 ): void => {
     for (let iy = area.iy; iy < area.iy + area.yCount; iy++) {
         for (let ix = area.ix; ix < area.ix + area.xCount; ix++) {
-            setTile(map, tile, ix, iy, finish);
+            setTile(map, tile, ix, iy);
         }
     }
 };
