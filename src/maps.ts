@@ -22,68 +22,32 @@
  * SOFTWARE.
  */
 
-import type { Level } from "./Level";
-import { CameraMode } from "./core/gameplay/Camera";
+import { Action } from "./Action";
+import { createLevel, type Level } from "./Level";
 import {
     carve,
-    core,
     coreX,
     coreY,
     segment4,
+    segment9,
     sliceLeft,
     sliceRight,
+    sliceTop,
 } from "./core/tiles/TileArea";
-import {
-    fill,
-    findTilePosition,
-    TILE_HEIGHT,
-    TILE_WIDTH,
-    tileToArea,
-} from "./tiles";
-
-const createLevel = (
-    number: number,
-    introduction: string,
-    xCount: number,
-    yCount: number,
-    characterCount: number,
-    charactersToFinish: number,
-): Level => {
-    const width = xCount * TILE_WIDTH,
-        height = yCount * TILE_HEIGHT;
-
-    const level: Level = {
-        number,
-        introduction,
-        ix: 0,
-        iy: 0,
-        xCount,
-        yCount,
-        width,
-        height,
-        camera: {
-            mode: CameraMode.ShowWholeLevel,
-            x: 50,
-            y: 50,
-            zoom: 8,
-        },
-        tiles: Array.from({ length: xCount * yCount }),
-        objects: [],
-        startTile: { ix: 0, iy: 0 },
-        finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
-        charactersTotal: characterCount,
-        charactersToFinish,
-        charactersLeft: characterCount,
-        charactersLost: 0,
-        charactersFinished: 0,
-        lastSpawnTime: 0,
-    };
-
-    return level;
-};
+import { fill, findTilePosition, tileToArea } from "./tiles";
 
 const createMapInitial = (number: number): Level => {
-    const level = createLevel(number, "Level 1", 10, 10, 3, 2);
+    const level = createLevel({
+        number,
+        introduction: "Level 1",
+        xCount: 10,
+        yCount: 10,
+        characterCount: 3,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Rainbow]: 2,
+        },
+    });
     fill(level, level, "water");
 
     const inner = carve(level);
@@ -104,25 +68,55 @@ const createMapInitial = (number: number): Level => {
     return level;
 };
 
-const createMapRiver = (number: number): Level => {
-    const level = createLevel(number, "Level 2", 10, 10, 3, 3);
+const createMapIslands = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Level 2",
+        xCount: 12,
+        yCount: 12,
+        characterCount: 3,
+        charactersToFinish: 3,
+        actionCounts: {
+            [Action.Up]: 1,
+            [Action.Down]: 1,
+            [Action.Left]: 1,
+            [Action.Right]: 1,
+            [Action.Rainbow]: 2,
+        },
+    });
     fill(level, level, "water");
 
     const inner = carve(level);
-    fill(level, inner, "grass");
 
-    const [_topLeft, topRight, _bottomLeft, bottomRight] = segment4(inner);
-    fill(level, bottomRight, "water");
+    const [
+        topLeft,
+        _top,
+        topRight,
+        _middleLeft,
+        _middle,
+        _middleRight,
+        bottomLeft,
+        _bottom,
+        bottomRight,
+    ] = segment9(inner, inner.yCount / 2, 1, inner.xCount / 2, 1);
 
-    fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, core(topRight), "finish");
+    fill(level, topLeft, "grass");
+    fill(level, topRight, "grass");
+    fill(level, bottomLeft, "grass");
+    fill(level, bottomRight, "grass");
+
+    const [a, _b, c, _d] = segment4(bottomRight);
+    fill(level, a, "water");
+
+    fill(level, coreY(sliceLeft(topLeft)), "start");
+    fill(level, sliceLeft(sliceTop(c)), "finish");
 
     return level;
 };
 
 export const maps: ((number: number) => Level)[] = [
     createMapInitial,
-    createMapRiver,
+    createMapIslands,
 ];
 
 export const createMap = (number: number): Level => {
