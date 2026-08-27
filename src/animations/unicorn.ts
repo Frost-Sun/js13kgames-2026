@@ -1,3 +1,27 @@
+/*
+ * Copyright (c) 2026 Frost Sun
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {
     type GameObject,
     VELOCITY_UP,
@@ -5,41 +29,8 @@ import {
     VELOCITY_LEFT,
 } from "../GameObject";
 
-import { cx } from "../graphics";
+import { cx, drawPart, type DrawCommand } from "../graphics";
 
-/**
- * Define the structure of a draw command.
- * This avoids repeating the types inside the draw function.
- */
-type DrawCommand = [
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    dx: number,
-    dy: number,
-    ang: number,
-    col: string | any // Use any or a specific Canvas type for colors/gradients
-];
-
-/**
- * The core drawing function.
- * It takes a single DrawCommand tuple.
- */
-export const drawPart = (params: DrawCommand) => {
-    const [x, y, w, h, dx, dy, ang, col] = params;
-
-    cx.save();
-    cx.translate(dx, dy);
-    cx.rotate(ang);
-    cx.fillStyle = col;
-
-    cx.beginPath();
-    cx.roundRect(x, y, w, h, 2);
-    cx.fill();
-
-    cx.restore();
-};
 
 /**
  * The function that actually renders the unicorn.
