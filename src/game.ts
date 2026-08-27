@@ -1,3 +1,4 @@
+import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import type { TimeStep } from "./core/time/TimeStep";
@@ -62,6 +63,15 @@ const draw = (time: TimeStep): void => {
             // Blank screen
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const introUnicorn: any = {
+                x: canvas.width / 4,
+                y: canvas.height / 1.4,
+                width: canvas.width / 2.5,
+                height: canvas.height / 2.5,
+            };
+
+            renderUnicorn(introUnicorn);
 
             renderText("GAME TITLE", TextSize.Huge);
             renderWaitForProgressInput();
