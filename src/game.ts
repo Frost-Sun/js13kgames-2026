@@ -2,6 +2,7 @@ import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import type { TimeStep } from "./core/time/TimeStep";
+import type { GameObject } from "./GameObject";
 import { getGameState } from "./GameState";
 import { setStateIntro } from "./gamestates";
 import { canvas, cx } from "./graphics";
@@ -64,11 +65,12 @@ const draw = (time: TimeStep): void => {
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const introUnicorn: any = {
+            const introUnicorn: GameObject = {
                 x: canvas.width / 4,
                 y: canvas.height / 1.4,
                 width: canvas.width / 2.5,
                 height: canvas.height / 2.5,
+                type: "character",
             };
 
             renderUnicorn(introUnicorn);
