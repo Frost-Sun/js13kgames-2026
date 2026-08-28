@@ -1,6 +1,7 @@
 import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
+import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
 import { setStateIntro } from "./gamestates";
@@ -60,9 +61,25 @@ const draw = (time: TimeStep): void => {
         case "intro": {
             cx.save();
 
-            // Blank screen
-            cx.fillStyle = "black";
-            cx.fillRect(0, 0, canvas.width, canvas.height);
+            const colors = [
+                "red",
+                "orange",
+                "yellow",
+                "green",
+                "cyan",
+                "blue",
+                "violet",
+            ];
+
+            for (let i = 0; i < colors.length; i++) {
+                cx.fillStyle = colors[i];
+                cx.fillRect(
+                    0,
+                    i * canvas.height / colors.length,
+                    canvas.width,
+                    canvas.height / colors.length,
+                );
+            }
 
             renderUnicorn({
                 x: canvas.width / 4,
@@ -73,6 +90,9 @@ const draw = (time: TimeStep): void => {
             });
 
             renderText("GAME TITLE", TextSize.Huge);
+
+            renderGradient(canvas, cx, 0.5);
+
             renderWaitForProgressInput();
 
             cx.restore();

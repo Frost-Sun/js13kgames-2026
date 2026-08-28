@@ -24,8 +24,6 @@
 
 import {
     type GameObject,
-    VELOCITY_UP,
-    VELOCITY_DOWN,
     VELOCITY_LEFT,
 } from "../GameObject";
 
