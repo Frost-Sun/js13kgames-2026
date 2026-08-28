@@ -149,12 +149,12 @@ const createTile = (
                 straw:
                     random() > 0.2
                         ? {
-                            wobblePhase: random(Math.PI),
-                            width: TILE_WIDTH / 16,
-                            height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
-                            xAdjust: random(TILE_WIDTH),
-                            yAdjust: random(TILE_HEIGHT),
-                        }
+                              wobblePhase: random(Math.PI),
+                              width: TILE_WIDTH / 16,
+                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                              xAdjust: random(TILE_WIDTH),
+                              yAdjust: random(TILE_HEIGHT),
+                          }
                         : undefined,
             };
         default:
@@ -331,9 +331,12 @@ export const drawMap = (
                     const right = tileMapGet(map, ix + 1, iy)?.type;
 
                     const isHorizontalBridge =
-                        left === "grass" || right === "grass" ||
-                        left === "start" || right === "finish" ||
-                        up === "water" || down === "water";
+                        left === "grass" ||
+                        right === "grass" ||
+                        left === "start" ||
+                        right === "finish" ||
+                        up === "water" ||
+                        down === "water";
 
                     const colors = [
                         "red",

@@ -75,7 +75,7 @@ const draw = (time: TimeStep): void => {
                 cx.fillStyle = colors[i];
                 cx.fillRect(
                     0,
-                    i * canvas.height / colors.length,
+                    (i * canvas.height) / colors.length,
                     canvas.width,
                     canvas.height / colors.length,
                 );
