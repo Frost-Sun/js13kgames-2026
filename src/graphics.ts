@@ -10,7 +10,7 @@ export type DrawCommand = [
     dx: number,
     dy: number,
     ang: number,
-    col: string | any // Use any or a specific Canvas type for colors/gradients
+    col: string | any, // Use any or a specific Canvas type for colors/gradients
 ];
 
 /**

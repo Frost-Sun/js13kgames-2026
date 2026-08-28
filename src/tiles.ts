@@ -149,12 +149,12 @@ const createTile = (
                 straw:
                     random() > 0.2
                         ? {
-                            wobblePhase: random(Math.PI),
-                            width: TILE_WIDTH / 16,
-                            height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
-                            xAdjust: random(TILE_WIDTH),
-                            yAdjust: random(TILE_HEIGHT),
-                        }
+                              wobblePhase: random(Math.PI),
+                              width: TILE_WIDTH / 16,
+                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                              xAdjust: random(TILE_WIDTH),
+                              yAdjust: random(TILE_HEIGHT),
+                          }
                         : undefined,
             };
         default:
@@ -370,7 +370,6 @@ export const drawMap = (
     objectsToDraw.push(...objects);
 
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
-
 
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
