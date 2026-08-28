@@ -1,5 +1,3 @@
 {
-  "recommendations": [
-    "web-bytes.oxlint"
-  ]
+    "recommendations": ["web-bytes.oxlint"]
 }
