@@ -579,14 +579,24 @@ export const drawMap = (
             }
             case "rock": {
                 cx.fillStyle = "rgb(80, 70, 70)";
-                cx.fillRect(o.x, o.y, o.width, o.height);
+                cx.fillRect(
+                    o.x,
+                    o.y - TILE_UPWARD_HEIGHT,
+                    o.width,
+                    o.height + TILE_UPWARD_HEIGHT,
+                );
                 cx.fillStyle = "rgb(100, 90, 90)";
                 cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
                 break;
             }
             case "finish": {
                 cx.fillStyle = "rgb(150, 50, 50)";
-                cx.fillRect(o.x, o.y, o.width, o.height);
+                cx.fillRect(
+                    o.x,
+                    o.y - TILE_UPWARD_HEIGHT,
+                    o.width,
+                    o.height + TILE_UPWARD_HEIGHT,
+                );
                 cx.fillStyle = "rgb(180, 70, 70)";
                 cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
                 break;
