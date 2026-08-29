@@ -565,7 +565,7 @@ export const drawMap = (
         const o = objectsToDraw[i];
         switch (o.type) {
             case "character": {
-                renderUnicorn(o);
+                renderUnicorn(o, o.action === GameObjectAction.Dig);
                 break;
             }
             case "rock": {

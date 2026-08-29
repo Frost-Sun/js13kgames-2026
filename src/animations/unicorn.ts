@@ -29,7 +29,7 @@ import { cx, drawPart, type DrawCommand } from "../graphics";
  * The function that actually renders the unicorn.
  * This is what you call in your main draw loop.
  */
-export const renderUnicorn = (obj: GameObject) => {
+export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
     const age = performance.now() / 1000;
     const P = Math.PI;
     const scaleX = obj.velocity.x < 0 ? -1 : 1;
@@ -39,6 +39,17 @@ export const renderUnicorn = (obj: GameObject) => {
 
     cx.save();
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
+
+    if (highlight) {
+        cx.fillStyle = "rgb(255, 100, 100)";
+        cx.fillRect(
+            -obj.width / 4,
+            -obj.height / 4,
+            obj.width / 2,
+            obj.height / 2,
+        );
+    }
+
     cx.scale((obj.height / 100) * scaleX, obj.height / 100);
     cx.translate(0, -25 + Math.sin(age * P * 4) * 2);
 
