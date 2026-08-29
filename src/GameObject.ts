@@ -26,6 +26,10 @@ import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
 
 export const CHARACTER_SPEED = 0.005;
+export const DIGGING_SPEED = 0.001;
+
+export const UNICORN_WIDTH = 5;
+export const UNICORN_HEIGHT = 4;
 
 export const VELOCITY_UP: Vector = { x: 0, y: -CHARACTER_SPEED };
 export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
@@ -34,12 +38,18 @@ export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
 export type GameObjectType = "rock" | "character" | "finish";
 
+export enum GameObjectAction {
+    Walk,
+    Dig,
+}
+
 export interface GameObject extends Area {
     type: GameObjectType;
     x: number;
     y: number;
     width: number;
     height: number;
-    velocity?: Vector;
+    velocity: Vector;
+    action?: GameObjectAction;
     toDelete?: boolean;
 }

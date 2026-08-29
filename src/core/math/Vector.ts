@@ -59,6 +59,10 @@ export function length(a: Vector): number {
     return Math.sqrt(a.x * a.x + a.y * a.y);
 }
 
+export function negate(a: Vector): Vector {
+    return { x: -a.x, y: -a.y };
+}
+
 export function add(a: Vector, b: Vector): Vector {
     return {
         x: a.x + b.x,

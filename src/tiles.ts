@@ -22,13 +22,18 @@
  * SOFTWARE.
  */
 
-import { ZERO_VECTOR, type Vector } from "./core/math/Vector";
+import { negate, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import type { TimeStep } from "./core/time/TimeStep";
-import { type GameObject } from "./GameObject";
+import {
+    CHARACTER_SPEED,
+    DIGGING_SPEED,
+    GameObjectAction,
+    type GameObject,
+} from "./GameObject";
 import { cx } from "./graphics";
 import type { TileArea } from "./core/tiles/TileArea";
 import { tileMapGet, tileMapSet, type TileMap } from "./core/tiles/TileMap";
-import type { Area } from "./core/math/Area";
+import { getCenter, type Area } from "./core/math/Area";
 import { renderStraw, type StrawParams } from "./animations/straw";
 import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
@@ -47,6 +52,9 @@ export type TileType =
     | "left"
     | "right"
     | "rainbow";
+
+export const isArrow = (type: TileType): boolean =>
+    type === "up" || type === "down" || type === "left" || type === "right";
 
 export interface Tile {
     type: TileType;
@@ -127,6 +135,7 @@ const createTile = (
                     y: iy * TILE_HEIGHT,
                     width: TILE_WIDTH,
                     height: TILE_HEIGHT,
+                    velocity: ZERO_VECTOR,
                 },
             };
         case "finish":
@@ -138,6 +147,7 @@ const createTile = (
                     y: iy * TILE_HEIGHT,
                     width: TILE_WIDTH,
                     height: TILE_HEIGHT,
+                    velocity: ZERO_VECTOR,
                 },
             };
         case "grass":
@@ -203,9 +213,8 @@ export const moveObject = (
     map: TileMap<Tile>,
     o: GameObject,
 ): void => {
-    const velocity = o.velocity ?? ZERO_VECTOR;
-    let dx = velocity.x * time.dt;
-    let dy = velocity.y * time.dt;
+    let dx = o.velocity.x * time.dt;
+    let dy = o.velocity.y * time.dt;
 
     const newX = o.x + dx;
     const newY = o.y + dy;
@@ -220,20 +229,119 @@ export const moveObject = (
     const blockUpRight = isBlocking(map, maxXIndex, minYIndex);
     const blockDownRight = isBlocking(map, maxXIndex, maxYIndex);
 
+    let blockXDirection: -1 | 1 | undefined;
+    let blockYDirection: -1 | 1 | undefined;
+
     if (dx < 0 && (blockUpLeft || blockDownLeft)) {
-        dx = 0;
+        blockXDirection = -1;
     } else if (dx > 0 && (blockUpRight || blockDownRight)) {
-        dx = 0;
+        blockXDirection = 1;
+    } else if (dy < 0 && (blockUpLeft || blockUpRight)) {
+        blockYDirection = -1;
+    } else if (dy > 0 && (blockDownLeft || blockDownRight)) {
+        blockYDirection = 1;
     }
 
-    if (dy < 0 && (blockUpLeft || blockUpRight)) {
-        dy = 0;
-    } else if (dy > 0 && (blockDownLeft || blockDownRight)) {
-        dy = 0;
+    if (blockXDirection || blockYDirection) {
+        if (o.action === GameObjectAction.Dig) {
+            if (blockXDirection) {
+                digHorizontally(time, map, o, blockXDirection);
+            } else if (blockYDirection) {
+                digVertically(time, map, o, blockYDirection);
+            }
+        } else {
+            // Go to opposite direction
+            o.velocity = negate(o.velocity);
+        }
     }
+
+    dx = o.velocity.x * time.dt;
+    dy = o.velocity.y * time.dt;
 
     o.x += dx;
     o.y += dy;
+};
+
+const digHorizontally = (
+    time: TimeStep,
+    map: TileMap<Tile>,
+    o: GameObject,
+    xDirection: -1 | 1,
+): void => {
+    const objectCenter = getCenter(o);
+    const currentTile = getTileAt(map, objectCenter);
+    if (currentTile == null) {
+        return;
+    }
+
+    const dx = o.velocity.x * time.dt;
+    const tilePos = getTilePosAt(objectCenter);
+    const rock =
+        currentTile.type === "rock"
+            ? currentTile
+            : tileMapGet(map, tilePos.ix + xDirection, tilePos.iy);
+
+    if (rock?.type === "rock" && rock?.object) {
+        // Set slower speed for digging
+        if (Math.abs(o.velocity.x) > DIGGING_SPEED) {
+            o.velocity = { x: xDirection * DIGGING_SPEED, y: 0 };
+        }
+
+        // Adjust rock size
+        if (xDirection > 0) {
+            rock.object.x += dx;
+        }
+        rock.object.width -= Math.abs(dx);
+
+        // Check if the current block is finished
+        const BlockFinishedThreshold = TILE_WIDTH / 10;
+        if (rock.object.width <= BlockFinishedThreshold) {
+            rock.object = undefined;
+            rock.type = "grass";
+            o.velocity = { x: xDirection * CHARACTER_SPEED, y: 0 };
+        }
+    }
+};
+
+const digVertically = (
+    time: TimeStep,
+    map: TileMap<Tile>,
+    o: GameObject,
+    yDirection: -1 | 1,
+): void => {
+    const objectCenter = getCenter(o);
+    const currentTile = getTileAt(map, objectCenter);
+    if (currentTile == null) {
+        return;
+    }
+
+    const dy = o.velocity.y * time.dt;
+    const tilePos = getTilePosAt(objectCenter);
+    const rock =
+        currentTile.type === "rock"
+            ? currentTile
+            : tileMapGet(map, tilePos.ix, tilePos.iy + yDirection);
+
+    if (rock?.type === "rock" && rock?.object) {
+        // Set slower speed for digging
+        if (Math.abs(o.velocity.y) > DIGGING_SPEED) {
+            o.velocity = { x: 0, y: yDirection * DIGGING_SPEED };
+        }
+
+        // Adjust rock size
+        if (yDirection > 0) {
+            rock.object.y += dy;
+        }
+        rock.object.height -= Math.abs(dy);
+
+        // Check if the current block is finished
+        const BlockFinishedThreshold = TILE_HEIGHT / 10;
+        if (rock.object.height <= BlockFinishedThreshold) {
+            rock.object = undefined;
+            rock.type = "grass";
+            o.velocity = { x: 0, y: yDirection * CHARACTER_SPEED };
+        }
+    }
 };
 
 export const drawMap = (
@@ -289,6 +397,7 @@ export const drawMap = (
                     break;
                 }
                 case "grass":
+                case "rock":
                 case "up":
                 case "down":
                 case "left":
@@ -332,7 +441,7 @@ export const drawMap = (
                         renderStraw(x, y, tile.straw, time.t);
                     }
 
-                    if (tile.type != "grass") {
+                    if (isArrow(tile.type)) {
                         cx.save();
                         cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
 
@@ -460,15 +569,10 @@ export const drawMap = (
                 break;
             }
             case "rock": {
-                cx.fillStyle = "rgb(80, 50, 30)";
+                cx.fillStyle = "rgb(80, 70, 70)";
                 cx.fillRect(o.x, o.y, o.width, o.height);
-                cx.fillStyle = "rgb(100, 70, 50)";
-                cx.fillRect(
-                    o.x,
-                    o.y - TILE_HEIGHT / 2,
-                    TILE_WIDTH,
-                    TILE_HEIGHT,
-                );
+                cx.fillStyle = "rgb(100, 90, 90)";
+                cx.fillRect(o.x, o.y - o.height / 2, o.width, o.height);
                 break;
             }
             case "finish": {

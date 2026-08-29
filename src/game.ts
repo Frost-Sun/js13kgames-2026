@@ -2,6 +2,7 @@ import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
+import { ZERO_VECTOR } from "./core/math/Vector";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
 import { setStateLoaded } from "./gamestates";
@@ -99,6 +100,7 @@ const draw = (time: TimeStep): void => {
                 width: canvas.width / 2.5,
                 height: canvas.height / 2.5,
                 type: "character",
+                velocity: ZERO_VECTOR,
             });
 
             renderText("UNICORN GAME", TextSize.Huge);

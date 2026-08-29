@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-import { type GameObject, VELOCITY_LEFT } from "../GameObject";
-
+import { type GameObject } from "../GameObject";
 import { cx, drawPart, type DrawCommand } from "../graphics";
 
 /**
@@ -33,7 +32,7 @@ import { cx, drawPart, type DrawCommand } from "../graphics";
 export const renderUnicorn = (obj: GameObject) => {
     const age = performance.now() / 1000;
     const P = Math.PI;
-    const scaleX = obj.velocity === VELOCITY_LEFT ? -1 : 1;
+    const scaleX = obj.velocity.x < 0 ? -1 : 1;
 
     const w = (Math.sin(age * P * 8) * P) / 8;
     const dy = Math.sin(age * P * 8) * 3;
@@ -43,7 +42,7 @@ export const renderUnicorn = (obj: GameObject) => {
     cx.scale((obj.height / 100) * scaleX, obj.height / 100);
     cx.translate(0, -25 + Math.sin(age * P * 4) * 2);
 
-    if (obj.velocity && obj.velocity.y > 0) {
+    if (obj.velocity.y > 0) {
         const partsDown: DrawCommand[] = [
             [-3, 0, 6, 15, -7, 6 - dy, 0, "#d1d5db"],
             [-3, 0, 6, 15, 7, 6 + dy, 0, "#d1d5db"],
@@ -75,7 +74,7 @@ export const renderUnicorn = (obj: GameObject) => {
         cx.lineTo(3, -36);
         cx.lineTo(0, -56);
         cx.fill();
-    } else if (obj.velocity && obj.velocity.y < 0) {
+    } else if (obj.velocity.y < 0) {
         const partsUp: DrawCommand[] = [
             [-3, 0, 6, 15, -6, 12 - dy, 0, "#d1d5db"],
             [-3, 0, 6, 15, 6, 12 + dy, 0, "#d1d5db"],

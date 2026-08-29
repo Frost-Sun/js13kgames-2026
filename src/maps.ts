@@ -68,10 +68,44 @@ const createMapInitial = (number: number): Level => {
     return level;
 };
 
-const createMapIslands = (number: number): Level => {
+const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Level 2",
+        xCount: 10,
+        yCount: 10,
+        characterCount: 5,
+        charactersToFinish: 1,
+        actionCounts: {
+            [Action.Right]: 2,
+            [Action.Dig]: 2,
+        },
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+    fill(level, inner, "grass");
+
+    const rock = coreX(inner, 2);
+    fill(level, rock, "rock");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
+    const finishPosition = findTilePosition(level, "finish") ?? {
+        ix: 0,
+        iy: 0,
+    };
+    level.finishArea = tileToArea(finishPosition);
+
+    return level;
+};
+
+const createMapIslands = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Level 3",
         xCount: 12,
         yCount: 12,
         characterCount: 3,
@@ -116,6 +150,7 @@ const createMapIslands = (number: number): Level => {
 
 export const maps: ((number: number) => Level)[] = [
     createMapInitial,
+    createMapRocks,
     createMapIslands,
 ];
 
