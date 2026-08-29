@@ -28,6 +28,11 @@ export type GameStateLoad = {
     type: "load";
 };
 
+export type GameStateLoaded = {
+    type: "loaded";
+    start: number;
+};
+
 export type GameStateIntro = {
     type: "intro";
     start: number;
@@ -58,6 +63,7 @@ export type GameStateWin = {
 
 export type GameState =
     | GameStateLoad
+    | GameStateLoaded
     | GameStateIntro
     | GameStateRun
     | GameStateLevelFinished

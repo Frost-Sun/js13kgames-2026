@@ -4,7 +4,7 @@ import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
-import { setStateIntro } from "./gamestates";
+import { setStateLoaded } from "./gamestates";
 import { canvas, cx } from "./graphics";
 import { drawLevel, levelHandleClick, updateLevel } from "./Level";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
@@ -50,11 +50,24 @@ const draw = (time: TimeStep): void => {
     switch (state.type) {
         case "load": {
             cx.save();
-            // Blank screen
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
             renderText("LOADING...", TextSize.Huge);
+            cx.restore();
+            break;
+        }
+        case "loaded": {
+            cx.save();
+            cx.fillStyle = "black";
+            cx.fillRect(0, 0, canvas.width, canvas.height);
+
+            renderText("© FROST SUN", TextSize.Huge);
+            renderText("2026", TextSize.Large, 1, 4);
+
+
+            renderWaitForProgressInput();
+
             cx.restore();
             break;
         }
@@ -89,7 +102,7 @@ const draw = (time: TimeStep): void => {
                 type: "character",
             });
 
-            renderText("GAME TITLE", TextSize.Huge);
+            renderText("UNICORN GAME", TextSize.Huge);
 
             renderGradient(canvas, cx, 0.5);
 
@@ -162,5 +175,5 @@ export const start = async (): Promise<void> => {
 
     await initializeAudio();
 
-    setStateIntro(time);
+    setStateLoaded(time);
 };
