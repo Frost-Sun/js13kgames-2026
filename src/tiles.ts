@@ -258,8 +258,29 @@ export const drawMap = (
             switch (tile?.type) {
                 case "rainbow":
                 case "water": {
+                    const up = tileMapGet(map, ix, iy - 1)?.type;
+                    const down = tileMapGet(map, ix, iy + 1)?.type;
+                    const left = tileMapGet(map, ix - 1, iy)?.type;
+                    const right = tileMapGet(map, ix + 1, iy)?.type;
+
+                    const isLand = (t: string | undefined) => t !== undefined && t !== "water" && t !== "rainbow";
+
+                    const r = 3;
+
+                    const tl = (isLand(up) && isLand(left)) ? r : 0;
+                    const tr = (isLand(up) && isLand(right)) ? r : 0;
+                    const br = (isLand(down) && isLand(right)) ? r : 0;
+                    const bl = (isLand(down) && isLand(left)) ? r : 0;
+
+                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
+                        cx.fillStyle = `rgb(40, 160, 40)`;
+                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                    }
+
                     cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                    cx.beginPath();
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
+                    cx.fill();
                     break;
                 }
                 case "start": {
