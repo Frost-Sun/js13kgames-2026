@@ -27,7 +27,6 @@ import {
     startSong,
     mouseSfx,
     mouseWalkNormalSfx,
-    fightSong,
     bounceSfx,
     catMeowSfx,
 } from "./sfxData.ts";
@@ -96,7 +95,6 @@ const initMusicPlayer = (
 export const initializeAudio = () => {
     return Promise.all([
         initMusicPlayer(startTune, startSong, true),
-        initMusicPlayer(gameTune, fightSong, true),
     ]);
 };
 
