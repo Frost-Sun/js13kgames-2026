@@ -149,12 +149,12 @@ const createTile = (
                 straw:
                     random() > 0.2
                         ? {
-                              wobblePhase: random(Math.PI),
-                              width: TILE_WIDTH / 16,
-                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
-                              xAdjust: random(TILE_WIDTH),
-                              yAdjust: random(TILE_HEIGHT),
-                          }
+                            wobblePhase: random(Math.PI),
+                            width: TILE_WIDTH / 16,
+                            height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                            xAdjust: random(TILE_WIDTH),
+                            yAdjust: random(TILE_HEIGHT),
+                        }
                         : undefined,
             };
         default:
@@ -256,72 +256,61 @@ export const drawMap = (
             const tile = tileMapGet(map, ix, iy);
             switch (tile?.type) {
                 case "grass":
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    if (tile.straw) {
-                        cx.fillStyle = `rgb(50, 190, 50)`;
-                        renderStraw(x, y, tile.straw, time.t);
-                    }
-                    break;
-                case "up": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + 3 * qh);
-                    cx.lineTo(x + 2 * qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "down": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + qh);
-                    cx.lineTo(x + 2 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "left": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + 2 * qh);
-                    cx.lineTo(x + 3 * qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
+                case "up":
+                case "down":
+                case "left":
                 case "right": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                    const up = tileMapGet(map, ix, iy - 1)?.type;
+                    const down = tileMapGet(map, ix, iy + 1)?.type;
+                    const left = tileMapGet(map, ix - 1, iy)?.type;
+                    const right = tileMapGet(map, ix + 1, iy)?.type;
+                    const upLeft = tileMapGet(map, ix - 1, iy - 1)?.type;
+                    const upRight = tileMapGet(map, ix + 1, iy - 1)?.type;
+                    const downLeft = tileMapGet(map, ix - 1, iy + 1)?.type;
+                    const downRight = tileMapGet(map, ix + 1, iy + 1)?.type;
 
-                    // Draw arrow
-                    cx.fillStyle = "pink";
+                    const r = 3;
+
+                    const tl = (up === "water" && left === "water" && upLeft === "water") ? r : 0;
+                    const tr = (up === "water" && right === "water" && upRight === "water") ? r : 0;
+                    const br = (down === "water" && right === "water" && downRight === "water") ? r : 0;
+                    const bl = (down === "water" && left === "water" && downLeft === "water") ? r : 0;
+
+                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
+                        cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                    }
+
+                    cx.fillStyle = tile.type === "grass" ? `rgb(0, 160, 0)` : `rgb(40, 160, 40)`;
                     cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 2 * qh);
-                    cx.lineTo(x + qw, y + 3 * qh);
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                     cx.fill();
+
+                    if (tile.type === "grass") {
+                        if (tile.straw) {
+                            cx.fillStyle = `rgb(0, 190, 0)`;
+                            renderStraw(x, y, tile.straw, time.t);
+                        }
+                    } else {
+                        cx.save();
+                        cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
+
+                        if (tile.type === "right") cx.rotate(Math.PI / 2);
+                        else if (tile.type === "down") cx.rotate(Math.PI);
+                        else if (tile.type === "left") cx.rotate(-Math.PI / 2);
+
+                        cx.fillStyle = "pink";
+                        cx.beginPath();
+                        const qw = TILE_WIDTH / 4;
+                        const qh = TILE_HEIGHT / 4;
+
+                        cx.moveTo(-qw, qh);
+                        cx.lineTo(0, -qh);
+                        cx.lineTo(qw, qh);
+                        cx.fill();
+
+                        cx.restore();
+                    }
                     break;
                 }
                 case "rainbow": {
