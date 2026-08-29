@@ -33,11 +33,21 @@ import {
 } from "./GameState";
 import { createMap, maps } from "./maps";
 
+export const setStateLoaded = (time: TimeStep): void => {
+    setGameState({
+        type: "loaded",
+        start: time.t,
+    });
+    waitForKey("Space").then(() => setStateIntro(time));
+};
+
 export const setStateIntro = (time: TimeStep): void => {
     setGameState({
         type: "intro",
         start: time.t,
     });
+    playTune(SFX_RUNNING);
+
     waitForKey("Space").then(() => setStateRun(time));
 };
 
@@ -50,7 +60,6 @@ export const setStateRun = (time: TimeStep): void => {
             start: time.t,
             level: createMap(0),
         });
-        playTune(SFX_RUNNING);
     } else if (currentState.level.number + 1 < maps.length) {
         setGameState({
             type: "run",

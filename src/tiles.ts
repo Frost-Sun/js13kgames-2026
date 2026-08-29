@@ -254,136 +254,117 @@ export const drawMap = (
         for (let ix = 0; ix < map.xCount; ix++) {
             const x = ix * TILE_WIDTH;
             const tile = tileMapGet(map, ix, iy);
+
             switch (tile?.type) {
-                case "grass":
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    if (tile.straw) {
-                        cx.fillStyle = `rgb(50, 190, 50)`;
-                        renderStraw(x, y, tile.straw, time.t);
-                    }
-                    break;
-                case "up": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + 3 * qh);
-                    cx.lineTo(x + 2 * qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "down": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + qh);
-                    cx.lineTo(x + 2 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "left": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + 2 * qh);
-                    cx.lineTo(x + 3 * qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "right": {
-                    cx.fillStyle = `rgb(40, 160, 40)`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                    // Draw arrow
-                    cx.fillStyle = "pink";
-                    cx.beginPath();
-                    const qw = TILE_WIDTH / 4;
-                    const qh = TILE_HEIGHT / 4;
-                    cx.moveTo(x + qw, y + qh);
-                    cx.lineTo(x + 3 * qw, y + 2 * qh);
-                    cx.lineTo(x + qw, y + 3 * qh);
-                    cx.fill();
-                    break;
-                }
-                case "rainbow": {
+                case "rainbow":
+                case "water": {
                     const up = tileMapGet(map, ix, iy - 1)?.type;
                     const down = tileMapGet(map, ix, iy + 1)?.type;
                     const left = tileMapGet(map, ix - 1, iy)?.type;
                     const right = tileMapGet(map, ix + 1, iy)?.type;
 
-                    const isHorizontalBridge =
-                        left === "grass" ||
-                        right === "grass" ||
-                        left === "start" ||
-                        right === "finish" ||
-                        up === "water" ||
-                        down === "water";
+                    const isLand = (t: string | undefined) =>
+                        t !== undefined && t !== "water" && t !== "rainbow";
 
-                    const colors = [
-                        "red",
-                        "orange",
-                        "yellow",
-                        "green",
-                        "cyan",
-                        "blue",
-                        "violet",
-                    ];
+                    const r = 3;
 
-                    const stripeHeight = TILE_HEIGHT / colors.length;
-                    const stripeWidth = TILE_WIDTH / colors.length;
+                    const tl = isLand(up) && isLand(left) ? r : 0;
+                    const tr = isLand(up) && isLand(right) ? r : 0;
+                    const br = isLand(down) && isLand(right) ? r : 0;
+                    const bl = isLand(down) && isLand(left) ? r : 0;
 
-                    for (let i = 0; i < colors.length; i++) {
-                        cx.fillStyle = colors[i];
-
-                        if (isHorizontalBridge) {
-                            cx.fillRect(
-                                x,
-                                y + i * stripeHeight,
-                                TILE_WIDTH,
-                                TILE_HEIGHT - i * stripeHeight,
-                            );
-                        } else {
-                            cx.fillRect(
-                                x + i * stripeWidth,
-                                y,
-                                TILE_WIDTH - i * stripeWidth,
-                                TILE_HEIGHT,
-                            );
-                        }
+                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
+                        cx.fillStyle = `rgb(40, 160, 40)`;
+                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     }
+
+                    cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                    cx.beginPath();
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
+                        tl,
+                        tr,
+                        br,
+                        bl,
+                    ]);
+                    cx.fill();
                     break;
                 }
-                case "water":
-                    cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-                    break;
-                case "start":
+                case "start": {
                     cx.fillStyle = "rgb(80, 50, 150)";
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
-                default:
+                }
+                case "grass":
+                case "up":
+                case "down":
+                case "left":
+                case "right": {
+                    const up = tileMapGet(map, ix, iy - 1)?.type;
+                    const down = tileMapGet(map, ix, iy + 1)?.type;
+                    const left = tileMapGet(map, ix - 1, iy)?.type;
+                    const right = tileMapGet(map, ix + 1, iy)?.type;
+                    const upLeft = tileMapGet(map, ix - 1, iy - 1)?.type;
+                    const upRight = tileMapGet(map, ix + 1, iy - 1)?.type;
+                    const downLeft = tileMapGet(map, ix - 1, iy + 1)?.type;
+                    const downRight = tileMapGet(map, ix + 1, iy + 1)?.type;
+
+                    const r = 3;
+                    const isW = (t: string | undefined) =>
+                        t === "water" || t === "rainbow";
+
+                    const tl = isW(up) && isW(left) && isW(upLeft) ? r : 0;
+                    const tr = isW(up) && isW(right) && isW(upRight) ? r : 0;
+                    const br =
+                        isW(down) && isW(right) && isW(downRight) ? r : 0;
+                    const bl = isW(down) && isW(left) && isW(downLeft) ? r : 0;
+
+                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
+                        cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                    }
+
+                    cx.fillStyle = `rgb(40, 160, 40)`;
+                    cx.beginPath();
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
+                        tl,
+                        tr,
+                        br,
+                        bl,
+                    ]);
+                    cx.fill();
+
+                    if (tile.straw) {
+                        cx.fillStyle = `rgb(0, 190, 0)`;
+                        renderStraw(x, y, tile.straw, time.t);
+                    }
+
+                    if (tile.type != "grass") {
+                        cx.save();
+                        cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
+
+                        if (tile.type === "right") cx.rotate(Math.PI / 2);
+                        else if (tile.type === "down") cx.rotate(Math.PI);
+                        else if (tile.type === "left") cx.rotate(-Math.PI / 2);
+
+                        cx.fillStyle = "darkgreen";
+                        cx.beginPath();
+                        const qw = TILE_WIDTH / 4;
+                        const qh = TILE_HEIGHT / 4;
+
+                        cx.moveTo(-qw, qh);
+                        cx.lineTo(0, -qh);
+                        cx.lineTo(qw, qh);
+                        cx.fill();
+
+                        cx.restore();
+                    }
+                    break;
+                }
+                default: {
                     cx.fillStyle = "black";
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                     break;
+                }
             }
 
             if (tile?.object) {
@@ -392,8 +373,89 @@ export const drawMap = (
         }
     }
 
-    objectsToDraw.push(...objects);
+    for (let iy = 0; iy < map.yCount; iy++) {
+        const y = iy * TILE_HEIGHT;
+        for (let ix = 0; ix < map.xCount; ix++) {
+            const x = ix * TILE_WIDTH;
+            const tile = tileMapGet(map, ix, iy);
 
+            if (tile?.type === "rainbow") {
+                const left = tileMapGet(map, ix - 1, iy)?.type;
+                const right = tileMapGet(map, ix + 1, iy)?.type;
+                const up = tileMapGet(map, ix, iy - 1)?.type;
+                const down = tileMapGet(map, ix, iy + 1)?.type;
+
+                const isHorizontalBridge =
+                    left === "grass" ||
+                    right === "grass" ||
+                    left === "start" ||
+                    right === "finish" ||
+                    up === "water" ||
+                    down === "water";
+
+                const over = 2;
+
+                const colors = [
+                    "red",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "cyan",
+                    "blue",
+                    "violet",
+                ];
+                const step = 1 / colors.length;
+
+                cx.save();
+
+                cx.globalAlpha = 0.8;
+
+                if (isHorizontalBridge) {
+                    const rx = x - over;
+                    const rw = TILE_WIDTH + over * 2;
+
+                    const gradient = cx.createLinearGradient(
+                        rx,
+                        y,
+                        rx,
+                        y + TILE_HEIGHT,
+                    );
+                    for (let i = 0; i < colors.length; i++) {
+                        gradient.addColorStop(i * step, colors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            colors[i],
+                        );
+                    }
+                    cx.fillStyle = gradient;
+                    cx.fillRect(rx, y, rw, TILE_HEIGHT);
+                } else {
+                    const ry = y - over;
+                    const rh = TILE_HEIGHT + over * 2;
+
+                    const gradient = cx.createLinearGradient(
+                        x,
+                        ry,
+                        x + TILE_WIDTH,
+                        ry,
+                    );
+                    for (let i = 0; i < colors.length; i++) {
+                        gradient.addColorStop(i * step, colors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            colors[i],
+                        );
+                    }
+                    cx.fillStyle = gradient;
+                    cx.fillRect(x, ry, TILE_WIDTH, rh);
+                }
+
+                cx.restore();
+            }
+        }
+    }
+
+    objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
     for (let i = 0; i < objectsToDraw.length; i++) {
@@ -422,8 +484,6 @@ export const drawMap = (
                 cx.fillRect(o.x, o.y - o.height / 2, o.width, o.height);
                 break;
             }
-            default:
-                break;
         }
     }
 

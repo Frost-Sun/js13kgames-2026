@@ -45,6 +45,6 @@ export const renderStraw = (
     cx.save();
     cx.translate(x + xAdjust, y + yAdjust);
     cx.rotate(angle);
-    cx.fillRect(-width / 2, -height, width, height);
+    cx.fillRect(-width / 2, -height / 2, width / 2, height / 2);
     cx.restore();
 };
