@@ -39,7 +39,6 @@ export const setStateLoaded = (time: TimeStep): void => {
         start: time.t,
     });
     waitForKey("Space").then(() => setStateIntro(time));
-
 };
 
 export const setStateIntro = (time: TimeStep): void => {

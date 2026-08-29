@@ -65,7 +65,6 @@ const draw = (time: TimeStep): void => {
             renderText("© FROST SUN", TextSize.Huge);
             renderText("2026", TextSize.Large, 1, 4);
 
-
             renderWaitForProgressInput();
 
             cx.restore();

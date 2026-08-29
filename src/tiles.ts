@@ -149,12 +149,12 @@ const createTile = (
                 straw:
                     random() > 0.2
                         ? {
-                            wobblePhase: random(Math.PI),
-                            width: TILE_WIDTH / 16,
-                            height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
-                            xAdjust: random(TILE_WIDTH),
-                            yAdjust: random(TILE_HEIGHT),
-                        }
+                              wobblePhase: random(Math.PI),
+                              width: TILE_WIDTH / 16,
+                              height: random(TILE_HEIGHT / 4) + TILE_HEIGHT / 8,
+                              xAdjust: random(TILE_WIDTH),
+                              yAdjust: random(TILE_HEIGHT),
+                          }
                         : undefined,
             };
         default:
@@ -263,14 +263,15 @@ export const drawMap = (
                     const left = tileMapGet(map, ix - 1, iy)?.type;
                     const right = tileMapGet(map, ix + 1, iy)?.type;
 
-                    const isLand = (t: string | undefined) => t !== undefined && t !== "water" && t !== "rainbow";
+                    const isLand = (t: string | undefined) =>
+                        t !== undefined && t !== "water" && t !== "rainbow";
 
                     const r = 3;
 
-                    const tl = (isLand(up) && isLand(left)) ? r : 0;
-                    const tr = (isLand(up) && isLand(right)) ? r : 0;
-                    const br = (isLand(down) && isLand(right)) ? r : 0;
-                    const bl = (isLand(down) && isLand(left)) ? r : 0;
+                    const tl = isLand(up) && isLand(left) ? r : 0;
+                    const tr = isLand(up) && isLand(right) ? r : 0;
+                    const br = isLand(down) && isLand(right) ? r : 0;
+                    const bl = isLand(down) && isLand(left) ? r : 0;
 
                     if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
                         cx.fillStyle = `rgb(40, 160, 40)`;
@@ -279,7 +280,12 @@ export const drawMap = (
 
                     cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
                     cx.beginPath();
-                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
+                        tl,
+                        tr,
+                        br,
+                        bl,
+                    ]);
                     cx.fill();
                     break;
                 }
@@ -303,12 +309,14 @@ export const drawMap = (
                     const downRight = tileMapGet(map, ix + 1, iy + 1)?.type;
 
                     const r = 3;
-                    const isW = (t: string | undefined) => t === "water" || t === "rainbow";
+                    const isW = (t: string | undefined) =>
+                        t === "water" || t === "rainbow";
 
-                    const tl = (isW(up) && isW(left) && isW(upLeft)) ? r : 0;
-                    const tr = (isW(up) && isW(right) && isW(upRight)) ? r : 0;
-                    const br = (isW(down) && isW(right) && isW(downRight)) ? r : 0;
-                    const bl = (isW(down) && isW(left) && isW(downLeft)) ? r : 0;
+                    const tl = isW(up) && isW(left) && isW(upLeft) ? r : 0;
+                    const tr = isW(up) && isW(right) && isW(upRight) ? r : 0;
+                    const br =
+                        isW(down) && isW(right) && isW(downRight) ? r : 0;
+                    const bl = isW(down) && isW(left) && isW(downLeft) ? r : 0;
 
                     if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
                         cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
@@ -317,7 +325,12 @@ export const drawMap = (
 
                     cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.beginPath();
-                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
+                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
+                        tl,
+                        tr,
+                        br,
+                        bl,
+                    ]);
                     cx.fill();
 
                     if (tile.straw) {
@@ -373,13 +386,24 @@ export const drawMap = (
                 const down = tileMapGet(map, ix, iy + 1)?.type;
 
                 const isHorizontalBridge =
-                    left === "grass" || right === "grass" ||
-                    left === "start" || right === "finish" ||
-                    up === "water" || down === "water";
+                    left === "grass" ||
+                    right === "grass" ||
+                    left === "start" ||
+                    right === "finish" ||
+                    up === "water" ||
+                    down === "water";
 
                 const over = 2;
 
-                const colors = ["red", "orange", "yellow", "green", "cyan", "blue", "violet"];
+                const colors = [
+                    "red",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "cyan",
+                    "blue",
+                    "violet",
+                ];
                 const step = 1 / colors.length;
 
                 cx.save();
@@ -390,10 +414,18 @@ export const drawMap = (
                     const rx = x - over;
                     const rw = TILE_WIDTH + over * 2;
 
-                    const gradient = cx.createLinearGradient(rx, y, rx, y + TILE_HEIGHT);
+                    const gradient = cx.createLinearGradient(
+                        rx,
+                        y,
+                        rx,
+                        y + TILE_HEIGHT,
+                    );
                     for (let i = 0; i < colors.length; i++) {
                         gradient.addColorStop(i * step, colors[i]);
-                        gradient.addColorStop(Math.min(1, (i + 1) * step), colors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            colors[i],
+                        );
                     }
                     cx.fillStyle = gradient;
                     cx.fillRect(rx, y, rw, TILE_HEIGHT);
@@ -401,10 +433,18 @@ export const drawMap = (
                     const ry = y - over;
                     const rh = TILE_HEIGHT + over * 2;
 
-                    const gradient = cx.createLinearGradient(x, ry, x + TILE_WIDTH, ry);
+                    const gradient = cx.createLinearGradient(
+                        x,
+                        ry,
+                        x + TILE_WIDTH,
+                        ry,
+                    );
                     for (let i = 0; i < colors.length; i++) {
                         gradient.addColorStop(i * step, colors[i]);
-                        gradient.addColorStop(Math.min(1, (i + 1) * step), colors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            colors[i],
+                        );
                     }
                     cx.fillStyle = gradient;
                     cx.fillRect(x, ry, TILE_WIDTH, rh);
@@ -429,7 +469,12 @@ export const drawMap = (
                 cx.fillStyle = "rgb(80, 50, 30)";
                 cx.fillRect(o.x, o.y, o.width, o.height);
                 cx.fillStyle = "rgb(100, 70, 50)";
-                cx.fillRect(o.x, o.y - TILE_HEIGHT / 2, TILE_WIDTH, TILE_HEIGHT);
+                cx.fillRect(
+                    o.x,
+                    o.y - TILE_HEIGHT / 2,
+                    TILE_WIDTH,
+                    TILE_HEIGHT,
+                );
                 break;
             }
             case "finish": {
