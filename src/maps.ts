@@ -75,7 +75,7 @@ const createMapRocks = (number: number): Level => {
         xCount: 10,
         yCount: 10,
         characterCount: 5,
-        charactersToFinish: 1,
+        charactersToFinish: 5,
         actionCounts: {
             [Action.Right]: 2,
             [Action.Dig]: 2,

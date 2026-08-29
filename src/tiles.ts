@@ -276,10 +276,8 @@ const digHorizontally = (
 
     const dx = o.velocity.x * time.dt;
     const tilePos = getTilePosAt(objectCenter);
-    const rock =
-        currentTile.type === "rock"
-            ? currentTile
-            : tileMapGet(map, tilePos.ix + xDirection, tilePos.iy);
+    const nextTile = tileMapGet(map, tilePos.ix + xDirection, tilePos.iy);
+    const rock = currentTile.type === "rock" ? currentTile : nextTile;
 
     if (rock?.type === "rock" && rock?.object) {
         // Set slower speed for digging
@@ -298,7 +296,12 @@ const digHorizontally = (
         if (rock.object.width <= BlockFinishedThreshold) {
             rock.object = undefined;
             rock.type = "grass";
-            o.velocity = { x: xDirection * CHARACTER_SPEED, y: 0 };
+
+            // Check if there are no more rocks to dig
+            if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
+                o.action = GameObjectAction.Walk;
+                o.velocity = { x: xDirection * CHARACTER_SPEED, y: 0 };
+            }
         }
     }
 };
@@ -317,10 +320,8 @@ const digVertically = (
 
     const dy = o.velocity.y * time.dt;
     const tilePos = getTilePosAt(objectCenter);
-    const rock =
-        currentTile.type === "rock"
-            ? currentTile
-            : tileMapGet(map, tilePos.ix, tilePos.iy + yDirection);
+    const nextTile = tileMapGet(map, tilePos.ix, tilePos.iy + yDirection);
+    const rock = currentTile.type === "rock" ? currentTile : nextTile;
 
     if (rock?.type === "rock" && rock?.object) {
         // Set slower speed for digging
@@ -339,7 +340,12 @@ const digVertically = (
         if (rock.object.height <= BlockFinishedThreshold) {
             rock.object = undefined;
             rock.type = "grass";
-            o.velocity = { x: 0, y: yDirection * CHARACTER_SPEED };
+
+            // Check if there are no more rocks to dig
+            if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
+                o.action = GameObjectAction.Walk;
+                o.velocity = { x: 0, y: yDirection * CHARACTER_SPEED };
+            }
         }
     }
 };
