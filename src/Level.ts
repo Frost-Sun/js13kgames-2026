@@ -364,7 +364,10 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
     });
 
     // Draw button row
-    const buttonWidth = buttonRowHeight;
+    const buttonWidth = Math.min(
+        buttonRowHeight,
+        levelDrawArea.width / actionButtons.length,
+    );
     const buttonRowWidth = buttonWidth * actionButtons.length;
     const buttonRowX = (canvas.width - buttonRowWidth) / 2;
 
