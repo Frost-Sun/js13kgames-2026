@@ -26,6 +26,7 @@ import { Action } from "./Action";
 import { createLevel, type Level } from "./Level";
 import {
     carve,
+    core,
     coreX,
     coreY,
     segment4,
@@ -33,6 +34,7 @@ import {
     sliceLeft,
     sliceRight,
     sliceTop,
+    walk,
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
@@ -72,11 +74,14 @@ const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Level 2",
-        xCount: 10,
-        yCount: 10,
+        xCount: 13,
+        yCount: 13,
         characterCount: 5,
-        charactersToFinish: 5,
+        charactersToFinish: 4,
         actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
             [Action.Right]: 2,
             [Action.Dig]: 2,
         },
@@ -86,11 +91,19 @@ const createMapRocks = (number: number): Level => {
     const inner = carve(level);
     fill(level, inner, "grass");
 
-    const rock = coreX(inner, 2);
-    fill(level, rock, "rock");
+    const [topLeft, topRight, bottomLeft, _bottomRight] = segment4(inner);
 
-    fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, coreY(sliceRight(inner)), "finish");
+    fill(level, topLeft, "water");
+
+    const rockWall = sliceRight(bottomLeft);
+    fill(level, rockWall, "rock");
+
+    walk(core(rockWall), coreY(sliceRight(topRight, 2), 2), (area) =>
+        fill(level, area, "rock"),
+    );
+
+    fill(level, coreY(sliceLeft(bottomLeft)), "start");
+    fill(level, coreY(sliceRight(topLeft)), "finish");
 
     level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
     const finishPosition = findTilePosition(level, "finish") ?? {
