@@ -68,6 +68,8 @@ import { distanceSquared, type Vector } from "./core/math/Vector";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
+const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
+
 interface TilePosition {
     ix: number;
     iy: number;
@@ -313,7 +315,6 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
-        const MAX_CLICK_DISTANCE = UNICORN_WIDTH / 2;
         let character: GameObject | undefined;
 
         if (selectedAction != null) {
@@ -322,7 +323,7 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     (character = findClosestCharacter(
                         level,
                         pointOnLevel,
-                        MAX_CLICK_DISTANCE,
+                        MAX_CHARACTER_CLICK_DISTANCE,
                     )) &&
                     character.action !== GameObjectAction.Dig
                 ) {
@@ -351,7 +352,6 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
-        const MAX_CLICK_DISTANCE = UNICORN_WIDTH / 2;
         let character: GameObject | undefined;
 
         if (selectedAction != null) {
@@ -367,7 +367,7 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                     (character = findClosestCharacter(
                         level,
                         pointOnLevel,
-                        MAX_CLICK_DISTANCE,
+                        MAX_CHARACTER_CLICK_DISTANCE,
                     )) &&
                     character.action !== GameObjectAction.Dig &&
                     consumeAction(level, selectedAction)
