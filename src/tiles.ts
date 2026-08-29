@@ -348,6 +348,7 @@ export const drawMap = (
     time: TimeStep,
     map: TileMap<Tile>,
     objects: GameObject[],
+    highlightedCharacter: GameObject | undefined = undefined,
 ): void => {
     const objectsToDraw: GameObject[] = [];
 
@@ -565,7 +566,7 @@ export const drawMap = (
         const o = objectsToDraw[i];
         switch (o.type) {
             case "character": {
-                renderUnicorn(o, o.action === GameObjectAction.Dig);
+                renderUnicorn(o, o === highlightedCharacter);
                 break;
             }
             case "rock": {

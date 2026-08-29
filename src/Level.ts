@@ -306,6 +306,35 @@ const consumeAction = (level: Level, action: Action): boolean => {
     return false;
 };
 
+let highlightedCharacter: GameObject | undefined;
+
+export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
+    if (level.selectedActionIndex != null) {
+        const { camera } = level;
+        const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const selectedAction = actionButtons[level.selectedActionIndex].action;
+        const MAX_CLICK_DISTANCE = UNICORN_WIDTH / 2;
+        let character: GameObject | undefined;
+
+        if (selectedAction != null) {
+            if (selectedAction === Action.Dig) {
+                if (
+                    (character = findClosestCharacter(
+                        level,
+                        pointOnLevel,
+                        MAX_CLICK_DISTANCE,
+                    )) &&
+                    character.action !== GameObjectAction.Dig
+                ) {
+                    highlightedCharacter = character;
+                } else {
+                    highlightedCharacter = undefined;
+                }
+            }
+        }
+    }
+};
+
 export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
@@ -316,14 +345,14 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         }
     }
 
-    // Check click on a tile
+    // Check action click
     if (level.selectedActionIndex != null) {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
         const MAX_CLICK_DISTANCE = UNICORN_WIDTH / 2;
-        let closestCharacter: GameObject | undefined;
+        let character: GameObject | undefined;
 
         if (selectedAction != null) {
             if (selectedAction === Action.Rainbow) {
@@ -335,15 +364,15 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                 }
             } else if (selectedAction === Action.Dig) {
                 if (
-                    (closestCharacter = findClosestCharacter(
+                    (character = findClosestCharacter(
                         level,
                         pointOnLevel,
                         MAX_CLICK_DISTANCE,
                     )) &&
-                    closestCharacter.action !== GameObjectAction.Dig &&
+                    character.action !== GameObjectAction.Dig &&
                     consumeAction(level, selectedAction)
                 ) {
-                    closestCharacter.action = GameObjectAction.Dig;
+                    character.action = GameObjectAction.Dig;
                 }
             } else if (
                 tile?.type === "grass" &&
@@ -412,7 +441,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
     // Draw the level according to camera angle
     applyCamera(camera, cx, levelDrawArea, level, () => {
-        drawMap(time, level, level.objects);
+        drawMap(time, level, level.objects, highlightedCharacter);
     });
 
     // Draw button row
