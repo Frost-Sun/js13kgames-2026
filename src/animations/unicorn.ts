@@ -22,12 +22,7 @@
  * SOFTWARE.
  */
 
-import {
-    type GameObject,
-    VELOCITY_UP,
-    VELOCITY_DOWN,
-    VELOCITY_LEFT,
-} from "../GameObject";
+import { type GameObject, VELOCITY_LEFT } from "../GameObject";
 
 import { cx, drawPart, type DrawCommand } from "../graphics";
 

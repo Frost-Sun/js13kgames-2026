@@ -256,16 +256,16 @@ export const drawMap = (
             const tile = tileMapGet(map, ix, iy);
             switch (tile?.type) {
                 case "grass":
-                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
                     if (tile.straw) {
-                        cx.fillStyle = `rgb(0, 190, 0)`;
+                        cx.fillStyle = `rgb(50, 190, 50)`;
                         renderStraw(x, y, tile.straw, time.t);
                     }
                     break;
                 case "up": {
-                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
                     // Draw arrow
@@ -280,7 +280,7 @@ export const drawMap = (
                     break;
                 }
                 case "down": {
-                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
                     // Draw arrow
@@ -295,7 +295,7 @@ export const drawMap = (
                     break;
                 }
                 case "left": {
-                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
                     // Draw arrow
@@ -310,7 +310,7 @@ export const drawMap = (
                     break;
                 }
                 case "right": {
-                    cx.fillStyle = `rgb(0, 160, 0)`;
+                    cx.fillStyle = `rgb(40, 160, 40)`;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
                     // Draw arrow
@@ -325,6 +325,19 @@ export const drawMap = (
                     break;
                 }
                 case "rainbow": {
+                    const up = tileMapGet(map, ix, iy - 1)?.type;
+                    const down = tileMapGet(map, ix, iy + 1)?.type;
+                    const left = tileMapGet(map, ix - 1, iy)?.type;
+                    const right = tileMapGet(map, ix + 1, iy)?.type;
+
+                    const isHorizontalBridge =
+                        left === "grass" ||
+                        right === "grass" ||
+                        left === "start" ||
+                        right === "finish" ||
+                        up === "water" ||
+                        down === "water";
+
                     const colors = [
                         "red",
                         "orange",
@@ -334,16 +347,28 @@ export const drawMap = (
                         "blue",
                         "violet",
                     ];
-                    const height = TILE_HEIGHT / colors.length;
+
+                    const stripeHeight = TILE_HEIGHT / colors.length;
+                    const stripeWidth = TILE_WIDTH / colors.length;
+
                     for (let i = 0; i < colors.length; i++) {
-                        const color = colors[i];
-                        cx.fillStyle = color;
-                        cx.fillRect(
-                            x,
-                            y + i * height,
-                            TILE_WIDTH,
-                            TILE_HEIGHT - i * height,
-                        );
+                        cx.fillStyle = colors[i];
+
+                        if (isHorizontalBridge) {
+                            cx.fillRect(
+                                x,
+                                y + i * stripeHeight,
+                                TILE_WIDTH,
+                                TILE_HEIGHT - i * stripeHeight,
+                            );
+                        } else {
+                            cx.fillRect(
+                                x + i * stripeWidth,
+                                y,
+                                TILE_WIDTH - i * stripeWidth,
+                                TILE_HEIGHT,
+                            );
+                        }
                     }
                     break;
                 }
