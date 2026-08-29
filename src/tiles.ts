@@ -41,6 +41,8 @@ import { renderUnicorn } from "./animations/unicorn";
 export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
 
+export const TILE_UPWARD_HEIGHT = TILE_HEIGHT / 2;
+
 export type TileType =
     | "grass"
     | "rock"
@@ -579,14 +581,14 @@ export const drawMap = (
                 cx.fillStyle = "rgb(80, 70, 70)";
                 cx.fillRect(o.x, o.y, o.width, o.height);
                 cx.fillStyle = "rgb(100, 90, 90)";
-                cx.fillRect(o.x, o.y - o.height / 2, o.width, o.height);
+                cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
                 break;
             }
             case "finish": {
                 cx.fillStyle = "rgb(150, 50, 50)";
                 cx.fillRect(o.x, o.y, o.width, o.height);
                 cx.fillStyle = "rgb(180, 70, 70)";
-                cx.fillRect(o.x, o.y - o.height / 2, o.width, o.height);
+                cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
                 break;
             }
         }
