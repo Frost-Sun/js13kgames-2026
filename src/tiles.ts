@@ -360,131 +360,250 @@ export const drawMap = (
 ): void => {
     const objectsToDraw: GameObject[] = [];
 
+    // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
         const y = iy * TILE_HEIGHT;
         for (let ix = 0; ix < map.xCount; ix++) {
             const x = ix * TILE_WIDTH;
             const tile = tileMapGet(map, ix, iy);
 
-            switch (tile?.type) {
-                case "rainbow":
-                case "water": {
-                    const up = tileMapGet(map, ix, iy - 1)?.type;
-                    const down = tileMapGet(map, ix, iy + 1)?.type;
-                    const left = tileMapGet(map, ix - 1, iy)?.type;
-                    const right = tileMapGet(map, ix + 1, iy)?.type;
+            if (!tile) continue;
+            if (tile.object) objectsToDraw.push(tile.object);
 
-                    const isLand = (t: string | undefined) =>
-                        t !== undefined && t !== "water" && t !== "rainbow";
+            if (
+                tile.type === "grass" ||
+                tile.type === "rock" ||
+                tile.type === "up" ||
+                tile.type === "down" ||
+                tile.type === "left" ||
+                tile.type === "right"
+            ) {
+                const up = tileMapGet(map, ix, iy - 1)?.type;
+                const down = tileMapGet(map, ix, iy + 1)?.type;
+                const left = tileMapGet(map, ix - 1, iy)?.type;
+                const right = tileMapGet(map, ix + 1, iy)?.type;
+                const upLeft = tileMapGet(map, ix - 1, iy - 1)?.type;
+                const upRight = tileMapGet(map, ix + 1, iy - 1)?.type;
+                const downLeft = tileMapGet(map, ix - 1, iy + 1)?.type;
+                const downRight = tileMapGet(map, ix + 1, iy + 1)?.type;
 
-                    const r = 3;
+                const r = 3;
+                const isW = (t: string | undefined) =>
+                    t === "water" || t === "rainbow";
 
-                    const tl = isLand(up) && isLand(left) ? r : 0;
-                    const tr = isLand(up) && isLand(right) ? r : 0;
-                    const br = isLand(down) && isLand(right) ? r : 0;
-                    const bl = isLand(down) && isLand(left) ? r : 0;
+                const tl = isW(up) && isW(left) && isW(upLeft) ? r : 0;
+                const tr = isW(up) && isW(right) && isW(upRight) ? r : 0;
+                const br = isW(down) && isW(right) && isW(downRight) ? r : 0;
+                const bl = isW(down) && isW(left) && isW(downLeft) ? r : 0;
 
-                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
-                        cx.fillStyle = `rgb(40, 160, 40)`;
-                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-                    }
-
+                // Draw Water background for outer capes so the rounded corners reveal water
+                if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
                     cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
-                    cx.beginPath();
-                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
-                        tl,
-                        tr,
-                        br,
-                        bl,
+                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                }
+
+                cx.save();
+
+                // 1. Base Green (defines the absolute outer boundary)
+                cx.fillStyle = `rgb(40, 160, 40)`;
+                cx.beginPath();
+                cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
+                cx.fill();
+
+                cx.clip();
+
+                // 2. Tide layer (covers the whole clipped tile)
+                const tide = Math.sin(time.t * 0.002) * 1.0;
+                cx.fillStyle = `rgb(40, 130, ${150 + (ix * iy) / 2})`;
+                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                // 3. Inner Green (shrinks away from water to reveal the Tide)
+                let ix_in = x,
+                    iy_in = y,
+                    iw_in = TILE_WIDTH,
+                    ih_in = TILE_HEIGHT;
+                if (isW(up)) {
+                    iy_in += tide;
+                    ih_in -= tide;
+                }
+                if (isW(down)) {
+                    ih_in -= tide;
+                }
+                if (isW(left)) {
+                    ix_in += tide;
+                    iw_in -= tide;
+                }
+                if (isW(right)) {
+                    iw_in -= tide;
+                }
+
+                const itl = tl > 0 ? Math.max(0, tl - tide) : 0;
+                const itr = tr > 0 ? Math.max(0, tr - tide) : 0;
+                const ibr = br > 0 ? Math.max(0, br - tide) : 0;
+                const ibl = bl > 0 ? Math.max(0, bl - tide) : 0;
+
+                cx.fillStyle = `rgb(40, 160, 40)`;
+                cx.beginPath();
+                if (iw_in > 0 && ih_in > 0) {
+                    cx.roundRect(ix_in, iy_in, iw_in, ih_in, [
+                        itl,
+                        itr,
+                        ibr,
+                        ibl,
                     ]);
                     cx.fill();
-                    break;
                 }
-                case "start": {
-                    cx.fillStyle = "rgb(80, 50, 150)";
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-                    break;
+
+                cx.restore();
+
+                // 4. Decorations
+                if (tile.straw) {
+                    cx.fillStyle = `rgb(0, 190, 0)`;
+                    renderStraw(x, y, tile.straw, time.t);
                 }
-                case "grass":
-                case "rock":
-                case "up":
-                case "down":
-                case "left":
-                case "right": {
-                    const up = tileMapGet(map, ix, iy - 1)?.type;
-                    const down = tileMapGet(map, ix, iy + 1)?.type;
-                    const left = tileMapGet(map, ix - 1, iy)?.type;
-                    const right = tileMapGet(map, ix + 1, iy)?.type;
-                    const upLeft = tileMapGet(map, ix - 1, iy - 1)?.type;
-                    const upRight = tileMapGet(map, ix + 1, iy - 1)?.type;
-                    const downLeft = tileMapGet(map, ix - 1, iy + 1)?.type;
-                    const downRight = tileMapGet(map, ix + 1, iy + 1)?.type;
 
-                    const r = 3;
-                    const isW = (t: string | undefined) =>
-                        t === "water" || t === "rainbow";
+                if (isArrow(tile.type)) {
+                    cx.save();
+                    cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
+                    if (tile.type === "right") cx.rotate(Math.PI / 2);
+                    else if (tile.type === "down") cx.rotate(Math.PI);
+                    else if (tile.type === "left") cx.rotate(-Math.PI / 2);
 
-                    const tl = isW(up) && isW(left) && isW(upLeft) ? r : 0;
-                    const tr = isW(up) && isW(right) && isW(upRight) ? r : 0;
-                    const br =
-                        isW(down) && isW(right) && isW(downRight) ? r : 0;
-                    const bl = isW(down) && isW(left) && isW(downLeft) ? r : 0;
-
-                    if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
-                        cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
-                        cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-                    }
-
-                    cx.fillStyle = `rgb(40, 160, 40)`;
+                    cx.fillStyle = "darkgreen";
                     cx.beginPath();
-                    cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [
-                        tl,
-                        tr,
-                        br,
-                        bl,
-                    ]);
+                    const qw = TILE_WIDTH / 4;
+                    const qh = TILE_HEIGHT / 4;
+                    cx.moveTo(-qw, qh);
+                    cx.lineTo(0, -qh);
+                    cx.lineTo(qw, qh);
                     cx.fill();
-
-                    if (tile.straw) {
-                        cx.fillStyle = `rgb(0, 190, 0)`;
-                        renderStraw(x, y, tile.straw, time.t);
-                    }
-
-                    if (isArrow(tile.type)) {
-                        cx.save();
-                        cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
-
-                        if (tile.type === "right") cx.rotate(Math.PI / 2);
-                        else if (tile.type === "down") cx.rotate(Math.PI);
-                        else if (tile.type === "left") cx.rotate(-Math.PI / 2);
-
-                        cx.fillStyle = "darkgreen";
-                        cx.beginPath();
-                        const qw = TILE_WIDTH / 4;
-                        const qh = TILE_HEIGHT / 4;
-
-                        cx.moveTo(-qw, qh);
-                        cx.lineTo(0, -qh);
-                        cx.lineTo(qw, qh);
-                        cx.fill();
-
-                        cx.restore();
-                    }
-                    break;
+                    cx.restore();
                 }
-                default: {
-                    cx.fillStyle = "black";
-                    cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-                    break;
-                }
-            }
-
-            if (tile?.object) {
-                objectsToDraw.push(tile.object);
+            } else if (tile.type === "start") {
+                cx.fillStyle = "rgb(80, 50, 150)";
+                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+            } else if (tile.type !== "water" && tile.type !== "rainbow") {
+                cx.fillStyle = "black";
+                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
             }
         }
     }
 
+    // PASS 2: Draw all Water Tiles (Bay curves spill over to trim grass corners)
+    for (let iy = 0; iy < map.yCount; iy++) {
+        const y = iy * TILE_HEIGHT;
+        for (let ix = 0; ix < map.xCount; ix++) {
+            const x = ix * TILE_WIDTH;
+            const tile = tileMapGet(map, ix, iy);
+
+            if (tile?.type === "water" || tile?.type === "rainbow") {
+                const up = tileMapGet(map, ix, iy - 1)?.type;
+                const down = tileMapGet(map, ix, iy + 1)?.type;
+                const left = tileMapGet(map, ix - 1, iy)?.type;
+                const right = tileMapGet(map, ix + 1, iy)?.type;
+
+                const isLand = (t: string | undefined) =>
+                    t !== undefined && t !== "water" && t !== "rainbow";
+                const r = 3;
+
+                const tl = isLand(up) && isLand(left) ? r : 0;
+                const tr = isLand(up) && isLand(right) ? r : 0;
+                const br = isLand(down) && isLand(right) ? r : 0;
+                const bl = isLand(down) && isLand(left) ? r : 0;
+
+                // If this water tile has a land bay corner
+                if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
+                    // Synchronized tide size to perfectly match Pass 1
+                    const tide = Math.sin(time.t * 0.002) * 1.0;
+
+                    // 1. Spillover Green Base (expanded safely, no alpha overlap issues)
+                    cx.fillStyle = `rgb(40, 160, 40)`;
+                    if (tl > 0)
+                        cx.fillRect(
+                            x - tide - 1,
+                            y - tide - 1,
+                            tl + tide + 1,
+                            tl + tide + 1,
+                        );
+                    if (tr > 0)
+                        cx.fillRect(
+                            x + TILE_WIDTH - tr,
+                            y - tide - 1,
+                            tr + tide + 1,
+                            tr + tide + 1,
+                        );
+                    if (br > 0)
+                        cx.fillRect(
+                            x + TILE_WIDTH - br,
+                            y + TILE_HEIGHT - br,
+                            br + tide + 1,
+                            br + tide + 1,
+                        );
+                    if (bl > 0)
+                        cx.fillRect(
+                            x - tide - 1,
+                            y + TILE_HEIGHT - bl,
+                            bl + tide + 1,
+                            bl + tide + 1,
+                        );
+
+                    // 2. Concentric Tide Arcs
+                    // Exact mathematical angles (no extensions) to prevent dark overlapping wedges
+                    cx.fillStyle = `rgb(40, 130, ${150 + (ix * iy) / 2})`;
+                    cx.beginPath();
+
+                    if (tl > 0) {
+                        cx.moveTo(x + tl, y + tl);
+                        cx.arc(
+                            x + tl,
+                            y + tl,
+                            tl + tide,
+                            Math.PI,
+                            Math.PI * 1.5,
+                        );
+                    }
+                    if (tr > 0) {
+                        cx.moveTo(x + TILE_WIDTH - tr, y + tr);
+                        cx.arc(
+                            x + TILE_WIDTH - tr,
+                            y + tr,
+                            tr + tide,
+                            Math.PI * 1.5,
+                            Math.PI * 2,
+                        );
+                    }
+                    if (br > 0) {
+                        cx.moveTo(x + TILE_WIDTH - br, y + TILE_HEIGHT - br);
+                        cx.arc(
+                            x + TILE_WIDTH - br,
+                            y + TILE_HEIGHT - br,
+                            br + tide,
+                            0,
+                            Math.PI * 0.5,
+                        );
+                    }
+                    if (bl > 0) {
+                        cx.moveTo(x + bl, y + TILE_HEIGHT - bl);
+                        cx.arc(
+                            x + bl,
+                            y + TILE_HEIGHT - bl,
+                            bl + tide,
+                            Math.PI * 0.5,
+                            Math.PI,
+                        );
+                    }
+                    cx.fill();
+                }
+                // 3. Main Water Layer
+                cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                cx.beginPath();
+                cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
+                cx.fill();
+            }
+        }
+    }
+
+    // PASS 3: Draw Rainbow Bridges
     for (let iy = 0; iy < map.yCount; iy++) {
         const y = iy * TILE_HEIGHT;
         for (let ix = 0; ix < map.xCount; ix++) {
@@ -506,7 +625,6 @@ export const drawMap = (
                     down === "water";
 
                 const over = 2;
-
                 const colors = [
                     "red",
                     "orange",
@@ -519,13 +637,11 @@ export const drawMap = (
                 const step = 1 / colors.length;
 
                 cx.save();
-
                 cx.globalAlpha = 0.8;
 
                 if (isHorizontalBridge) {
                     const rx = x - over;
                     const rw = TILE_WIDTH + over * 2;
-
                     const gradient = cx.createLinearGradient(
                         rx,
                         y,
@@ -544,7 +660,6 @@ export const drawMap = (
                 } else {
                     const ry = y - over;
                     const rh = TILE_HEIGHT + over * 2;
-
                     const gradient = cx.createLinearGradient(
                         x,
                         ry,
@@ -561,7 +676,6 @@ export const drawMap = (
                     cx.fillStyle = gradient;
                     cx.fillRect(x, ry, TILE_WIDTH, rh);
                 }
-
                 cx.restore();
             }
         }
@@ -570,6 +684,7 @@ export const drawMap = (
     objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
+    // PASS 4: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
         switch (o.type) {
