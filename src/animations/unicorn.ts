@@ -132,9 +132,9 @@ export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
 
         cx.fillStyle = "#fbbf24";
         cx.beginPath();
-        cx.moveTo(18, -26);
-        cx.lineTo(26, -42);
-        cx.lineTo(26, -26);
+        cx.moveTo(24, -26);
+        cx.lineTo(30, -42);
+        cx.lineTo(32, -26);
         cx.fill();
     }
 
