@@ -31,6 +31,9 @@ import {
 import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
+    GameObjectAction,
+    UNICORN_HEIGHT,
+    UNICORN_WIDTH,
     VELOCITY_DOWN,
     VELOCITY_LEFT,
     VELOCITY_RIGHT,
@@ -60,9 +63,12 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action } from "./Action";
+import { Action, isApplicable } from "./Action";
+import { distanceSquared, type Vector } from "./core/math/Vector";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
+
+const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
 
 interface TilePosition {
     ix: number;
@@ -120,6 +126,14 @@ const actionButtons: Button[] = [
         height: 50,
         text: "RAINBOW",
         action: Action.Rainbow,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "DIG",
+        action: Action.Dig,
     },
 ];
 
@@ -181,17 +195,16 @@ const toggleActionButton = (level: Level, i: number): void => {
 };
 
 const addCharacter = (level: Level): void => {
-    const width = 5,
-        height = 4;
     const startPos = level.startTile;
 
     const character: GameObject = {
         type: "character",
-        x: startPos.ix * TILE_WIDTH + (TILE_WIDTH - width) / 2,
-        y: startPos.iy * TILE_HEIGHT + (TILE_HEIGHT - height) / 2,
-        width,
-        height,
+        x: startPos.ix * TILE_WIDTH + (TILE_WIDTH - UNICORN_WIDTH) / 2,
+        y: startPos.iy * TILE_HEIGHT + (TILE_HEIGHT - UNICORN_HEIGHT) / 2,
+        width: UNICORN_WIDTH,
+        height: UNICORN_HEIGHT,
         velocity: { x: CHARACTER_SPEED, y: 0 },
+        action: GameObjectAction.Walk,
     };
 
     level.objects.push(character);
@@ -277,7 +290,11 @@ const killCharacter = (
     }
 };
 
-const useAction = (level: Level, action: Action): boolean => {
+const consumeAction = (level: Level, action: Action, tile: Tile): boolean => {
+    if (!isApplicable(action, tile)) {
+        return false;
+    }
+
     if (!level.actionCounts[action]) {
         return false;
     }
@@ -295,31 +312,78 @@ const useAction = (level: Level, action: Action): boolean => {
     return false;
 };
 
+let highlightedCharacter: GameObject | undefined;
+let highlightedTile: Tile | undefined;
+
+export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
+    if (level.selectedActionIndex != null) {
+        const { camera } = level;
+        const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const selectedAction = actionButtons[level.selectedActionIndex].action;
+        const tile = getTileAt(level, pointOnLevel);
+        let character: GameObject | undefined;
+
+        if (selectedAction != null && tile != null) {
+            if (selectedAction === Action.Dig) {
+                if (
+                    (character = findClosestCharacter(
+                        level,
+                        pointOnLevel,
+                        MAX_CHARACTER_CLICK_DISTANCE,
+                    )) &&
+                    character.action !== GameObjectAction.Dig
+                ) {
+                    highlightedCharacter = character;
+                } else {
+                    highlightedCharacter = undefined;
+                }
+            } else {
+                if (isApplicable(selectedAction, tile)) {
+                    highlightedTile = tile;
+                } else {
+                    highlightedTile = undefined;
+                }
+            }
+        }
+    }
+};
+
 export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         if (includesPoint(button, event)) {
             toggleActionButton(level, i);
+            return;
         }
     }
 
-    // Check click on a tile
+    // Check action click
     if (level.selectedActionIndex != null) {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
+        let character: GameObject | undefined;
 
         if (selectedAction != null && tile != null) {
             if (selectedAction === Action.Rainbow) {
-                if (tile.type === "water" && useAction(level, selectedAction)) {
+                if (consumeAction(level, selectedAction, tile)) {
                     tile.type = "rainbow";
                 }
-            } else if (
-                tile.type === "grass" &&
-                useAction(level, selectedAction)
-            ) {
+            } else if (selectedAction === Action.Dig) {
+                if (
+                    (character = findClosestCharacter(
+                        level,
+                        pointOnLevel,
+                        MAX_CHARACTER_CLICK_DISTANCE,
+                    )) &&
+                    character.action !== GameObjectAction.Dig &&
+                    consumeAction(level, selectedAction, tile)
+                ) {
+                    character.action = GameObjectAction.Dig;
+                }
+            } else if (consumeAction(level, selectedAction, tile)) {
                 const tileType = actionToTileType(selectedAction);
                 if (tileType) {
                     tile.type = tileType;
@@ -327,6 +391,29 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
             }
         }
     }
+};
+
+const findClosestCharacter = (
+    level: Level,
+    point: Vector,
+    maxDistance: number,
+): GameObject | undefined => {
+    let minDistance = Number.MAX_VALUE;
+    let closestCharacter: GameObject | undefined;
+
+    for (let i = 0; i < level.objects.length; i++) {
+        const o = level.objects[i];
+        if (o.type !== "character") {
+            continue;
+        }
+        const dst = distanceSquared(point, getCenter(o));
+        if (dst < maxDistance * maxDistance && dst < minDistance) {
+            minDistance = dst;
+            closestCharacter = o;
+        }
+    }
+
+    return closestCharacter;
 };
 
 const actionToTileType = (action: Action): TileType | undefined => {
@@ -360,11 +447,20 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
     // Draw the level according to camera angle
     applyCamera(camera, cx, levelDrawArea, level, () => {
-        drawMap(time, level, level.objects);
+        drawMap(
+            time,
+            level,
+            level.objects,
+            highlightedTile,
+            highlightedCharacter,
+        );
     });
 
     // Draw button row
-    const buttonWidth = buttonRowHeight;
+    const buttonWidth = Math.min(
+        buttonRowHeight,
+        levelDrawArea.width / actionButtons.length,
+    );
     const buttonRowWidth = buttonWidth * actionButtons.length;
     const buttonRowX = (canvas.width - buttonRowWidth) / 2;
 
