@@ -1,6 +1,6 @@
 import { renderUnicorn } from "./animations/unicorn";
-import { initializeAudio } from "./audio/sfx";
 import { GAME_TITLE } from "./constants";
+import { initializeAudio, playTune, SFX_CLICK } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
@@ -190,10 +190,12 @@ const handleClick = (event: MouseEvent): void => {
     switch (state.type) {
         case "levels": {
             levelSelectionHandleClick(time, event);
+            playTune(SFX_CLICK);
             break;
         }
         case "run": {
             levelHandleClick(state.level, event);
+            playTune(SFX_CLICK);
             break;
         }
     }
