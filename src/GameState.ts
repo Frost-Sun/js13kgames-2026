@@ -38,6 +38,11 @@ export type GameStateIntro = {
     start: number;
 };
 
+export type GameStateLevelSelection = {
+    type: "levels";
+    start: number;
+};
+
 export type GameStateRun = {
     type: "run";
     start: number;
@@ -65,6 +70,7 @@ export type GameState =
     | GameStateLoad
     | GameStateLoaded
     | GameStateIntro
+    | GameStateLevelSelection
     | GameStateRun
     | GameStateLevelFinished
     | GameStateLose

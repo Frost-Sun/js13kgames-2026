@@ -38,6 +38,8 @@ import {
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
+export type CreateMapFunction = (number: number) => Level;
+
 const createMapInitial = (number: number): Level => {
     const level = createLevel({
         number,
@@ -161,7 +163,7 @@ const createMapIslands = (number: number): Level => {
     return level;
 };
 
-export const maps: ((number: number) => Level)[] = [
+export const maps: CreateMapFunction[] = [
     createMapInitial,
     createMapRocks,
     createMapIslands,

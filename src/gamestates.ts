@@ -46,13 +46,29 @@ export const setStateIntro = (time: TimeStep): void => {
         type: "intro",
         start: time.t,
     });
-    waitForSpace().then(() => setStateRun(time));
+    waitForSpace().then(() => setStateLevelSelection(time));
 };
 
-export const setStateRun = (time: TimeStep): void => {
+export const setStateLevelSelection = (time: TimeStep): void => {
+    setGameState({
+        type: "levels",
+        start: time.t,
+    });
+};
+
+export const setStateRun = (
+    time: TimeStep,
+    mapIndex: number | undefined = undefined,
+): void => {
     const currentState = getGameState();
 
-    if (currentState.type !== "finished") {
+    if (mapIndex != null) {
+        setGameState({
+            type: "run",
+            start: time.t,
+            level: createMap(mapIndex),
+        });
+    } else if (currentState.type !== "finished") {
         setGameState({
             type: "run",
             start: time.t,

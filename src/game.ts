@@ -13,6 +13,10 @@ import {
     levelHandleMouseMove,
     updateLevel,
 } from "./Level";
+import {
+    drawLevelSelection,
+    levelSelectionHandleClick,
+} from "./LevelSelection";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
 
 export const IntroductionTextTime = 4000;
@@ -153,6 +157,10 @@ const draw = (time: TimeStep): void => {
             cx.restore();
             break;
         }
+        case "levels": {
+            drawLevelSelection(time, state);
+            break;
+        }
         case "run":
         case "finished":
         case "lose": {
@@ -211,8 +219,15 @@ const handleMouseMove = (event: MouseEvent): void => {
 
 const handleClick = (event: MouseEvent): void => {
     const state = getGameState();
-    if (state.type === "run") {
+    switch (state.type) {
+        case "levels": {
+            levelSelectionHandleClick(time, event);
+            break;
+        }
+        case "run": {
         levelHandleClick(state.level, event);
+            break;
+        }
     }
 };
 
