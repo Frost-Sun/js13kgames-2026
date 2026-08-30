@@ -63,7 +63,7 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action } from "./Action";
+import { Action, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
@@ -290,7 +290,11 @@ const killCharacter = (
     }
 };
 
-const consumeAction = (level: Level, action: Action): boolean => {
+const consumeAction = (level: Level, action: Action, tile: Tile): boolean => {
+    if (!isApplicable(action, tile)) {
+        return false;
+    }
+
     if (!level.actionCounts[action]) {
         return false;
     }
@@ -309,15 +313,17 @@ const consumeAction = (level: Level, action: Action): boolean => {
 };
 
 let highlightedCharacter: GameObject | undefined;
+let highlightedTile: Tile | undefined;
 
 export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
         const { camera } = level;
         const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
+        const tile = getTileAt(level, pointOnLevel);
         let character: GameObject | undefined;
 
-        if (selectedAction != null) {
+        if (selectedAction != null && tile != null) {
             if (selectedAction === Action.Dig) {
                 if (
                     (character = findClosestCharacter(
@@ -330,6 +336,12 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     highlightedCharacter = character;
                 } else {
                     highlightedCharacter = undefined;
+                }
+            } else {
+                if (isApplicable(selectedAction, tile)) {
+                    highlightedTile = tile;
+                } else {
+                    highlightedTile = undefined;
                 }
             }
         }
@@ -354,12 +366,9 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         const tile = getTileAt(level, pointOnLevel);
         let character: GameObject | undefined;
 
-        if (selectedAction != null) {
+        if (selectedAction != null && tile != null) {
             if (selectedAction === Action.Rainbow) {
-                if (
-                    tile?.type === "water" &&
-                    consumeAction(level, selectedAction)
-                ) {
+                if (consumeAction(level, selectedAction, tile)) {
                     tile.type = "rainbow";
                 }
             } else if (selectedAction === Action.Dig) {
@@ -370,14 +379,11 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                         MAX_CHARACTER_CLICK_DISTANCE,
                     )) &&
                     character.action !== GameObjectAction.Dig &&
-                    consumeAction(level, selectedAction)
+                    consumeAction(level, selectedAction, tile)
                 ) {
                     character.action = GameObjectAction.Dig;
                 }
-            } else if (
-                tile?.type === "grass" &&
-                consumeAction(level, selectedAction)
-            ) {
+            } else if (consumeAction(level, selectedAction, tile)) {
                 const tileType = actionToTileType(selectedAction);
                 if (tileType) {
                     tile.type = tileType;
@@ -441,7 +447,13 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
     // Draw the level according to camera angle
     applyCamera(camera, cx, levelDrawArea, level, () => {
-        drawMap(time, level, level.objects, highlightedCharacter);
+        drawMap(
+            time,
+            level,
+            level.objects,
+            highlightedTile,
+            highlightedCharacter,
+        );
     });
 
     // Draw button row

@@ -24,6 +24,7 @@
 
 import { type GameObject } from "../GameObject";
 import { cx, drawPart, type DrawCommand } from "../graphics";
+import { HIGHLIGHT_COLOR } from "../theme";
 
 /**
  * The function that actually renders the unicorn.
@@ -41,7 +42,7 @@ export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
 
     if (highlight) {
-        cx.fillStyle = "rgb(255, 100, 100)";
+        cx.fillStyle = HIGHLIGHT_COLOR;
         cx.fillRect(
             -obj.width / 4,
             -obj.height / 4,

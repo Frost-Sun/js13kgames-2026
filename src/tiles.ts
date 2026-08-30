@@ -37,6 +37,7 @@ import { getCenter, type Area } from "./core/math/Area";
 import { renderStraw, type StrawParams } from "./animations/straw";
 import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
+import { HIGHLIGHT_COLOR } from "./theme";
 
 export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
@@ -356,7 +357,8 @@ export const drawMap = (
     time: TimeStep,
     map: TileMap<Tile>,
     objects: GameObject[],
-    highlightedCharacter: GameObject | undefined = undefined,
+    highlightedTile: Tile | undefined,
+    highlightedCharacter: GameObject | undefined,
 ): void => {
     const objectsToDraw: GameObject[] = [];
 
@@ -599,6 +601,13 @@ export const drawMap = (
                 cx.beginPath();
                 cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                 cx.fill();
+            }
+
+            if (tile === highlightedTile) {
+                cx.save();
+                cx.strokeStyle = HIGHLIGHT_COLOR;
+                cx.strokeRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                cx.restore();
             }
         }
     }
