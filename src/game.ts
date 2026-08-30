@@ -3,6 +3,7 @@ import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
+import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
 import { setStateLoaded } from "./gamestates";
 import { canvas, cx } from "./graphics";
@@ -83,15 +84,33 @@ const draw = (time: TimeStep): void => {
                 "violet",
             ];
 
+            const speed = 0.2;
+            const stripeWidth = canvas.width / 2;
+
+            const logicalWidth = (colors.length - 2) * stripeWidth;
+            const stateStartTime = state.start || 0;
+            const localTime = time.t - stateStartTime;
+
+            const rawOffset = (localTime * speed) % (logicalWidth * 2);
+
+            const offset =
+                rawOffset > logicalWidth
+                    ? 2 * logicalWidth - rawOffset
+                    : rawOffset;
+
             for (let i = 0; i < colors.length; i++) {
                 cx.fillStyle = colors[i];
+
                 cx.fillRect(
+                    i * stripeWidth - offset,
                     0,
-                    (i * canvas.height) / colors.length,
-                    canvas.width,
-                    canvas.height / colors.length,
+                    stripeWidth * 2,
+                    canvas.height,
                 );
             }
+
+            const currentVelocity =
+                rawOffset > logicalWidth ? VELOCITY_LEFT : VELOCITY_RIGHT;
 
             renderUnicorn({
                 x: canvas.width / 4,
@@ -99,9 +118,10 @@ const draw = (time: TimeStep): void => {
                 width: canvas.width / 2.5,
                 height: canvas.height / 2.5,
                 type: "character",
+                velocity: currentVelocity,
             });
 
-            renderText("UNICORN GAME", TextSize.Huge);
+            renderText("UNICORNS!", TextSize.Huge);
 
             renderGradient(canvas, cx, 0.5);
 
