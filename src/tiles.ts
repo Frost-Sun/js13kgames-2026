@@ -606,7 +606,7 @@ export const drawMap = (
             if (tile === highlightedTile) {
                 cx.save();
                 cx.strokeStyle = HIGHLIGHT_COLOR;
-                cx.strokeRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
                 cx.restore();
             }
         }
