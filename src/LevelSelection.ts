@@ -4,6 +4,7 @@ import type { GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";
+import { HIGHLIGHT_COLOR } from "./theme";
 
 interface Button extends Area {
     text: string;
@@ -17,6 +18,8 @@ const buttons: Button[] = maps.map((_, i) => ({
     // Button positions are set in the draw function
     // so that changes in window size are taken care of.
 })) as Button[];
+
+let highlightedButton: Button | undefined;
 
 export const drawLevelSelection = (
     time: TimeStep,
@@ -34,7 +37,6 @@ export const drawLevelSelection = (
         (canvas.width - marginX) / (iconWidth + marginX),
     );
 
-    cx.strokeStyle = "rgb(10, 100, 10)";
     cx.lineWidth = 5;
     cx.font = "38px Courier New";
 
@@ -52,6 +54,8 @@ export const drawLevelSelection = (
         button.height = iconHeight;
 
         cx.fillStyle = button.enabled ? "rgb(10, 150, 10)" : "gray";
+        cx.strokeStyle =
+            button === highlightedButton ? HIGHLIGHT_COLOR : "rgb(10, 100, 10)";
         cx.fillRect(button.x, button.y, button.width, button.height);
         cx.strokeRect(button.x, button.y, button.width, button.height);
         cx.fillStyle = "yellow";
@@ -63,6 +67,18 @@ export const drawLevelSelection = (
     }
 
     cx.restore();
+};
+
+export const levelSelectionHandeMouseMove = (event: MouseEvent): void => {
+    for (let i = 0; i < buttons.length; i++) {
+        const button = buttons[i];
+        if (button.enabled && includesPoint(button, event)) {
+            highlightedButton = button;
+            return;
+        }
+    }
+
+    highlightedButton = undefined;
 };
 
 export const levelSelectionHandleClick = (

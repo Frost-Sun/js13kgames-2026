@@ -16,6 +16,7 @@ import {
 } from "./Level";
 import {
     drawLevelSelection,
+    levelSelectionHandeMouseMove,
     levelSelectionHandleClick,
 } from "./LevelSelection";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
@@ -180,8 +181,15 @@ const draw = (time: TimeStep): void => {
 
 const handleMouseMove = (event: MouseEvent): void => {
     const state = getGameState();
-    if (state.type === "run") {
-        levelHandleMouseMove(state.level, event);
+    switch (state.type) {
+        case "levels": {
+            levelSelectionHandeMouseMove(event);
+            break;
+        }
+        case "run": {
+            levelHandleMouseMove(state.level, event);
+            break;
+        }
     }
 };
 
