@@ -155,11 +155,11 @@ export const waitForKey = (key: Key): Promise<void> => {
     });
 };
 
-export const waitForEnter = (soundToPlay?: string): Promise<void> => {
+export const waitForSpace = (soundToPlay?: string): Promise<void> => {
     return new Promise((resolve) => {
         const listener = (event: KeyboardEvent): void => {
             playTune(SFX_KB);
-            if (event.code === "Enter") {
+            if (event.code === "Space") {
                 if (soundToPlay) {
                     playTune(soundToPlay);
                 }
