@@ -1,3 +1,5 @@
+import type { TimeStep } from "./core/time/TimeStep";
+
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 
 export const cx: CanvasRenderingContext2D = canvas.getContext("2d")!;
@@ -30,4 +32,52 @@ export const drawPart = (params: DrawCommand) => {
     cx.fill();
 
     cx.restore();
+};
+
+/*
+ * Draws a rainbow background that fills the entire canvas.
+ * Returns the direction where the rainbow is moving in the x-axis.
+ */
+export const drawRainbowBackground = (
+    time: TimeStep,
+    start: number,
+): 1 | -1 => {
+    cx.save();
+
+    const colors = [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "cyan",
+        "blue",
+        "violet",
+    ];
+
+    const speed = 0.2;
+    const stripeWidth = canvas.width / 2;
+
+    const logicalWidth = (colors.length - 2) * stripeWidth;
+    const stateStartTime = start || 0;
+    const localTime = time.t - stateStartTime;
+
+    const rawOffset = (localTime * speed) % (logicalWidth * 2);
+
+    const offset =
+        rawOffset > logicalWidth ? 2 * logicalWidth - rawOffset : rawOffset;
+
+    for (let i = 0; i < colors.length; i++) {
+        cx.fillStyle = colors[i];
+
+        cx.fillRect(
+            i * stripeWidth - offset,
+            0,
+            stripeWidth * 2,
+            canvas.height,
+        );
+    }
+
+    cx.restore();
+
+    return rawOffset > logicalWidth ? 1 : -1;
 };

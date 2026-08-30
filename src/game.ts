@@ -6,7 +6,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
 import { setStateLoaded } from "./gamestates";
-import { canvas, cx } from "./graphics";
+import { canvas, cx, drawRainbowBackground } from "./graphics";
 import {
     drawLevel,
     levelHandleClick,
@@ -83,43 +83,10 @@ const draw = (time: TimeStep): void => {
         case "intro": {
             cx.save();
 
-            const colors = [
-                "red",
-                "orange",
-                "yellow",
-                "green",
-                "cyan",
-                "blue",
-                "violet",
-            ];
-
-            const speed = 0.2;
-            const stripeWidth = canvas.width / 2;
-
-            const logicalWidth = (colors.length - 2) * stripeWidth;
-            const stateStartTime = state.start || 0;
-            const localTime = time.t - stateStartTime;
-
-            const rawOffset = (localTime * speed) % (logicalWidth * 2);
-
-            const offset =
-                rawOffset > logicalWidth
-                    ? 2 * logicalWidth - rawOffset
-                    : rawOffset;
-
-            for (let i = 0; i < colors.length; i++) {
-                cx.fillStyle = colors[i];
-
-                cx.fillRect(
-                    i * stripeWidth - offset,
-                    0,
-                    stripeWidth * 2,
-                    canvas.height,
-                );
-            }
+            const direction = drawRainbowBackground(time, state.start);
 
             const currentVelocity =
-                rawOffset > logicalWidth ? VELOCITY_LEFT : VELOCITY_RIGHT;
+                direction > 0 ? VELOCITY_LEFT : VELOCITY_RIGHT;
 
             renderUnicorn({
                 x: canvas.width / 128,
@@ -225,7 +192,7 @@ const handleClick = (event: MouseEvent): void => {
             break;
         }
         case "run": {
-        levelHandleClick(state.level, event);
+            levelHandleClick(state.level, event);
             break;
         }
     }

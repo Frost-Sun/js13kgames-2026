@@ -2,7 +2,7 @@ import { includesPoint, type Area } from "./core/math/Area";
 import type { TimeStep } from "./core/time/TimeStep";
 import type { GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
-import { canvas, cx } from "./graphics";
+import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";
 
 interface Button extends Area {
@@ -22,38 +22,7 @@ export const drawLevelSelection = (
 ): void => {
     cx.save();
 
-    const colors = [
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "cyan",
-        "blue",
-        "violet",
-    ];
-
-    const speed = 0.2;
-    const stripeWidth = canvas.width / 2;
-
-    const logicalWidth = (colors.length - 2) * stripeWidth;
-    const stateStartTime = state.start || 0;
-    const localTime = time.t - stateStartTime;
-
-    const rawOffset = (localTime * speed) % (logicalWidth * 2);
-
-    const offset =
-        rawOffset > logicalWidth ? 2 * logicalWidth - rawOffset : rawOffset;
-
-    for (let i = 0; i < colors.length; i++) {
-        cx.fillStyle = colors[i];
-
-        cx.fillRect(
-            i * stripeWidth - offset,
-            0,
-            stripeWidth * 2,
-            canvas.height,
-        );
-    }
+    drawRainbowBackground(time, state.start);
 
     const iconWidth = Math.max(150, canvas.width / 10);
     const iconHeight = iconWidth;
