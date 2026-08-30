@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-// import { playTune, SFX_KB } from "../../audio/sfx";
+import { playTune, SFX_KB } from "../../audio/sfx";
 import { type Area, includesPoint } from "../math/Area";
 import { type VectorMutable } from "../math/Vector";
 import { setCanvasPositionFromScreenPosition } from "../platform/window";
@@ -82,7 +82,7 @@ export const waitForTap = (
             const touch = e.changedTouches[0];
             if (!touch) return; // Exit if no touch information is available
 
-            // playTune(SFX_KB);
+            playTune(SFX_KB);
 
             const point: VectorMutable = { x: 0, y: 0 };
 

@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { playTune, SFX_RUNNING } from "./audio/sfx";
-import { waitForKey } from "./core/controls/keyboard";
+import { waitForSpace } from "./core/controls/keyboard";
+import { SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
     getGameState,
@@ -38,7 +38,7 @@ export const setStateLoaded = (time: TimeStep): void => {
         type: "loaded",
         start: time.t,
     });
-    waitForKey("Space").then(() => setStateIntro(time));
+    waitForSpace(SFX_RUNNING).then(() => setStateIntro(time));
 };
 
 export const setStateIntro = (time: TimeStep): void => {
@@ -46,9 +46,7 @@ export const setStateIntro = (time: TimeStep): void => {
         type: "intro",
         start: time.t,
     });
-    playTune(SFX_RUNNING);
-
-    waitForKey("Space").then(() => setStateRun(time));
+    waitForSpace().then(() => setStateRun(time));
 };
 
 export const setStateRun = (time: TimeStep): void => {
@@ -80,7 +78,7 @@ export const setStateLevelFinished = (
         start: time.t,
         level: currentState.level,
     });
-    waitForKey("Space").then(() => setStateRun(time));
+    waitForSpace().then(() => setStateRun(time));
 };
 
 export const setStateLose = (
@@ -91,7 +89,7 @@ export const setStateLose = (
         type: "lose",
         level: currentState.level,
     });
-    waitForKey("Space").then(() => setStateIntro(time));
+    waitForSpace().then(() => setStateIntro(time));
 };
 
 export const setStateWin = (
@@ -103,5 +101,5 @@ export const setStateWin = (
         start: time.t,
         level: currentState.level,
     });
-    waitForKey("Space").then(() => setStateIntro(time));
+    waitForSpace().then(() => setStateIntro(time));
 };

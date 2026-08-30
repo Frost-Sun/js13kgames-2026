@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-// import { playTune, SFX_KB } from "../../audio/sfx";
+import { playTune, SFX_KB } from "../../audio/sfx";
 
 // These must match the definitions in KeyboardEvent.code
 export type Key =
@@ -143,6 +143,8 @@ export const clearRemover = (remover: (() => void) | null): null => {
 export const waitForKey = (key: Key): Promise<void> => {
     return new Promise((resolve) => {
         const listener = (event: KeyboardEvent): void => {
+            playTune(SFX_KB);
+
             if (event.code === key) {
                 window.removeEventListener("keydown", listener);
                 resolve();
@@ -153,13 +155,13 @@ export const waitForKey = (key: Key): Promise<void> => {
     });
 };
 
-export const waitForEnter = (soundToPlay?: string): Promise<void> => {
+export const waitForSpace = (soundToPlay?: string): Promise<void> => {
     return new Promise((resolve) => {
         const listener = (event: KeyboardEvent): void => {
-            // playTune(SFX_KB);
-            if (event.code === "Enter") {
+            playTune(SFX_KB);
+            if (event.code === "Space") {
                 if (soundToPlay) {
-                    // playTune(soundToPlay);
+                    playTune(soundToPlay);
                 }
                 window.removeEventListener("keydown", listener);
                 resolve();
