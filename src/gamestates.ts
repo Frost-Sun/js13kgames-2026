@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { waitForSpace } from "./core/controls/keyboard";
+import { waitForKey, waitForSpace } from "./core/controls/keyboard";
 import { SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
@@ -71,18 +71,21 @@ export const setStateRun = (
             start: time.t,
             level: createMap(mapIndex),
         });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else if (currentState.type !== "finished") {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(0),
         });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else if (currentState.level.number + 1 < maps.length) {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(currentState.level.number + 1),
         });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else {
         setStateWin(currentState, time);
     }
