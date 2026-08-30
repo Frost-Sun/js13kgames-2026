@@ -41,6 +41,7 @@ export type GameStateIntro = {
 export type GameStateLevelSelection = {
     type: "levels";
     start: number;
+    highestLevel: number;
 };
 
 export type GameStateRun = {

@@ -7,10 +7,12 @@ import { maps } from "./maps";
 
 interface Button extends Area {
     text: string;
+    enabled: boolean;
 }
 
 const buttons: Button[] = maps.map((_, i) => ({
     text: (i + 1).toString(),
+    enabled: false,
 
     // Button positions are set in the draw function
     // so that changes in window size are taken care of.
@@ -43,12 +45,13 @@ export const drawLevelSelection = (
 
         const button = buttons[i];
         button.text = (i + 1).toString();
+        button.enabled = i <= state.highestLevel;
         button.x = x;
         button.y = y;
         button.width = iconWidth;
         button.height = iconHeight;
 
-        cx.fillStyle = "rgb(10, 150, 10)";
+        cx.fillStyle = button.enabled ? "rgb(10, 150, 10)" : "gray";
         cx.fillRect(button.x, button.y, button.width, button.height);
         cx.strokeRect(button.x, button.y, button.width, button.height);
         cx.fillStyle = "yellow";
@@ -68,7 +71,7 @@ export const levelSelectionHandleClick = (
 ): void => {
     for (let i = 0; i < buttons.length; i++) {
         const button = buttons[i];
-        if (includesPoint(button, event)) {
+        if (button.enabled && includesPoint(button, event)) {
             setStateRun(time, i);
             return;
         }

@@ -32,6 +32,7 @@ import {
     type GameStateRun,
 } from "./GameState";
 import { createMap, maps } from "./maps";
+import { load, save } from "./storage";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -50,9 +51,11 @@ export const setStateIntro = (time: TimeStep): void => {
 };
 
 export const setStateLevelSelection = (time: TimeStep): void => {
+    const persistentState = load();
     setGameState({
         type: "levels",
         start: time.t,
+        highestLevel: persistentState.highestLevel,
     });
 };
 
@@ -94,6 +97,7 @@ export const setStateLevelFinished = (
         start: time.t,
         level: currentState.level,
     });
+    save({ highestLevel: currentState.level.number + 1 });
     waitForSpace().then(() => setStateRun(time));
 };
 

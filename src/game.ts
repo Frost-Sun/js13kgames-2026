@@ -1,5 +1,6 @@
 import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
+import { GAME_TITLE } from "./constants";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
@@ -115,7 +116,7 @@ const draw = (time: TimeStep): void => {
                 velocity: currentVelocity,
             });
 
-            renderText("UNICORNS!", TextSize.Huge);
+            renderText(GAME_TITLE, TextSize.Huge);
 
             renderGradient(canvas, cx, 0.5);
 
