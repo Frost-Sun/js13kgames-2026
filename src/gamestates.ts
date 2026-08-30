@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { waitForSpace } from "./core/controls/keyboard";
+import { waitForKey, waitForSpace } from "./core/controls/keyboard";
 import { SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
@@ -32,6 +32,7 @@ import {
     type GameStateRun,
 } from "./GameState";
 import { createMap, maps } from "./maps";
+import { load, save } from "./storage";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -46,24 +47,45 @@ export const setStateIntro = (time: TimeStep): void => {
         type: "intro",
         start: time.t,
     });
-    waitForSpace().then(() => setStateRun(time));
+    waitForSpace().then(() => setStateLevelSelection(time));
 };
 
-export const setStateRun = (time: TimeStep): void => {
+export const setStateLevelSelection = (time: TimeStep): void => {
+    const persistentState = load();
+    setGameState({
+        type: "levels",
+        start: time.t,
+        highestLevel: persistentState.highestLevel,
+    });
+};
+
+export const setStateRun = (
+    time: TimeStep,
+    mapIndex: number | undefined = undefined,
+): void => {
     const currentState = getGameState();
 
-    if (currentState.type !== "finished") {
+    if (mapIndex != null) {
+        setGameState({
+            type: "run",
+            start: time.t,
+            level: createMap(mapIndex),
+        });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
+    } else if (currentState.type !== "finished") {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(0),
         });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else if (currentState.level.number + 1 < maps.length) {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(currentState.level.number + 1),
         });
+        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else {
         setStateWin(currentState, time);
     }
@@ -78,6 +100,7 @@ export const setStateLevelFinished = (
         start: time.t,
         level: currentState.level,
     });
+    save({ highestLevel: currentState.level.number + 1 });
     waitForSpace().then(() => setStateRun(time));
 };
 

@@ -1,4 +1,5 @@
 import { renderUnicorn } from "./animations/unicorn";
+import { GAME_TITLE } from "./constants";
 import { initializeAudio, playTune, SFX_CLICK } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
@@ -6,13 +7,18 @@ import type { TimeStep } from "./core/time/TimeStep";
 import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
 import { setStateLoaded } from "./gamestates";
-import { canvas, cx } from "./graphics";
+import { canvas, cx, drawRainbowBackground } from "./graphics";
 import {
     drawLevel,
     levelHandleClick,
     levelHandleMouseMove,
     updateLevel,
 } from "./Level";
+import {
+    drawLevelSelection,
+    levelSelectionHandeMouseMove,
+    levelSelectionHandleClick,
+} from "./LevelSelection";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
 
 export const IntroductionTextTime = 4000;
@@ -79,43 +85,10 @@ const draw = (time: TimeStep): void => {
         case "intro": {
             cx.save();
 
-            const colors = [
-                "red",
-                "orange",
-                "yellow",
-                "green",
-                "cyan",
-                "blue",
-                "violet",
-            ];
-
-            const speed = 0.2;
-            const stripeWidth = canvas.width / 2;
-
-            const logicalWidth = (colors.length - 2) * stripeWidth;
-            const stateStartTime = state.start || 0;
-            const localTime = time.t - stateStartTime;
-
-            const rawOffset = (localTime * speed) % (logicalWidth * 2);
-
-            const offset =
-                rawOffset > logicalWidth
-                    ? 2 * logicalWidth - rawOffset
-                    : rawOffset;
-
-            for (let i = 0; i < colors.length; i++) {
-                cx.fillStyle = colors[i];
-
-                cx.fillRect(
-                    i * stripeWidth - offset,
-                    0,
-                    stripeWidth * 2,
-                    canvas.height,
-                );
-            }
+            const direction = drawRainbowBackground(time, state.start);
 
             const currentVelocity =
-                rawOffset > logicalWidth ? VELOCITY_LEFT : VELOCITY_RIGHT;
+                direction > 0 ? VELOCITY_LEFT : VELOCITY_RIGHT;
 
             renderUnicorn({
                 x: canvas.width / 128,
@@ -144,13 +117,17 @@ const draw = (time: TimeStep): void => {
                 velocity: currentVelocity,
             });
 
-            renderText("UNICORNS!", TextSize.Huge);
+            renderText(GAME_TITLE, TextSize.Huge);
 
             renderGradient(canvas, cx, 0.5);
 
             renderWaitForProgressInput();
 
             cx.restore();
+            break;
+        }
+        case "levels": {
+            drawLevelSelection(time, state);
             break;
         }
         case "run":
@@ -204,16 +181,31 @@ const draw = (time: TimeStep): void => {
 
 const handleMouseMove = (event: MouseEvent): void => {
     const state = getGameState();
-    if (state.type === "run") {
-        levelHandleMouseMove(state.level, event);
+    switch (state.type) {
+        case "levels": {
+            levelSelectionHandeMouseMove(event);
+            break;
+        }
+        case "run": {
+            levelHandleMouseMove(state.level, event);
+            break;
+        }
     }
 };
 
 const handleClick = (event: MouseEvent): void => {
     const state = getGameState();
-    if (state.type === "run") {
-        levelHandleClick(state.level, event);
-        playTune(SFX_CLICK);
+    switch (state.type) {
+        case "levels": {
+            levelSelectionHandleClick(time, event);
+            playTune(SFX_CLICK);
+            break;
+        }
+        case "run": {
+            levelHandleClick(state.level, event);
+            playTune(SFX_CLICK);
+            break;
+        }
     }
 };
 
