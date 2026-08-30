@@ -65,6 +65,7 @@ import {
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 import { Action, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
+import { playTune, SFX_HOME } from "./audio/sfx";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
@@ -235,6 +236,7 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
                 if (level.charactersFinished >= level.charactersToFinish) {
                     setStateLevelFinished(state, time);
                 }
+                playTune(SFX_HOME);
             }
 
             const center = getCenter(o);

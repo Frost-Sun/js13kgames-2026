@@ -22,14 +22,7 @@
  * SOFTWARE.
  */
 
-import {
-    kbSfx,
-    startSong,
-    mouseSfx,
-    mouseWalkNormalSfx,
-    bounceSfx,
-    catMeowSfx,
-} from "./sfxData.ts";
+import { kbSfx, startSong, clickSfx, homeSfx } from "./sfxData.ts";
 
 import { createTune, FadeOutIn, type SongData } from "../core/audio/music.js";
 
@@ -43,11 +36,10 @@ import CPlayer from "../core/audio/musicplayer.js";
 export const SFX_START = "start";
 export const SFX_RUNNING = "gamestarted";
 export const SFX_CHASE = "chase";
-export const SFX_MEOW = "meow";
-export const SFX_BOUNCE = "bounce";
+export const SFX_HOME = "home";
 export const SFX_KB = "keyboard";
 export const SFX_GAMEOVER = "gameover";
-export const SFX_MOUSE_WALK_NORMAL = "mousewalknormal";
+export const SFX_CLICK = "click";
 
 type Tune = {
     songData: SongData[];
@@ -101,12 +93,7 @@ export const playTune = async (tune: string, vol: number = 1) => {
 
     switch (tune) {
         case SFX_RUNNING: {
-            FadeOutIn(gameTune, startTune, 0.2);
-            break;
-        }
-        case SFX_GAMEOVER: {
-            zzfx(1, ...mouseSfx);
-            FadeOutIn(startTune, gameTune);
+            FadeOutIn(gameTune, startTune, 0.75);
             break;
         }
         case SFX_START: {
@@ -119,20 +106,16 @@ export const playTune = async (tune: string, vol: number = 1) => {
             FadeOutIn(startTune, gameTune);
             break;
         }
-        case SFX_MEOW: {
-            zzfx(0.1, ...catMeowSfx);
-            break;
-        }
-        case SFX_BOUNCE: {
-            zzfx(0.9, ...bounceSfx);
+        case SFX_HOME: {
+            zzfx(0.5, ...homeSfx);
             break;
         }
         case SFX_KB: {
             zzfx(0.5, ...kbSfx);
             break;
         }
-        case SFX_MOUSE_WALK_NORMAL: {
-            zzfx(vol, ...mouseWalkNormalSfx);
+        case SFX_CLICK: {
+            zzfx(vol, ...clickSfx);
             break;
         }
     }

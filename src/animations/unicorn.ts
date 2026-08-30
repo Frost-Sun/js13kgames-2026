@@ -42,13 +42,12 @@ export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
 
     if (highlight) {
-        cx.fillStyle = HIGHLIGHT_COLOR;
-        cx.fillRect(
-            -obj.width / 4,
-            -obj.height / 4,
-            obj.width / 2,
-            obj.height / 2,
-        );
+        cx.strokeStyle = HIGHLIGHT_COLOR;
+        cx.beginPath();
+        cx.arc(0, 0, obj.width / 4, 0, Math.PI * 2);
+        cx.fillStyle = "green";
+        cx.stroke();
+        cx.fill();
     }
 
     cx.scale((obj.height / 100) * scaleX, obj.height / 100);
