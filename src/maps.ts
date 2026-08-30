@@ -26,6 +26,7 @@ import { Action } from "./Action";
 import { createLevel, type Level } from "./Level";
 import {
     carve,
+    core,
     coreX,
     coreY,
     segment4,
@@ -33,6 +34,7 @@ import {
     sliceLeft,
     sliceRight,
     sliceTop,
+    walk,
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
@@ -68,10 +70,55 @@ const createMapInitial = (number: number): Level => {
     return level;
 };
 
-const createMapIslands = (number: number): Level => {
+const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Level 2",
+        xCount: 13,
+        yCount: 13,
+        characterCount: 5,
+        charactersToFinish: 4,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
+            [Action.Dig]: 2,
+        },
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+    fill(level, inner, "grass");
+
+    const [topLeft, topRight, bottomLeft, _bottomRight] = segment4(inner);
+
+    fill(level, topLeft, "water");
+
+    const rockWall = sliceRight(bottomLeft);
+    fill(level, rockWall, "rock");
+
+    walk(core(rockWall), coreY(sliceRight(topRight, 2), 2), (area) =>
+        fill(level, area, "rock"),
+    );
+
+    fill(level, coreY(sliceLeft(bottomLeft)), "start");
+    fill(level, coreY(sliceRight(topLeft)), "finish");
+
+    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
+    const finishPosition = findTilePosition(level, "finish") ?? {
+        ix: 0,
+        iy: 0,
+    };
+    level.finishArea = tileToArea(finishPosition);
+
+    return level;
+};
+
+const createMapIslands = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Level 3",
         xCount: 12,
         yCount: 12,
         characterCount: 3,
@@ -116,6 +163,7 @@ const createMapIslands = (number: number): Level => {
 
 export const maps: ((number: number) => Level)[] = [
     createMapInitial,
+    createMapRocks,
     createMapIslands,
 ];
 

@@ -2,11 +2,17 @@ import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
+import { ZERO_VECTOR } from "./core/math/Vector";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState } from "./GameState";
 import { setStateLoaded } from "./gamestates";
 import { canvas, cx } from "./graphics";
-import { drawLevel, levelHandleClick, updateLevel } from "./Level";
+import {
+    drawLevel,
+    levelHandleClick,
+    levelHandleMouseMove,
+    updateLevel,
+} from "./Level";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
 
 export const IntroductionTextTime = 4000;
@@ -99,6 +105,7 @@ const draw = (time: TimeStep): void => {
                 width: canvas.width / 2.5,
                 height: canvas.height / 2.5,
                 type: "character",
+                velocity: ZERO_VECTOR,
             });
 
             renderText("UNICORN GAME", TextSize.Huge);
@@ -159,6 +166,13 @@ const draw = (time: TimeStep): void => {
     }
 };
 
+const handleMouseMove = (event: MouseEvent): void => {
+    const state = getGameState();
+    if (state.type === "run") {
+        levelHandleMouseMove(state.level, event);
+    }
+};
+
 const handleClick = (event: MouseEvent): void => {
     const state = getGameState();
     if (state.type === "run") {
@@ -168,6 +182,7 @@ const handleClick = (event: MouseEvent): void => {
 
 export const start = async (): Promise<void> => {
     initializeKeyboard();
+    document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("click", handleClick);
 
     window.requestAnimationFrame(gameLoop);
