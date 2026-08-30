@@ -113,7 +113,25 @@ const draw = (time: TimeStep): void => {
                 rawOffset > logicalWidth ? VELOCITY_LEFT : VELOCITY_RIGHT;
 
             renderUnicorn({
+                x: canvas.width / 2,
+                y: canvas.height / 1.4,
+                width: canvas.width / 2.5,
+                height: canvas.height / 2.5,
+                type: "character",
+                velocity: currentVelocity,
+            });
+
+            renderUnicorn({
                 x: canvas.width / 4,
+                y: canvas.height / 1.3,
+                width: canvas.width / 2.5,
+                height: canvas.height / 2.5,
+                type: "character",
+                velocity: currentVelocity,
+            });
+
+            renderUnicorn({
+                x: canvas.width / 32,
                 y: canvas.height / 1.4,
                 width: canvas.width / 2.5,
                 height: canvas.height / 2.5,
