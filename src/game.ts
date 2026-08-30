@@ -2,7 +2,6 @@ import { renderUnicorn } from "./animations/unicorn";
 import { initializeAudio } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
-import { ZERO_VECTOR } from "./core/math/Vector";
 import type { TimeStep } from "./core/time/TimeStep";
 import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
