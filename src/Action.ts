@@ -1,13 +1,19 @@
-import type { Tile, TileType } from "./tiles";
+import type { Arrow, Tile, TileType } from "./tiles";
 
-export enum Action {
-    Up,
-    Down,
-    Left,
-    Right,
+export const enum Action {
+    // The directions should match with values of Arrow enum
+    // so that we get away with a small mapping function.
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4,
     Rainbow,
     Dig,
 }
+
+export const actionToArrow = (
+    action: Action.Up | Action.Down | Action.Left | Action.Right,
+): Arrow => action as unknown as Arrow;
 
 const ActionTiles: Record<Action, TileType | undefined> = {
     [Action.Up]: "grass",

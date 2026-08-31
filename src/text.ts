@@ -24,7 +24,7 @@
 
 import { canvas, cx } from "./graphics";
 
-export enum TextSize {
+export const enum TextSize {
     Tiny = 16,
     Xs = 20,
     Small = 24,
