@@ -44,6 +44,7 @@ import type { GameStateRun } from "./GameState";
 import { canvas, cx } from "./graphics";
 import type { TileMap } from "./core/tiles/TileMap";
 import {
+    Arrow,
     drawMap,
     getTileAt,
     getTilePosAt,
@@ -52,7 +53,6 @@ import {
     TILE_WIDTH,
     tileToArea,
     type Tile,
-    type TileType,
 } from "./tiles";
 import {
     getCenter,
@@ -63,7 +63,7 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action, isApplicable } from "./Action";
+import { Action, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 
@@ -249,22 +249,22 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
             ) {
                 killCharacter(time, state, o);
             } else if (
-                tile?.type === "up" &&
+                tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
             ) {
                 o.velocity = VELOCITY_UP;
             } else if (
-                tile?.type === "down" &&
+                tile?.arrow === Arrow.Down &&
                 includesArea(tileToArea(tilePos), o)
             ) {
                 o.velocity = VELOCITY_DOWN;
             } else if (
-                tile?.type === "left" &&
+                tile?.arrow === Arrow.Left &&
                 includesArea(tileToArea(tilePos), o)
             ) {
                 o.velocity = VELOCITY_LEFT;
             } else if (
-                tile?.type === "right" &&
+                tile?.arrow === Arrow.Right &&
                 includesArea(tileToArea(tilePos), o)
             ) {
                 o.velocity = VELOCITY_RIGHT;
@@ -385,10 +385,17 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                 ) {
                     character.action = GameObjectAction.Dig;
                 }
-            } else if (consumeAction(level, selectedAction, tile)) {
-                const tileType = actionToTileType(selectedAction);
-                if (tileType) {
-                    tile.type = tileType;
+            } else if (
+                selectedAction === Action.Up ||
+                selectedAction === Action.Down ||
+                selectedAction === Action.Left ||
+                selectedAction === Action.Right
+            ) {
+                if (consumeAction(level, selectedAction, tile)) {
+                    const arrow = actionToArrow(selectedAction);
+                    if (arrow) {
+                        tile.arrow = arrow;
+                    }
                 }
             }
         }
@@ -416,23 +423,6 @@ const findClosestCharacter = (
     }
 
     return closestCharacter;
-};
-
-const actionToTileType = (action: Action): TileType | undefined => {
-    switch (action) {
-        case Action.Up:
-            return "up";
-        case Action.Down:
-            return "down";
-        case Action.Left:
-            return "left";
-        case Action.Right:
-            return "right";
-        case Action.Rainbow:
-            return "rainbow";
-        default:
-            return undefined;
-    }
 };
 
 export const drawLevel = (time: TimeStep, level: Level): void => {

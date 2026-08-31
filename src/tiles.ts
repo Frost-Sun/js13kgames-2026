@@ -45,22 +45,18 @@ export const TILE_HEIGHT = 10;
 export const TILE_UPWARD_HEIGHT = TILE_HEIGHT / 2;
 
 export type TileType =
-    | "grass"
-    | "rock"
-    | "water"
-    | "start"
-    | "finish"
-    | "up"
-    | "down"
-    | "left"
-    | "right"
-    | "rainbow";
+    "grass" | "rock" | "water" | "start" | "finish" | "rainbow";
 
-export const isArrow = (type: TileType): boolean =>
-    type === "up" || type === "down" || type === "left" || type === "right";
+export const enum Arrow {
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4,
+}
 
 export interface Tile {
     type: TileType;
+    arrow?: Arrow;
     object?: GameObject;
     straw?: StrawParams;
 }
@@ -372,14 +368,7 @@ export const drawMap = (
             if (!tile) continue;
             if (tile.object) objectsToDraw.push(tile.object);
 
-            if (
-                tile.type === "grass" ||
-                tile.type === "rock" ||
-                tile.type === "up" ||
-                tile.type === "down" ||
-                tile.type === "left" ||
-                tile.type === "right"
-            ) {
+            if (tile.type === "grass" || tile.type === "rock") {
                 const up = tileMapGet(map, ix, iy - 1)?.type;
                 const down = tileMapGet(map, ix, iy + 1)?.type;
                 const left = tileMapGet(map, ix - 1, iy)?.type;
@@ -464,12 +453,12 @@ export const drawMap = (
                     renderStraw(x, y, tile.straw, time.t);
                 }
 
-                if (isArrow(tile.type)) {
+                if (tile.arrow != null) {
                     cx.save();
                     cx.translate(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2);
-                    if (tile.type === "right") cx.rotate(Math.PI / 2);
-                    else if (tile.type === "down") cx.rotate(Math.PI);
-                    else if (tile.type === "left") cx.rotate(-Math.PI / 2);
+                    if (tile.arrow === Arrow.Right) cx.rotate(Math.PI / 2);
+                    else if (tile.arrow === Arrow.Down) cx.rotate(Math.PI);
+                    else if (tile.arrow === Arrow.Left) cx.rotate(-Math.PI / 2);
 
                     cx.fillStyle = "darkgreen";
                     cx.beginPath();
