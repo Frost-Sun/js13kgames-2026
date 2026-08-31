@@ -1,6 +1,6 @@
 import type { Arrow, Tile, TileType } from "./tiles";
 
-export enum Action {
+export const enum Action {
     // The directions should match with values of Arrow enum
     // so that we get away with a small mapping function.
     Up = 1,

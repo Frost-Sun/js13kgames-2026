@@ -25,7 +25,7 @@
 import type { Area, Dimensions } from "../math/Area";
 import type { Vector } from "../math/Vector";
 
-export enum CameraMode {
+export const enum CameraMode {
     ShowWholeLevel,
     StayInLevel,
 }
