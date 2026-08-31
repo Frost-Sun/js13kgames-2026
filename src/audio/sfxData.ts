@@ -3,7 +3,7 @@
 // SFX
 export const kbSfx = [2, , 12, , , .008, , 1.2, 15, -7, , , .05, .4, , , .15, .82, .03, .28,];
 export const clickSfx = [1.4, , 225, , , , 3, 1.7, -7, , , , , , , , .19, .1, , .38, 485];
-export const homeSfx = [.5, ,539, , .04, .29, 1,1.92 , , , 567 , .02, .02 , , , , .04];
+export const homeSfx = [1.4, ,539, , .04, .29, 1,1.92 , , , 567 , .02, .02 , , , , .04];
 
 export const startSong = {
     songData: [

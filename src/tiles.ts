@@ -29,6 +29,7 @@ import {
     DIGGING_SPEED,
     GameObjectAction,
     type GameObject,
+    type Theme,
 } from "./GameObject";
 import { cx } from "./graphics";
 import type { TileArea } from "./core/tiles/TileArea";
@@ -45,7 +46,7 @@ export const TILE_HEIGHT = 10;
 export const TILE_UPWARD_HEIGHT = TILE_HEIGHT / 2;
 
 export type TileType =
-    "grass" | "rock" | "water" | "start" | "finish" | "rainbow";
+    "land" | "rock" | "water" | "start" | "finish" | "rainbow";
 
 export const enum Arrow {
     Up = 1,
@@ -149,7 +150,7 @@ const createTile = (
                     velocity: ZERO_VECTOR,
                 },
             };
-        case "grass":
+        case "land":
             return {
                 type,
                 straw:
@@ -294,7 +295,7 @@ const digHorizontally = (
         const BlockFinishedThreshold = TILE_WIDTH / 10;
         if (rock.object.width <= BlockFinishedThreshold) {
             rock.object = undefined;
-            rock.type = "grass";
+            rock.type = "land";
 
             // Check if there are no more rocks to dig
             if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
@@ -338,7 +339,7 @@ const digVertically = (
         const BlockFinishedThreshold = TILE_HEIGHT / 10;
         if (rock.object.height <= BlockFinishedThreshold) {
             rock.object = undefined;
-            rock.type = "grass";
+            rock.type = "land";
 
             // Check if there are no more rocks to dig
             if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
@@ -355,8 +356,25 @@ export const drawMap = (
     objects: GameObject[],
     highlightedTile: Tile | undefined,
     highlightedCharacter: GameObject | undefined,
+    theme?: Theme,
 ): void => {
     const objectsToDraw: GameObject[] = [];
+
+    const landColor =
+        theme === "spring"
+            ? `rgb(60, 100, 60)`
+            : theme === "winter"
+              ? `rgb(200, 200, 255)`
+              : theme === "autumn"
+                ? `rgb(160, 100, 40)`
+                : `rgb(40, 160, 40)`;
+
+    const strawColor =
+        theme === "spring"
+            ? `rgb(40,80, 40)`
+            : theme === "autumn"
+              ? `rgb(170, 120, 60)`
+              : `rgb(0, 190, 0)`;
 
     // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
@@ -368,7 +386,7 @@ export const drawMap = (
             if (!tile) continue;
             if (tile.object) objectsToDraw.push(tile.object);
 
-            if (tile.type === "grass" || tile.type === "rock") {
+            if (tile.type === "land" || tile.type === "rock") {
                 const up = tileMapGet(map, ix, iy - 1)?.type;
                 const down = tileMapGet(map, ix, iy + 1)?.type;
                 const left = tileMapGet(map, ix - 1, iy)?.type;
@@ -396,7 +414,8 @@ export const drawMap = (
                 cx.save();
 
                 // 1. Base Green (defines the absolute outer boundary)
-                cx.fillStyle = `rgb(40, 160, 40)`;
+                cx.fillStyle = landColor;
+
                 cx.beginPath();
                 cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                 cx.fill();
@@ -433,7 +452,7 @@ export const drawMap = (
                 const ibr = br > 0 ? Math.max(0, br - tide) : 0;
                 const ibl = bl > 0 ? Math.max(0, bl - tide) : 0;
 
-                cx.fillStyle = `rgb(40, 160, 40)`;
+                cx.fillStyle = landColor;
                 cx.beginPath();
                 if (iw_in > 0 && ih_in > 0) {
                     cx.roundRect(ix_in, iy_in, iw_in, ih_in, [
@@ -448,8 +467,8 @@ export const drawMap = (
                 cx.restore();
 
                 // 4. Decorations
-                if (tile.straw) {
-                    cx.fillStyle = `rgb(0, 190, 0)`;
+                if (theme != "winter" && tile.straw) {
+                    cx.fillStyle = strawColor;
                     renderStraw(x, y, tile.straw, time.t);
                 }
 
@@ -480,7 +499,7 @@ export const drawMap = (
         }
     }
 
-    // PASS 2: Draw all Water Tiles (Bay curves spill over to trim grass corners)
+    // PASS 2: Draw all Water Tiles (Bay curves spill over to trim land corners)
     for (let iy = 0; iy < map.yCount; iy++) {
         const y = iy * TILE_HEIGHT;
         for (let ix = 0; ix < map.xCount; ix++) {
@@ -508,7 +527,7 @@ export const drawMap = (
                     const tide = Math.sin(time.t * 0.002) * 1.0;
 
                     // 1. Spillover Green Base (expanded safely, no alpha overlap issues)
-                    cx.fillStyle = `rgb(40, 160, 40)`;
+                    cx.fillStyle = landColor;
                     if (tl > 0)
                         cx.fillRect(
                             x - tide - 1,
@@ -615,8 +634,8 @@ export const drawMap = (
                 const down = tileMapGet(map, ix, iy + 1)?.type;
 
                 const isHorizontalBridge =
-                    left === "grass" ||
-                    right === "grass" ||
+                    left === "land" ||
+                    right === "land" ||
                     left === "start" ||
                     right === "finish" ||
                     up === "water" ||

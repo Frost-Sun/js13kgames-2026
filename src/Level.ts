@@ -146,6 +146,7 @@ export interface LevelParameters {
     readonly characterCount: number;
     readonly charactersToFinish: number;
     readonly actionCounts: Partial<Record<Action, number>>;
+    readonly theme?: "spring" | "summer" | "autumn" | "winter";
 }
 
 export interface Level extends TileMap<Tile>, LevelParameters {
@@ -457,6 +458,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
             level.objects,
             highlightedTile,
             highlightedCharacter,
+            level.theme,
         );
     });
 
