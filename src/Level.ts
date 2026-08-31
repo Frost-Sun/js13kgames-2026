@@ -292,6 +292,11 @@ const killCharacter = (
     }
 };
 
+const hasActionsLeft = (level: Level, action: Action): boolean =>
+    !!level.actionCounts[action] &&
+    (level.actionsUsed[action] == null ||
+        level.actionsUsed[action] < level.actionCounts[action]);
+
 const consumeAction = (level: Level, action: Action, tile: Tile): boolean => {
     if (!isApplicable(action, tile)) {
         return false;
@@ -325,7 +330,11 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
         const tile = getTileAt(level, pointOnLevel);
         let character: GameObject | undefined;
 
-        if (selectedAction != null && tile != null) {
+        if (
+            selectedAction != null &&
+            hasActionsLeft(level, selectedAction) &&
+            tile != null
+        ) {
             if (selectedAction === Action.Dig) {
                 if (
                     (character = findClosestCharacter(
@@ -346,6 +355,9 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     highlightedTile = undefined;
                 }
             }
+        } else {
+            highlightedTile = undefined;
+            highlightedCharacter = undefined;
         }
     }
 };
