@@ -16,10 +16,10 @@ export const actionToArrow = (
 ): Arrow => action as unknown as Arrow;
 
 const ActionTiles: Record<Action, TileType | undefined> = {
-    [Action.Up]: "grass",
-    [Action.Down]: "grass",
-    [Action.Left]: "grass",
-    [Action.Right]: "grass",
+    [Action.Up]: "land",
+    [Action.Down]: "land",
+    [Action.Left]: "land",
+    [Action.Right]: "land",
     [Action.Rainbow]: "water",
     [Action.Dig]: undefined,
 };

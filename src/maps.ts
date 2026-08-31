@@ -51,11 +51,12 @@ const createMapInitial = (number: number): Level => {
         actionCounts: {
             [Action.Rainbow]: 2,
         },
+        theme: "spring",
     });
     fill(level, level, "water");
 
     const inner = carve(level);
-    fill(level, inner, "grass");
+    fill(level, inner, "land");
 
     fill(level, coreX(inner), "water");
 
@@ -87,11 +88,12 @@ const createMapRocks = (number: number): Level => {
             [Action.Right]: 2,
             [Action.Dig]: 2,
         },
+        theme: "summer",
     });
     fill(level, level, "water");
 
     const inner = carve(level);
-    fill(level, inner, "grass");
+    fill(level, inner, "land");
 
     const [topLeft, topRight, bottomLeft, _bottomRight] = segment4(inner);
 
@@ -132,6 +134,7 @@ const createMapIslands = (number: number): Level => {
             [Action.Right]: 1,
             [Action.Rainbow]: 2,
         },
+        theme: "winter",
     });
     fill(level, level, "water");
 
@@ -149,10 +152,10 @@ const createMapIslands = (number: number): Level => {
         bottomRight,
     ] = segment9(inner, inner.yCount / 2, 1, inner.xCount / 2, 1);
 
-    fill(level, topLeft, "grass");
-    fill(level, topRight, "grass");
-    fill(level, bottomLeft, "grass");
-    fill(level, bottomRight, "grass");
+    fill(level, topLeft, "land");
+    fill(level, topRight, "land");
+    fill(level, bottomLeft, "land");
+    fill(level, bottomRight, "land");
 
     const [a, _b, c, _d] = segment4(bottomRight);
     fill(level, a, "water");
