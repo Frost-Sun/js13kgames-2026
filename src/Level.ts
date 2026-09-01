@@ -67,6 +67,7 @@ import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 import type { Theme } from "./theme";
+import { mousePositionToCanvasPosition } from "./core/platform/window";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
@@ -327,7 +328,8 @@ let highlightedTile: Tile | undefined;
 export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
         const { camera } = level;
-        const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const position = mousePositionToCanvasPosition(canvas, event);
+        const pointOnLevel = screenToLevel(camera, levelDrawArea, position);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
         let character: GameObject | undefined;
@@ -365,10 +367,12 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
 };
 
 export const levelHandleClick = (level: Level, event: MouseEvent): void => {
+    const position = mousePositionToCanvasPosition(canvas, event);
+
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
-        if (includesPoint(button, event)) {
+        if (includesPoint(button, position)) {
             toggleActionButton(level, i);
             return;
         }
@@ -377,7 +381,7 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
     // Check action click
     if (level.selectedActionIndex != null) {
         const { camera } = level;
-        const pointOnLevel = screenToLevel(camera, levelDrawArea, event);
+        const pointOnLevel = screenToLevel(camera, levelDrawArea, position);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
         let character: GameObject | undefined;
