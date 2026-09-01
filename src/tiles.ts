@@ -29,7 +29,6 @@ import {
     DIGGING_SPEED,
     GameObjectAction,
     type GameObject,
-    type Theme,
 } from "./GameObject";
 import { cx } from "./graphics";
 import type { TileArea } from "./core/tiles/TileArea";
@@ -38,7 +37,13 @@ import { getCenter, type Area } from "./core/math/Area";
 import { renderStraw, type StrawParams } from "./animations/straw";
 import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
-import { HIGHLIGHT_COLOR } from "./theme";
+import {
+    ArrowColorByTheme,
+    HIGHLIGHT_COLOR,
+    LandColorByTheme,
+    StrawColorByTheme,
+    type Theme,
+} from "./theme";
 
 export const TILE_WIDTH = 10;
 export const TILE_HEIGHT = 10;
@@ -124,6 +129,7 @@ const createTile = (
     type: TileType,
     ix: number,
     iy: number,
+    arrow?: Arrow,
 ): Tile | undefined => {
     switch (type) {
         case "rock":
@@ -153,6 +159,7 @@ const createTile = (
         case "land":
             return {
                 type,
+                arrow,
                 straw:
                     random() > 0.2
                         ? {
@@ -171,13 +178,14 @@ const createTile = (
     }
 };
 
-const setTile = (
+export const setTile = (
     map: TileMap<Tile>,
     type: TileType | undefined,
     ix: number,
     iy: number,
+    arrow?: Arrow,
 ): void => {
-    const tile = type ? createTile(type, ix, iy) : undefined;
+    const tile = type ? createTile(type, ix, iy, arrow) : undefined;
     tileMapSet(map, tile, ix, iy);
 };
 
@@ -356,25 +364,13 @@ export const drawMap = (
     objects: GameObject[],
     highlightedTile: Tile | undefined,
     highlightedCharacter: GameObject | undefined,
-    theme?: Theme,
+    theme: Theme,
 ): void => {
     const objectsToDraw: GameObject[] = [];
 
-    const landColor =
-        theme === "spring"
-            ? `rgb(60, 100, 60)`
-            : theme === "winter"
-              ? `rgb(200, 200, 255)`
-              : theme === "autumn"
-                ? `rgb(160, 100, 40)`
-                : `rgb(40, 160, 40)`;
-
-    const strawColor =
-        theme === "spring"
-            ? `rgb(40,80, 40)`
-            : theme === "autumn"
-              ? `rgb(170, 120, 60)`
-              : `rgb(0, 190, 0)`;
+    const landColor = LandColorByTheme[theme];
+    const strawColor = StrawColorByTheme[theme];
+    const arrowColor = ArrowColorByTheme[theme];
 
     // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
@@ -467,7 +463,7 @@ export const drawMap = (
                 cx.restore();
 
                 // 4. Decorations
-                if (theme != "winter" && tile.straw) {
+                if (strawColor && tile.straw) {
                     cx.fillStyle = strawColor;
                     renderStraw(x, y, tile.straw, time.t);
                 }
@@ -479,7 +475,7 @@ export const drawMap = (
                     else if (tile.arrow === Arrow.Down) cx.rotate(Math.PI);
                     else if (tile.arrow === Arrow.Left) cx.rotate(-Math.PI / 2);
 
-                    cx.fillStyle = "darkgreen";
+                    cx.fillStyle = arrowColor;
                     cx.beginPath();
                     const qw = TILE_WIDTH / 4;
                     const qh = TILE_HEIGHT / 4;
