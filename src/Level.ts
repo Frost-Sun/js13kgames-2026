@@ -93,7 +93,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "UP",
+        text: "▲",
         action: Action.Up,
     },
     {
@@ -101,7 +101,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "DOWN",
+        text: "▼",
         action: Action.Down,
     },
     {
@@ -109,7 +109,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "LEFT",
+        text: "◀",
         action: Action.Left,
     },
     {
@@ -117,7 +117,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "RIGHT",
+        text: "▶",
         action: Action.Right,
     },
     {
@@ -125,7 +125,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "RAINBOW",
+        text: "🌈",
         action: Action.Rainbow,
     },
     {
@@ -133,7 +133,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "DIG",
+        text: "🦄⛏️",
         action: Action.Dig,
     },
 ];
@@ -478,7 +478,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
         button.x = buttonRowX + i * buttonWidth;
         button.y = buttonRowY;
-        button.width = buttonWidth;
+        button.width = buttonWidth - 2;
         button.height = buttonRowHeight;
 
         cx.fillStyle =
@@ -487,17 +487,21 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
                 : "rgb(80, 50, 50)";
         cx.fillRect(button.x, button.y, button.width, button.height);
 
+        cx.textAlign = "center";
+        cx.textBaseline = "middle";
+
         cx.fillStyle = count > 0 ? "white" : "grey";
         cx.font = "38px Courier New";
         cx.fillText(
             button.text,
-            button.x + button.width * 0.2,
+            button.x + button.width / 2,
             button.y + button.height / 2,
         );
+
         cx.font = "32px Courier New";
         cx.fillText(
             count.toString(),
-            button.x + button.width * 0.4,
+            button.x + button.width / 2,
             button.y + button.height * 0.75,
         );
     }
