@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { type VectorMutable } from "../math/Vector";
+import { type Vector, type VectorMutable } from "../math/Vector";
 
 let canvasScale = 1;
 
@@ -73,6 +73,17 @@ export const resizeCanvasMaintainingAspectRatio = (
     // Apply the scaling
     canvas.style.transform = `scale(${scale})`;
     canvas.style.transformOrigin = "top left";
+};
+
+export const mousePositionToCanvasPosition = (
+    canvas: HTMLCanvasElement,
+    event: MouseEvent,
+): Vector => {
+    const offset = canvas.getBoundingClientRect();
+    return {
+        x: (event.clientX - offset.left) / canvasScale,
+        y: (event.clientY - offset.top) / canvasScale,
+    };
 };
 
 export const setCanvasPositionFromScreenPosition = (

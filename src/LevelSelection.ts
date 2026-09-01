@@ -1,4 +1,5 @@
 import { includesPoint, type Area } from "./core/math/Area";
+import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TimeStep } from "./core/time/TimeStep";
 import type { GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
@@ -70,9 +71,11 @@ export const drawLevelSelection = (
 };
 
 export const levelSelectionHandeMouseMove = (event: MouseEvent): void => {
+    const position = mousePositionToCanvasPosition(canvas, event);
+
     for (let i = 0; i < buttons.length; i++) {
         const button = buttons[i];
-        if (button.enabled && includesPoint(button, event)) {
+        if (button.enabled && includesPoint(button, position)) {
             highlightedButton = button;
             return;
         }
@@ -85,9 +88,11 @@ export const levelSelectionHandleClick = (
     time: TimeStep,
     event: MouseEvent,
 ): void => {
+    const position = mousePositionToCanvasPosition(canvas, event);
+
     for (let i = 0; i < buttons.length; i++) {
         const button = buttons[i];
-        if (button.enabled && includesPoint(button, event)) {
+        if (button.enabled && includesPoint(button, position)) {
             setStateRun(time, i);
             return;
         }
