@@ -481,6 +481,8 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
         button.width = buttonWidth - 2;
         button.height = buttonRowHeight;
 
+        cx.save();
+
         cx.fillStyle =
             i === level.selectedActionIndex
                 ? "rgb(120, 90, 90)"
@@ -504,5 +506,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
             button.x + button.width / 2,
             button.y + button.height * 0.75,
         );
+
+        cx.restore();
     }
 };
