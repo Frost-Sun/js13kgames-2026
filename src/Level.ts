@@ -63,7 +63,7 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action, actionToArrow, isApplicable } from "./Action";
+import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 import type { Theme } from "./theme";
@@ -399,12 +399,7 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                 ) {
                     character.action = GameObjectAction.Dig;
                 }
-            } else if (
-                selectedAction === Action.Up ||
-                selectedAction === Action.Down ||
-                selectedAction === Action.Left ||
-                selectedAction === Action.Right
-            ) {
+            } else if (actionIsArrow(selectedAction)) {
                 if (consumeAction(level, selectedAction, tile)) {
                     const arrow = actionToArrow(selectedAction);
                     if (arrow) {
