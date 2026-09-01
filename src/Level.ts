@@ -63,9 +63,10 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action, actionToArrow, isApplicable } from "./Action";
+import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
+import type { Theme } from "./theme";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
@@ -146,7 +147,7 @@ export interface LevelParameters {
     readonly characterCount: number;
     readonly charactersToFinish: number;
     readonly actionCounts: Partial<Record<Action, number>>;
-    readonly theme?: "spring" | "summer" | "autumn" | "winter";
+    readonly theme?: Theme;
 }
 
 export interface Level extends TileMap<Tile>, LevelParameters {
@@ -398,12 +399,7 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                 ) {
                     character.action = GameObjectAction.Dig;
                 }
-            } else if (
-                selectedAction === Action.Up ||
-                selectedAction === Action.Down ||
-                selectedAction === Action.Left ||
-                selectedAction === Action.Right
-            ) {
+            } else if (actionIsArrow(selectedAction)) {
                 if (consumeAction(level, selectedAction, tile)) {
                     const arrow = actionToArrow(selectedAction);
                     if (arrow) {
@@ -458,7 +454,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
             level.objects,
             highlightedTile,
             highlightedCharacter,
-            level.theme,
+            level.theme ?? "summer",
         );
     });
 

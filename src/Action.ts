@@ -11,6 +11,14 @@ export const enum Action {
     Dig,
 }
 
+export const actionIsArrow = (
+    action: Action,
+): action is Action.Up | Action.Down | Action.Left | Action.Right =>
+    action === Action.Up ||
+    action === Action.Down ||
+    action === Action.Left ||
+    action === Action.Right;
+
 export const actionToArrow = (
     action: Action.Up | Action.Down | Action.Left | Action.Right,
 ): Arrow => action as unknown as Arrow;
@@ -26,5 +34,8 @@ const ActionTiles: Record<Action, TileType | undefined> = {
 
 export const isApplicable = (action: Action, tile: Tile): boolean => {
     const tileType = ActionTiles[action];
-    return tileType == null || tileType === tile.type;
+    return (
+        (tileType == null || tileType === tile.type) &&
+        (!actionIsArrow(action) || tile.arrow !== actionToArrow(action))
+    );
 };

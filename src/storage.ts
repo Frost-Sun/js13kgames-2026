@@ -6,9 +6,15 @@ export interface PersistentState {
 
 const KEY: string = GAME_TITLE + "_" + "state";
 
-export const save = (state: PersistentState): void => {
-    const serialized = JSON.stringify(state);
-    localStorage.setItem(KEY, serialized);
+export const saveHighestLevel = (level: number): void => {
+    const currentState = load();
+    if (level > currentState.highestLevel) {
+        const newState: PersistentState = {
+            highestLevel: level,
+        };
+        const serialized = JSON.stringify(newState);
+        localStorage.setItem(KEY, serialized);
+    }
 };
 
 export const load = (): PersistentState => {
