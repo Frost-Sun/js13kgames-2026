@@ -36,7 +36,8 @@ export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
 export const VELOCITY_LEFT: Vector = { x: -CHARACTER_SPEED, y: 0 };
 export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
-export type GameObjectType = "rock" | "character" | "explosion" | "finish";
+export type GameObjectType =
+    "rock" | "character" | "splash" | "explosion" | "finish";
 
 export const enum GameObjectAction {
     Walk,

@@ -235,6 +235,16 @@ const addCharacter = (level: Level): void => {
     level.objects.push(character);
 };
 
+const createSplash = (time: TimeStep, position: Vector): GameObject => ({
+    type: "splash",
+    x: position.x,
+    y: position.y,
+    width: TILE_WIDTH,
+    height: TILE_HEIGHT,
+    velocity: ZERO_VECTOR,
+    createTime: time.t,
+});
+
 const createExplosion = (time: TimeStep, position: Vector): GameObject => ({
     type: "explosion",
     x: position.x,
@@ -288,6 +298,12 @@ export const updateLevel = (
                 includesArea(tileToArea(tilePos), o)
             ) {
                 killCharacter(time, state, o);
+                level.objectsToAdd.push(
+                    createSplash(time, {
+                        x: o.x + o.width / 2,
+                        y: o.y + o.height / 2,
+                    }),
+                );
             } else if (
                 tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
