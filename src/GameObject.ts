@@ -25,8 +25,8 @@
 import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
 
-export const CHARACTER_SPEED = 0.005;
-export const DIGGING_SPEED = 0.001;
+export const CHARACTER_SPEED = 0.002;
+export const DIGGING_SPEED = 0.0005;
 
 export const UNICORN_WIDTH = 5;
 export const UNICORN_HEIGHT = 4;

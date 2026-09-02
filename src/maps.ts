@@ -26,30 +26,33 @@ import { Action } from "./Action";
 import { createLevel, type Level } from "./Level";
 import {
     carve,
+    carveRight,
+    carveY,
     core,
-    coreX,
     coreY,
     segment4,
     segment9,
+    sliceBottom,
     sliceLeft,
     sliceRight,
     sliceTop,
-    walk,
+    splitX,
+    splitY,
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
 
-const createMapInitial = (number: number): Level => {
+const createMapRockSimple = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Level 1",
-        xCount: 10,
-        yCount: 10,
-        characterCount: 3,
-        charactersToFinish: 2,
+        introduction: "There's something blocking my way",
+        xCount: 8,
+        yCount: 5,
+        characterCount: 1,
+        charactersToFinish: 1,
         actionCounts: {
-            [Action.Rainbow]: 2,
+            [Action.Dig]: 2,
         },
         theme: "spring",
     });
@@ -58,7 +61,47 @@ const createMapInitial = (number: number): Level => {
     const inner = carve(level);
     fill(level, inner, "land");
 
-    fill(level, coreX(inner), "water");
+    const [_left, right] = splitX(inner);
+    fill(level, sliceLeft(right), "rock");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
+    const finishPosition = findTilePosition(level, "finish") ?? {
+        ix: 0,
+        iy: 0,
+    };
+    level.finishArea = tileToArea(finishPosition);
+
+    return level;
+};
+
+const createMapRiver = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "How shall we get over the river?",
+        xCount: 10,
+        yCount: 6,
+        characterCount: 3,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
+            [Action.Rainbow]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+    fill(level, inner, "land");
+
+    const [left, right] = splitX(inner, inner.xCount * 0.6);
+    fill(level, sliceRight(left), "water");
+    fill(level, sliceBottom(sliceLeft(right), 2), "water"); // River
 
     fill(level, coreY(sliceLeft(inner)), "start");
     fill(level, coreY(sliceRight(inner)), "finish");
@@ -76,38 +119,44 @@ const createMapInitial = (number: number): Level => {
 const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Level 2",
-        xCount: 13,
-        yCount: 13,
-        characterCount: 5,
-        charactersToFinish: 4,
+        introduction: "The unicorns must not touch each other!",
+        xCount: 18,
+        yCount: 10,
+        characterCount: 10,
+        charactersToFinish: 8,
         actionCounts: {
-            [Action.Up]: 2,
-            [Action.Down]: 2,
-            [Action.Left]: 2,
-            [Action.Right]: 2,
-            [Action.Dig]: 2,
+            [Action.Up]: 5,
+            [Action.Down]: 5,
+            [Action.Left]: 5,
+            [Action.Right]: 5,
+            [Action.Dig]: 8,
+            [Action.Rainbow]: 2,
         },
-        theme: "summer",
+        theme: "autumn",
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
-    fill(level, inner, "land");
+    const island = carve(level);
+    fill(level, island, "land");
+    const [left, right] = splitX(island);
 
-    const [topLeft, topRight, bottomLeft, _bottomRight] = segment4(inner);
-
+    const [topLeft, bottomLeft] = splitY(left);
     fill(level, topLeft, "water");
 
-    const rockWall = sliceRight(bottomLeft);
+    const rockWall = carveRight(sliceRight(bottomLeft, 3));
     fill(level, rockWall, "rock");
 
-    walk(core(rockWall), coreY(sliceRight(topRight, 2), 2), (area) =>
-        fill(level, area, "rock"),
-    );
+    fill(level, core(right, 2), "water");
+
+    const [a, b, c, d] = segment4(right);
+    fill(level, core(a, 3), "water");
+    fill(level, coreY(sliceLeft(a)), "water");
+    fill(level, carveY(sliceRight(b, 2)), "rock");
+    fill(level, sliceBottom(c), "water");
+    fill(level, sliceRight(d, 2), "water");
 
     fill(level, coreY(sliceLeft(bottomLeft)), "start");
-    fill(level, coreY(sliceRight(topLeft)), "finish");
+    fill(level, sliceTop(sliceRight(topLeft)), "finish");
 
     level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
     const finishPosition = findTilePosition(level, "finish") ?? {
@@ -122,8 +171,8 @@ const createMapRocks = (number: number): Level => {
 const createMapIslands = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Level 3",
-        xCount: 12,
+        introduction: "Islands",
+        xCount: 18,
         yCount: 12,
         characterCount: 3,
         charactersToFinish: 3,
@@ -167,7 +216,8 @@ const createMapIslands = (number: number): Level => {
 };
 
 export const maps: CreateMapFunction[] = [
-    createMapInitial,
+    createMapRockSimple,
+    createMapRiver,
     createMapRocks,
     createMapIslands,
 ];
