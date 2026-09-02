@@ -64,7 +64,7 @@ import {
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
-import { distanceSquared, type Vector } from "./core/math/Vector";
+import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
@@ -171,6 +171,7 @@ export interface Level extends TileMap<Tile>, LevelParameters {
     camera: Camera;
     tiles: (Tile | undefined)[];
     objects: GameObject[];
+    objectsToAdd: GameObject[];
     startTile: TilePosition;
     finishArea: Area;
     charactersLeft: number;
@@ -195,6 +196,7 @@ export const createLevel = (params: LevelParameters): Level => ({
     },
     tiles: Array.from({ length: params.xCount * params.yCount }),
     objects: [],
+    objectsToAdd: [],
     startTile: { ix: 0, iy: 0 },
     finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
     charactersLeft: params.characterCount,
@@ -227,6 +229,16 @@ const addCharacter = (level: Level): void => {
 
     level.objects.push(character);
 };
+
+const createExplosion = (time: TimeStep, position: Vector): GameObject => ({
+    type: "explosion",
+    x: position.x,
+    y: position.y,
+    width: TILE_WIDTH,
+    height: TILE_HEIGHT,
+    velocity: ZERO_VECTOR,
+    createTime: time.t,
+});
 
 export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
     const { level } = state;
@@ -286,10 +298,21 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
             ) {
                 o.velocity = VELOCITY_RIGHT;
             }
+
+            for (let j = i + 1; j < level.objects.length; j++) {
+                const other = level.objects[j];
+                if (other.type === "character" && overlap(o, other)) {
+                    killCharacter(time, state, o);
+                    killCharacter(time, state, other);
+                    level.objectsToAdd.push(createExplosion(time, o));
+                }
+            }
         }
     }
 
     level.objects = level.objects.filter((o) => !o.toDelete);
+    level.objects.push(...level.objectsToAdd);
+    level.objectsToAdd = [];
 };
 
 const killCharacter = (

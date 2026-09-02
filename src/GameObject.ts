@@ -36,7 +36,7 @@ export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
 export const VELOCITY_LEFT: Vector = { x: -CHARACTER_SPEED, y: 0 };
 export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
-export type GameObjectType = "rock" | "character" | "finish";
+export type GameObjectType = "rock" | "character" | "explosion" | "finish";
 
 export const enum GameObjectAction {
     Walk,
@@ -51,5 +51,6 @@ export interface GameObject extends Area {
     height: number;
     velocity: Vector;
     action?: GameObjectAction;
+    createTime?: number;
     toDelete?: boolean;
 }
