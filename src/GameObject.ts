@@ -54,3 +54,14 @@ export interface GameObject extends Area {
     createTime?: number;
     toDelete?: boolean;
 }
+
+export const getUnicornCollisionArea = (o: GameObject): Area => {
+    const xMargin = 0.2 * o.width;
+    const yMargin = 0.2 * o.height;
+    return {
+        x: o.x + xMargin,
+        y: o.y + yMargin,
+        width: o.width - 2 * xMargin,
+        height: o.height - 2 * yMargin,
+    };
+};

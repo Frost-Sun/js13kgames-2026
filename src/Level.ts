@@ -32,6 +32,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
     GameObjectAction,
+    getUnicornCollisionArea,
     UNICORN_HEIGHT,
     UNICORN_WIDTH,
     VELOCITY_DOWN,
@@ -311,10 +312,17 @@ export const updateLevel = (
 
             for (let j = i + 1; j < level.objects.length; j++) {
                 const other = level.objects[j];
-                if (other.type === "character" && overlap(o, other)) {
-                    killCharacter(time, state, o);
-                    killCharacter(time, state, other);
-                    level.objectsToAdd.push(createExplosion(time, o));
+                if (other.type === "character") {
+                    if (
+                        overlap(
+                            getUnicornCollisionArea(o),
+                            getUnicornCollisionArea(other),
+                        )
+                    ) {
+                        killCharacter(time, state, o);
+                        killCharacter(time, state, other);
+                        level.objectsToAdd.push(createExplosion(time, o));
+                    }
                 }
             }
         }
