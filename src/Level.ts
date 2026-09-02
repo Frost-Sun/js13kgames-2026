@@ -40,7 +40,11 @@ import {
     VELOCITY_UP,
     type GameObject,
 } from "./GameObject";
-import type { GameStateRun } from "./GameState";
+import type {
+    GameStateLevelFinished,
+    GameStateLose,
+    GameStateRun,
+} from "./GameState";
 import { canvas, cx } from "./graphics";
 import type { TileMap } from "./core/tiles/TileMap";
 import {
@@ -240,7 +244,10 @@ const createExplosion = (time: TimeStep, position: Vector): GameObject => ({
     createTime: time.t,
 });
 
-export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
+export const updateLevel = (
+    time: TimeStep,
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
+): void => {
     const { level } = state;
 
     if (
@@ -262,7 +269,10 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
                 o.toDelete = true;
                 level.charactersFinished++;
 
-                if (level.charactersFinished >= level.charactersToFinish) {
+                if (
+                    state.type === "run" &&
+                    level.charactersFinished >= level.charactersToFinish
+                ) {
                     setStateLevelFinished(state, time);
                 }
                 playTune(SFX_HOME);
@@ -317,7 +327,7 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
 
 const killCharacter = (
     time: TimeStep,
-    state: GameStateRun,
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
     o: GameObject,
 ): void => {
     const { level } = state;
@@ -325,8 +335,8 @@ const killCharacter = (
     level.charactersLost++;
 
     if (
-        level.characterCount - level.charactersLost <
-        level.charactersToFinish
+        state.type === "run" &&
+        level.characterCount - level.charactersLost < level.charactersToFinish
     ) {
         setStateLose(state, time);
     }
