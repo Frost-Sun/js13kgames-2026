@@ -40,7 +40,11 @@ import {
     VELOCITY_UP,
     type GameObject,
 } from "./GameObject";
-import type { GameStateRun } from "./GameState";
+import type {
+    GameStateLevelFinished,
+    GameStateLose,
+    GameStateRun,
+} from "./GameState";
 import { canvas, cx } from "./graphics";
 import type { TileMap } from "./core/tiles/TileMap";
 import {
@@ -64,7 +68,7 @@ import {
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
-import { distanceSquared, type Vector } from "./core/math/Vector";
+import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
@@ -171,6 +175,7 @@ export interface Level extends TileMap<Tile>, LevelParameters {
     camera: Camera;
     tiles: (Tile | undefined)[];
     objects: GameObject[];
+    objectsToAdd: GameObject[];
     startTile: TilePosition;
     finishArea: Area;
     charactersLeft: number;
@@ -195,6 +200,7 @@ export const createLevel = (params: LevelParameters): Level => ({
     },
     tiles: Array.from({ length: params.xCount * params.yCount }),
     objects: [],
+    objectsToAdd: [],
     startTile: { ix: 0, iy: 0 },
     finishArea: { x: 0, y: 0, width: TILE_WIDTH, height: TILE_HEIGHT },
     charactersLeft: params.characterCount,
@@ -228,7 +234,20 @@ const addCharacter = (level: Level): void => {
     level.objects.push(character);
 };
 
-export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
+const createSplash = (time: TimeStep, position: Vector): GameObject => ({
+    type: "splash",
+    x: position.x,
+    y: position.y,
+    width: TILE_WIDTH,
+    height: TILE_HEIGHT,
+    velocity: ZERO_VECTOR,
+    createTime: time.t,
+});
+
+export const updateLevel = (
+    time: TimeStep,
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
+): void => {
     const { level } = state;
 
     if (
@@ -250,7 +269,10 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
                 o.toDelete = true;
                 level.charactersFinished++;
 
-                if (level.charactersFinished >= level.charactersToFinish) {
+                if (
+                    state.type === "run" &&
+                    level.charactersFinished >= level.charactersToFinish
+                ) {
                     setStateLevelFinished(state, time);
                 }
                 playTune(SFX_HOME);
@@ -265,6 +287,12 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
                 includesArea(tileToArea(tilePos), o)
             ) {
                 killCharacter(time, state, o);
+                level.objectsToAdd.push(
+                    createSplash(time, {
+                        x: o.x + o.width / 2,
+                        y: o.y + o.height / 2,
+                    }),
+                );
             } else if (
                 tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
@@ -290,11 +318,13 @@ export const updateLevel = (time: TimeStep, state: GameStateRun): void => {
     }
 
     level.objects = level.objects.filter((o) => !o.toDelete);
+    level.objects.push(...level.objectsToAdd);
+    level.objectsToAdd = [];
 };
 
 const killCharacter = (
     time: TimeStep,
-    state: GameStateRun,
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
     o: GameObject,
 ): void => {
     const { level } = state;
@@ -302,8 +332,8 @@ const killCharacter = (
     level.charactersLost++;
 
     if (
-        level.characterCount - level.charactersLost <
-        level.charactersToFinish
+        state.type === "run" &&
+        level.characterCount - level.charactersLost < level.charactersToFinish
     ) {
         setStateLose(state, time);
     }

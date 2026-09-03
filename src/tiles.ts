@@ -712,6 +712,18 @@ export const drawMap = (
                 }
                 break;
             }
+            case "splash": {
+                const phase = (time.t - (o.createTime ?? 0)) / 1000;
+                if (phase > 1) {
+                    o.toDelete = true;
+                }
+                const r = (TILE_WIDTH / 2) * phase;
+                cx.fillStyle = "rgb(40, 130, 200)";
+                cx.beginPath();
+                cx.arc(o.x, o.y, r, 0, 2 * Math.PI);
+                cx.fill();
+                break;
+            }
             case "rock": {
                 cx.fillStyle = "rgb(80, 70, 70)";
                 cx.fillRect(

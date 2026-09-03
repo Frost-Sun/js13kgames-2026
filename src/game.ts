@@ -47,7 +47,9 @@ const update = (time: TimeStep): void => {
     const state = getGameState();
 
     switch (state.type) {
-        case "run": {
+        case "run":
+        case "lose":
+        case "finished": {
             updateLevel(time, state);
             break;
         }
@@ -150,7 +152,7 @@ const draw = (time: TimeStep): void => {
 
             if (state.type === "run") {
                 if (time.t - state.start < IntroductionTextTime) {
-                    renderText(level.introduction, TextSize.Normal, 1, -20);
+                    renderText(level.introduction, TextSize.Normal, 1, -10);
                 }
             } else if (state.type === "finished") {
                 renderText("LEVEL FINISHED", TextSize.Large);
