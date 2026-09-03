@@ -119,18 +119,18 @@ const createMapRiver = (number: number): Level => {
 const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "The unicorns must not touch each other!",
+        introduction: "Keep digging.",
         xCount: 18,
         yCount: 10,
         characterCount: 10,
         charactersToFinish: 8,
         actionCounts: {
-            [Action.Up]: 5,
-            [Action.Down]: 5,
-            [Action.Left]: 5,
-            [Action.Right]: 5,
-            [Action.Dig]: 8,
-            [Action.Rainbow]: 2,
+            [Action.Up]: 3,
+            [Action.Down]: 3,
+            [Action.Left]: 3,
+            [Action.Right]: 3,
+            [Action.Dig]: 2,
+            [Action.Rainbow]: 1,
         },
         theme: "autumn",
     });

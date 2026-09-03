@@ -32,7 +32,6 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
     GameObjectAction,
-    getUnicornCollisionArea,
     UNICORN_HEIGHT,
     UNICORN_WIDTH,
     VELOCITY_DOWN,
@@ -245,16 +244,6 @@ const createSplash = (time: TimeStep, position: Vector): GameObject => ({
     createTime: time.t,
 });
 
-const createExplosion = (time: TimeStep, position: Vector): GameObject => ({
-    type: "explosion",
-    x: position.x,
-    y: position.y,
-    width: TILE_WIDTH,
-    height: TILE_HEIGHT,
-    velocity: ZERO_VECTOR,
-    createTime: time.t,
-});
-
 export const updateLevel = (
     time: TimeStep,
     state: GameStateRun | GameStateLose | GameStateLevelFinished,
@@ -324,22 +313,6 @@ export const updateLevel = (
                 includesArea(tileToArea(tilePos), o)
             ) {
                 o.velocity = VELOCITY_RIGHT;
-            }
-
-            for (let j = i + 1; j < level.objects.length; j++) {
-                const other = level.objects[j];
-                if (other.type === "character") {
-                    if (
-                        overlap(
-                            getUnicornCollisionArea(o),
-                            getUnicornCollisionArea(other),
-                        )
-                    ) {
-                        killCharacter(time, state, o);
-                        killCharacter(time, state, other);
-                        level.objectsToAdd.push(createExplosion(time, o));
-                    }
-                }
             }
         }
     }
