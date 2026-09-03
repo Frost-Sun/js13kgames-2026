@@ -86,10 +86,17 @@ const levelDrawArea: Dimensions = {
 
 interface Button extends Area {
     text: string;
-    action: Action;
+    action?: Action;
 }
 
 const actionButtons: Button[] = [
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "🗺️",
+    },
     {
         x: 0,
         y: 0,
@@ -135,7 +142,14 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "🦄⛏️",
+        text: "🦄",
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "⛏️",
         action: Action.Dig,
     },
 ];
@@ -441,7 +455,7 @@ const findClosestCharacter = (
 export const drawLevel = (time: TimeStep, level: Level): void => {
     const { camera } = level;
 
-    const ButtonRowHeightFraction = 0.2;
+    const ButtonRowHeightFraction = 0.15;
     const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
     const buttonRowY = canvas.height - buttonRowHeight;
 
@@ -463,18 +477,17 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
     });
 
     // Draw button row
-    const buttonWidth = Math.min(
-        buttonRowHeight,
-        levelDrawArea.width / actionButtons.length,
-    );
-    const buttonRowWidth = buttonWidth * actionButtons.length;
-    const buttonRowX = (canvas.width - buttonRowWidth) / 2;
+    const buttonWidth = canvas.width / actionButtons.length;
+    const buttonRowX = 0;
+
+    const fontSize = Math.floor(28 * (canvas.width / 1000));
 
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         const count =
+            button.action != null &&
             (level.actionCounts[button.action] ?? 0) -
-            (level.actionsUsed[button.action] ?? 0);
+                (level.actionsUsed[button.action] ?? 0);
 
         button.x = buttonRowX + i * buttonWidth;
         button.y = buttonRowY;
@@ -483,29 +496,47 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
 
         cx.save();
 
-        cx.fillStyle =
-            i === level.selectedActionIndex
-                ? "rgb(120, 90, 90)"
-                : "rgb(80, 50, 50)";
+        // Determine color based on selection or hover
+        let fillColor = "rgb(133, 11, 72)";
+        if (button.action) {
+            fillColor =
+                i === level.selectedActionIndex
+                    ? "rgb(219, 52, 141)"
+                    : "rgb(172, 15, 94)";
+        }
+
+        cx.fillStyle = fillColor;
+
         cx.fillRect(button.x, button.y, button.width, button.height);
+
+        cx.fillStyle = "rgba(0, 0, 0, 0.25)";
+
+        cx.fillRect(
+            button.x,
+            button.y + button.height / 2,
+            button.width,
+            button.height / 2,
+        );
 
         cx.textAlign = "center";
         cx.textBaseline = "middle";
 
-        cx.fillStyle = count > 0 ? "white" : "grey";
-        cx.font = "38px Courier New";
+        cx.fillStyle = "rgb(253, 240, 247)";
+        cx.font = `${fontSize}px Courier New`;
         cx.fillText(
             button.text,
             button.x + button.width / 2,
-            button.y + button.height / 2,
+            button.y + button.height / 3,
         );
 
-        cx.font = "32px Courier New";
-        cx.fillText(
-            count.toString(),
-            button.x + button.width / 2,
-            button.y + button.height * 0.75,
-        );
+        if (button.action) {
+            cx.font = `${fontSize}px Courier New`;
+            cx.fillText(
+                count.toString(),
+                button.x + button.width / 2,
+                button.y + button.height * 0.75,
+            );
+        }
 
         cx.restore();
     }
