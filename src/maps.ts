@@ -27,11 +27,13 @@ import { createLevel, type Level } from "./Level";
 import {
     carve,
     carveRight,
+    carveTop,
+    carveX,
     carveY,
     core,
+    coreX,
     coreY,
     segment4,
-    segment9,
     sliceBottom,
     sliceLeft,
     sliceRight,
@@ -172,45 +174,38 @@ const createMapIslands = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Islands",
-        xCount: 18,
-        yCount: 12,
+        xCount: 20,
+        yCount: 14,
         characterCount: 3,
         charactersToFinish: 3,
         actionCounts: {
-            [Action.Up]: 1,
-            [Action.Down]: 1,
-            [Action.Left]: 1,
-            [Action.Right]: 1,
-            [Action.Rainbow]: 2,
+            [Action.Up]: 3,
+            [Action.Down]: 3,
+            [Action.Left]: 3,
+            [Action.Right]: 3,
+            [Action.Rainbow]: 12,
         },
-        theme: "winter",
+        theme: "summer",
     });
     fill(level, level, "water");
 
     const inner = carve(level);
+    const [topLeft, topRight, _bottomLeft, bottomRight] = segment4(inner);
 
-    const [
-        topLeft,
-        _top,
-        topRight,
-        _middleLeft,
-        _middle,
-        _middleRight,
-        bottomLeft,
-        _bottom,
-        bottomRight,
-    ] = segment9(inner, inner.yCount / 2, 1, inner.xCount / 2, 1);
+    const startIsland = carveX(topLeft);
+    const middleIsland = carve(topRight);
+    const middle2 = coreX(sliceTop(bottomRight, 2), 4);
+    const finishIsland = carveTop(carveRight(bottomRight, 4), 3);
 
-    fill(level, topLeft, "land");
-    fill(level, topRight, "land");
-    fill(level, bottomLeft, "land");
-    fill(level, bottomRight, "land");
+    fill(level, startIsland, "land");
+    fill(level, sliceRight(sliceTop(startIsland, 2), 3), "water");
+    fill(level, sliceRight(sliceBottom(startIsland, 1), 3), "water");
+    fill(level, middleIsland, "land");
+    fill(level, middle2, "land");
+    fill(level, finishIsland, "land");
 
-    const [a, _b, c, _d] = segment4(bottomRight);
-    fill(level, a, "water");
-
-    fill(level, coreY(sliceLeft(topLeft)), "start");
-    fill(level, sliceLeft(sliceTop(c)), "finish");
+    fill(level, coreY(sliceLeft(startIsland)), "start");
+    fill(level, sliceLeft(coreY(finishIsland)), "finish");
 
     return level;
 };
