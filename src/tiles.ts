@@ -703,6 +703,13 @@ export const drawMap = (
         switch (o.type) {
             case "character": {
                 renderUnicorn(o, o === highlightedCharacter);
+                if (o.action === GameObjectAction.Dig) {
+                    cx.save();
+                    cx.fillStyle = "rgb(29, 26, 26)";
+                    cx.font = "2px Courier New";
+                    cx.fillText("⛏", o.x + o.width / 2 - 1, o.y - 1);
+                    cx.restore();
+                }
                 break;
             }
             case "rock": {
