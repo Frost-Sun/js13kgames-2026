@@ -128,7 +128,6 @@ const draw = (time: TimeStep): void => {
         }
         case "levels": {
             drawLevelSelection(time, state);
-
             break;
         }
         case "run":
@@ -162,7 +161,6 @@ const draw = (time: TimeStep): void => {
             }
 
             cx.restore();
-
             break;
         }
         case "win": {
