@@ -143,7 +143,7 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, level);
 
             renderText(
-                `Finish: ${level.charactersFinished} / ${level.charactersToFinish}`,
+                `🦄 in: ${level.charactersFinished} - target: ${level.charactersToFinish}`,
                 TextSize.Normal,
                 1,
                 3,
