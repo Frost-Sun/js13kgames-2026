@@ -7,7 +7,8 @@ export const enum Action {
     Down = 2,
     Left = 3,
     Right = 4,
-    Rainbow,
+    RainbowHorizontal,
+    RainbowVertical,
     Dig,
 }
 
@@ -28,6 +29,7 @@ export const ActionTiles: Record<Action, TileType | undefined> = {
     [Action.Down]: "land",
     [Action.Left]: "land",
     [Action.Right]: "land",
-    [Action.Rainbow]: "water",
+    [Action.RainbowHorizontal]: "water",
+    [Action.RainbowVertical]: "water",
     [Action.Dig]: undefined,
 };

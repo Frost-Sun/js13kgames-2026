@@ -63,8 +63,11 @@ export const enum Arrow {
 export interface Tile {
     type: TileType;
 
-    // When defined, the tile extends this many tiles to the right.
+    // When defined, the tile is drawn this many tiles to the right.
     xCount?: number;
+
+    // When defined, the tile is drawn this many tiles downwards.
+    yCount?: number;
 
     arrow?: Arrow;
     object?: GameObject;
@@ -627,32 +630,62 @@ export const drawMap = (
             const x = ix * TILE_WIDTH;
             const tile = tileMapGet(map, ix, iy);
 
-            if (tile?.type === "rainbow" && tile.xCount != null) {
-                const over = TILE_WIDTH * 0.2;
-                const step = 1 / RainbowColors.length;
+            if (tile?.type === "rainbow") {
+                // Draw only the first tile, which is
+                // drawn to cover the whole rainbow.
+                if (tile.xCount != null) {
+                    const over = TILE_WIDTH * 0.2;
+                    const step = 1 / RainbowColors.length;
 
-                cx.save();
-                cx.globalAlpha = 0.8;
+                    cx.save();
+                    cx.globalAlpha = 0.8;
 
-                const startX = x - over;
-                const width = tile.xCount * TILE_WIDTH + over * 2;
-                const gradient = cx.createLinearGradient(
-                    startX,
-                    y,
-                    startX,
-                    y + TILE_HEIGHT,
-                );
-                for (let i = 0; i < RainbowColors.length; i++) {
-                    gradient.addColorStop(i * step, RainbowColors[i]);
-                    gradient.addColorStop(
-                        Math.min(1, (i + 1) * step),
-                        RainbowColors[i],
+                    const startX = x - over;
+                    const width = tile.xCount * TILE_WIDTH + over * 2;
+                    const gradient = cx.createLinearGradient(
+                        startX,
+                        y,
+                        startX,
+                        y + TILE_HEIGHT,
                     );
-                }
-                cx.fillStyle = gradient;
-                cx.fillRect(startX, y, width, TILE_HEIGHT);
+                    for (let i = 0; i < RainbowColors.length; i++) {
+                        gradient.addColorStop(i * step, RainbowColors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            RainbowColors[i],
+                        );
+                    }
+                    cx.fillStyle = gradient;
+                    cx.fillRect(startX, y, width, TILE_HEIGHT);
 
-                cx.restore();
+                    cx.restore();
+                } else if (tile.yCount != null) {
+                    const over = TILE_HEIGHT * 0.2;
+                    const step = 1 / RainbowColors.length;
+
+                    cx.save();
+                    cx.globalAlpha = 0.8;
+
+                    const startY = y - over;
+                    const height = tile.yCount * TILE_HEIGHT + over * 2;
+                    const gradient = cx.createLinearGradient(
+                        x,
+                        startY,
+                        x + TILE_WIDTH,
+                        startY,
+                    );
+                    for (let i = 0; i < RainbowColors.length; i++) {
+                        gradient.addColorStop(i * step, RainbowColors[i]);
+                        gradient.addColorStop(
+                            Math.min(1, (i + 1) * step),
+                            RainbowColors[i],
+                        );
+                    }
+                    cx.fillStyle = gradient;
+                    cx.fillRect(x, startY, TILE_WIDTH, height);
+
+                    cx.restore();
+                }
             }
         }
     }

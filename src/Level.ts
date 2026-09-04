@@ -135,8 +135,16 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "🌈",
-        action: Action.Rainbow,
+        text: "🌈H",
+        action: Action.RainbowHorizontal,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "🌈V",
+        action: Action.RainbowVertical,
     },
     {
         x: 0,
@@ -341,7 +349,7 @@ const hasActionsLeft = (level: Level, action: Action): boolean =>
     (level.actionsUsed[action] == null ||
         level.actionsUsed[action] < level.actionCounts[action]);
 
-const isApplicable = (
+const getApplicableArea = (
     level: Level,
     action: Action,
     tile: Tile,
@@ -353,7 +361,7 @@ const isApplicable = (
         return undefined;
     }
 
-    if (action === Action.Rainbow) {
+    if (action === Action.RainbowHorizontal) {
         let ixLeftmost = tilePos.ix;
         let ixRightMost = tilePos.ix;
         while (
@@ -383,13 +391,38 @@ const isApplicable = (
         };
     }
 
+    if (action === Action.RainbowVertical) {
+        let ixTopMost = tilePos.iy;
+        let ixBottomMost = tilePos.iy;
+        while (tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type === "water") {
+            ixTopMost--;
+        }
+        while (
+            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type === "water"
+        ) {
+            ixBottomMost++;
+        }
+
+        // The rainbow must be from land to land.
+        if (
+            tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type !== "land" ||
+            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type !== "land"
+        ) {
+            return undefined;
+        }
+
+        return {
+            ix: tilePos.ix,
+            iy: ixTopMost,
+            xCount: 1,
+            yCount: ixBottomMost - ixTopMost + 1,
+        };
+    }
+
     if (actionIsArrow(action) && tile.arrow === actionToArrow(action)) {
         return undefined;
     }
 
-    // if (!actionIsArrow(action) || tile.arrow !== actionToArrow(action)) {
-
-    // }
     return { ...tilePos, xCount: 1, yCount: 1 };
 };
 
@@ -399,7 +432,7 @@ const consumeAction = (
     tile: Tile,
     tilePos: TilePosition,
 ): TileArea | undefined => {
-    const area = isApplicable(level, action, tile, tilePos);
+    const area = getApplicableArea(level, action, tile, tilePos);
     if (!area) {
         return undefined;
     }
@@ -453,7 +486,7 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     highlightedCharacter = undefined;
                 }
             } else {
-                highlightedArea = isApplicable(
+                highlightedArea = getApplicableArea(
                     level,
                     selectedAction,
                     tile,
@@ -489,7 +522,7 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         let character: GameObject | undefined;
 
         if (selectedAction != null && tile != null) {
-            if (selectedAction === Action.Rainbow) {
+            if (selectedAction === Action.RainbowHorizontal) {
                 const area = consumeAction(
                     level,
                     selectedAction,
@@ -509,6 +542,30 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                                 // The first tile of the rainbow is the one that
                                 // is actually drawn:
                                 areaTile.xCount = area.xCount;
+                            }
+                        }
+                    }
+                }
+            } else if (selectedAction === Action.RainbowVertical) {
+                const area = consumeAction(
+                    level,
+                    selectedAction,
+                    tile,
+                    tilePos,
+                );
+                if (area) {
+                    for (let i = 0; i < area.yCount; i++) {
+                        const areaTile = tileMapGet(
+                            level,
+                            area.ix,
+                            area.iy + i,
+                        );
+                        if (areaTile) {
+                            areaTile.type = "rainbow";
+                            if (i === 0) {
+                                // The first tile of the rainbow is the one that
+                                // is actually drawn:
+                                areaTile.yCount = area.yCount;
                             }
                         }
                     }

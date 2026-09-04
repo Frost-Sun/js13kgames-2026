@@ -92,7 +92,7 @@ const createMapRiver = (number: number): Level => {
             [Action.Down]: 2,
             [Action.Left]: 2,
             [Action.Right]: 2,
-            [Action.Rainbow]: 1,
+            [Action.RainbowHorizontal]: 1,
         },
         theme: "summer",
     });
@@ -132,7 +132,8 @@ const createMapRocks = (number: number): Level => {
             [Action.Left]: 3,
             [Action.Right]: 3,
             [Action.Dig]: 2,
-            [Action.Rainbow]: 1,
+            [Action.RainbowHorizontal]: 1,
+            [Action.RainbowVertical]: 1,
         },
         theme: "autumn",
     });
@@ -183,7 +184,8 @@ const createMapIslands = (number: number): Level => {
             [Action.Down]: 3,
             [Action.Left]: 3,
             [Action.Right]: 3,
-            [Action.Rainbow]: 12,
+            [Action.RainbowHorizontal]: 4,
+            [Action.RainbowVertical]: 4,
         },
         theme: "summer",
     });
