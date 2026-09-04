@@ -38,12 +38,13 @@ export const resizeCanvasMaintainingAspectRatio = (
     // Ensure the width and height do not exceed the maximum resolution
     if (width > maxWidth) {
         width = maxWidth;
-        height = maxWidth / aspectRatio;
     }
     if (height > maxHeight) {
         height = maxHeight;
-        width = maxHeight * aspectRatio;
     }
+
+    height = maxWidth / aspectRatio;
+    width = maxHeight * aspectRatio;
 
     const finalWidth = Math.floor(width);
     const finalHeight = Math.floor(height);
