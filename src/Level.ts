@@ -46,7 +46,7 @@ import type {
     GameStateRun,
 } from "./GameState";
 import { canvas, cx } from "./graphics";
-import type { TileMap } from "./core/tiles/TileMap";
+import { tileMapGet, type TileMap } from "./core/tiles/TileMap";
 import {
     Arrow,
     drawMap,
@@ -57,6 +57,7 @@ import {
     TILE_WIDTH,
     tileToArea,
     type Tile,
+    type TilePosition,
 } from "./tiles";
 import {
     getCenter,
@@ -67,20 +68,16 @@ import {
     type Dimensions,
 } from "./core/math/Area";
 import { setStateLevelFinished, setStateLose } from "./gamestates";
-import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
+import { Action, actionIsArrow, ActionTiles, actionToArrow } from "./Action";
 import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
+import type { TileArea } from "./core/tiles/TileArea";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
 const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
-
-interface TilePosition {
-    ix: number;
-    iy: number;
-}
 
 // The portion of canvas on which the map is drawn.
 const levelDrawArea: Dimensions = {
@@ -138,8 +135,16 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "🌈",
-        action: Action.Rainbow,
+        text: "🌈H",
+        action: Action.RainbowHorizontal,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "🌈V",
+        action: Action.RainbowVertical,
     },
     {
         x: 0,
@@ -344,30 +349,113 @@ const hasActionsLeft = (level: Level, action: Action): boolean =>
     (level.actionsUsed[action] == null ||
         level.actionsUsed[action] < level.actionCounts[action]);
 
-const consumeAction = (level: Level, action: Action, tile: Tile): boolean => {
-    if (!isApplicable(action, tile)) {
-        return false;
+const getApplicableArea = (
+    level: Level,
+    action: Action,
+    tile: Tile,
+    tilePos: TilePosition,
+): TileArea | undefined => {
+    const tileType = ActionTiles[action];
+
+    if (tileType != null && tileType !== tile.type) {
+        return undefined;
+    }
+
+    if (action === Action.RainbowHorizontal) {
+        let ixLeftmost = tilePos.ix;
+        let ixRightMost = tilePos.ix;
+        while (
+            tileMapGet(level, ixLeftmost - 1, tilePos.iy)?.type === "water"
+        ) {
+            ixLeftmost--;
+        }
+        while (
+            tileMapGet(level, ixRightMost + 1, tilePos.iy)?.type === "water"
+        ) {
+            ixRightMost++;
+        }
+
+        // The rainbow must be from land to land.
+        if (
+            tileMapGet(level, ixLeftmost - 1, tilePos.iy)?.type !== "land" ||
+            tileMapGet(level, ixRightMost + 1, tilePos.iy)?.type !== "land"
+        ) {
+            return undefined;
+        }
+
+        return {
+            ix: ixLeftmost,
+            iy: tilePos.iy,
+            xCount: ixRightMost - ixLeftmost + 1,
+            yCount: 1,
+        };
+    }
+
+    if (action === Action.RainbowVertical) {
+        let ixTopMost = tilePos.iy;
+        let ixBottomMost = tilePos.iy;
+        while (tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type === "water") {
+            ixTopMost--;
+        }
+        while (
+            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type === "water"
+        ) {
+            ixBottomMost++;
+        }
+
+        // The rainbow must be from land to land.
+        if (
+            tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type !== "land" ||
+            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type !== "land"
+        ) {
+            return undefined;
+        }
+
+        return {
+            ix: tilePos.ix,
+            iy: ixTopMost,
+            xCount: 1,
+            yCount: ixBottomMost - ixTopMost + 1,
+        };
+    }
+
+    if (actionIsArrow(action) && tile.arrow === actionToArrow(action)) {
+        return undefined;
+    }
+
+    return { ...tilePos, xCount: 1, yCount: 1 };
+};
+
+const consumeAction = (
+    level: Level,
+    action: Action,
+    tile: Tile,
+    tilePos: TilePosition,
+): TileArea | undefined => {
+    const area = getApplicableArea(level, action, tile, tilePos);
+    if (!area) {
+        return undefined;
     }
 
     if (!level.actionCounts[action]) {
-        return false;
+        return undefined;
     }
 
     if (level.actionsUsed[action] == null) {
         level.actionsUsed[action] = 1;
-        return true;
+        return area;
     }
 
     if (level.actionsUsed[action] < level.actionCounts[action]) {
         level.actionsUsed[action]++;
-        return true;
+        return area;
     }
 
-    return false;
+    return undefined;
 };
 
 let highlightedCharacter: GameObject | undefined;
-let highlightedTile: Tile | undefined;
+let highlightedArea: TileArea | undefined;
 
 export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
@@ -376,6 +464,7 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
         const pointOnLevel = screenToLevel(camera, levelDrawArea, position);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
+        const tilePos = getTilePosAt(pointOnLevel);
         let character: GameObject | undefined;
 
         if (
@@ -397,14 +486,15 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     highlightedCharacter = undefined;
                 }
             } else {
-                if (isApplicable(selectedAction, tile)) {
-                    highlightedTile = tile;
-                } else {
-                    highlightedTile = undefined;
-                }
+                highlightedArea = getApplicableArea(
+                    level,
+                    selectedAction,
+                    tile,
+                    tilePos,
+                );
             }
         } else {
-            highlightedTile = undefined;
+            highlightedArea = undefined;
             highlightedCharacter = undefined;
         }
     }
@@ -428,12 +518,57 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
         const pointOnLevel = screenToLevel(camera, levelDrawArea, position);
         const selectedAction = actionButtons[level.selectedActionIndex].action;
         const tile = getTileAt(level, pointOnLevel);
+        const tilePos = getTilePosAt(pointOnLevel);
         let character: GameObject | undefined;
 
         if (selectedAction != null && tile != null) {
-            if (selectedAction === Action.Rainbow) {
-                if (consumeAction(level, selectedAction, tile)) {
-                    tile.type = "rainbow";
+            if (selectedAction === Action.RainbowHorizontal) {
+                const area = consumeAction(
+                    level,
+                    selectedAction,
+                    tile,
+                    tilePos,
+                );
+                if (area) {
+                    for (let i = 0; i < area.xCount; i++) {
+                        const areaTile = tileMapGet(
+                            level,
+                            area.ix + i,
+                            area.iy,
+                        );
+                        if (areaTile) {
+                            areaTile.type = "rainbow";
+                            if (i === 0) {
+                                // The first tile of the rainbow is the one that
+                                // is actually drawn:
+                                areaTile.xCount = area.xCount;
+                            }
+                        }
+                    }
+                }
+            } else if (selectedAction === Action.RainbowVertical) {
+                const area = consumeAction(
+                    level,
+                    selectedAction,
+                    tile,
+                    tilePos,
+                );
+                if (area) {
+                    for (let i = 0; i < area.yCount; i++) {
+                        const areaTile = tileMapGet(
+                            level,
+                            area.ix,
+                            area.iy + i,
+                        );
+                        if (areaTile) {
+                            areaTile.type = "rainbow";
+                            if (i === 0) {
+                                // The first tile of the rainbow is the one that
+                                // is actually drawn:
+                                areaTile.yCount = area.yCount;
+                            }
+                        }
+                    }
                 }
             } else if (selectedAction === Action.Dig) {
                 if (
@@ -443,12 +578,12 @@ export const levelHandleClick = (level: Level, event: MouseEvent): void => {
                         MAX_CHARACTER_CLICK_DISTANCE,
                     )) &&
                     character.action !== GameObjectAction.Dig &&
-                    consumeAction(level, selectedAction, tile)
+                    consumeAction(level, selectedAction, tile, tilePos)
                 ) {
                     character.action = GameObjectAction.Dig;
                 }
             } else if (actionIsArrow(selectedAction)) {
-                if (consumeAction(level, selectedAction, tile)) {
+                if (consumeAction(level, selectedAction, tile, tilePos)) {
                     const arrow = actionToArrow(selectedAction);
                     if (arrow) {
                         tile.arrow = arrow;
@@ -500,7 +635,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
             time,
             level,
             level.objects,
-            highlightedTile,
+            highlightedArea,
             highlightedCharacter,
             level.theme ?? "summer",
         );
