@@ -36,6 +36,16 @@ export const drawPart = (params: DrawCommand) => {
     cx.restore();
 };
 
+export const RainbowColors: Readonly<string[]> = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "cyan",
+    "blue",
+    "violet",
+];
+
 /*
  * Draws a rainbow background that fills the entire canvas.
  * Returns the direction where the rainbow is moving in the x-axis.
@@ -46,20 +56,10 @@ export const drawRainbowBackground = (
 ): 1 | -1 => {
     cx.save();
 
-    const colors = [
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "cyan",
-        "blue",
-        "violet",
-    ];
-
     const speed = 0.2;
     const stripeWidth = canvas.width / 2;
 
-    const logicalWidth = (colors.length - 2) * stripeWidth;
+    const logicalWidth = (RainbowColors.length - 2) * stripeWidth;
     const stateStartTime = start || 0;
     const localTime = time.t - stateStartTime;
 
@@ -68,8 +68,8 @@ export const drawRainbowBackground = (
     const offset =
         rawOffset > logicalWidth ? 2 * logicalWidth - rawOffset : rawOffset;
 
-    for (let i = 0; i < colors.length; i++) {
-        cx.fillStyle = colors[i];
+    for (let i = 0; i < RainbowColors.length; i++) {
+        cx.fillStyle = RainbowColors[i];
 
         cx.fillRect(
             i * stripeWidth - offset,

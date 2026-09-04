@@ -30,7 +30,7 @@ import {
     GameObjectAction,
     type GameObject,
 } from "./GameObject";
-import { cx } from "./graphics";
+import { cx, RainbowColors } from "./graphics";
 import type { TileArea } from "./core/tiles/TileArea";
 import { tileMapGet, tileMapSet, type TileMap } from "./core/tiles/TileMap";
 import { getCenter, type Area } from "./core/math/Area";
@@ -62,9 +62,18 @@ export const enum Arrow {
 
 export interface Tile {
     type: TileType;
+
+    // When defined, the tile extends this many tiles to the right.
+    xCount?: number;
+
     arrow?: Arrow;
     object?: GameObject;
     straw?: StrawParams;
+}
+
+export interface TilePosition {
+    ix: number;
+    iy: number;
 }
 
 export const getTileCenter = (ix: number, iy: number): Vector => {
@@ -74,7 +83,7 @@ export const getTileCenter = (ix: number, iy: number): Vector => {
     };
 };
 
-export const getTilePosAt = (position: Vector): { ix: number; iy: number } => {
+export const getTilePosAt = (position: Vector): TilePosition => {
     const ix = Math.floor(position.x / TILE_WIDTH);
     const iy = Math.floor(position.y / TILE_HEIGHT);
     return { ix, iy };
@@ -184,9 +193,10 @@ export const setTile = (
     ix: number,
     iy: number,
     arrow?: Arrow,
-): void => {
+): Tile | undefined => {
     const tile = type ? createTile(type, ix, iy, arrow) : undefined;
     tileMapSet(map, tile, ix, iy);
+    return tile;
 };
 
 export const fill = (
@@ -362,7 +372,7 @@ export const drawMap = (
     time: TimeStep,
     map: TileMap<Tile>,
     objects: GameObject[],
-    highlightedTile: Tile | undefined,
+    highlightedArea: TileArea | undefined,
     highlightedCharacter: GameObject | undefined,
     theme: Theme,
 ): void => {
@@ -607,13 +617,6 @@ export const drawMap = (
                 cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                 cx.fill();
             }
-
-            if (tile === highlightedTile) {
-                cx.save();
-                cx.strokeStyle = HIGHLIGHT_COLOR;
-                cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
-                cx.restore();
-            }
         }
     }
 
@@ -624,81 +627,56 @@ export const drawMap = (
             const x = ix * TILE_WIDTH;
             const tile = tileMapGet(map, ix, iy);
 
-            if (tile?.type === "rainbow") {
-                const left = tileMapGet(map, ix - 1, iy)?.type;
-                const right = tileMapGet(map, ix + 1, iy)?.type;
-                const up = tileMapGet(map, ix, iy - 1)?.type;
-                const down = tileMapGet(map, ix, iy + 1)?.type;
-
-                const isHorizontalBridge =
-                    left === "land" ||
-                    right === "land" ||
-                    left === "start" ||
-                    right === "finish" ||
-                    up === "water" ||
-                    down === "water";
-
-                const over = 2;
-                const colors = [
-                    "red",
-                    "orange",
-                    "yellow",
-                    "green",
-                    "cyan",
-                    "blue",
-                    "violet",
-                ];
-                const step = 1 / colors.length;
+            if (tile?.type === "rainbow" && tile.xCount != null) {
+                const over = TILE_WIDTH * 0.2;
+                const step = 1 / RainbowColors.length;
 
                 cx.save();
                 cx.globalAlpha = 0.8;
 
-                if (isHorizontalBridge) {
-                    const rx = x - over;
-                    const rw = TILE_WIDTH + over * 2;
-                    const gradient = cx.createLinearGradient(
-                        rx,
-                        y,
-                        rx,
-                        y + TILE_HEIGHT,
+                const startX = x - over;
+                const width = tile.xCount * TILE_WIDTH + over * 2;
+                const gradient = cx.createLinearGradient(
+                    startX,
+                    y,
+                    startX,
+                    y + TILE_HEIGHT,
+                );
+                for (let i = 0; i < RainbowColors.length; i++) {
+                    gradient.addColorStop(i * step, RainbowColors[i]);
+                    gradient.addColorStop(
+                        Math.min(1, (i + 1) * step),
+                        RainbowColors[i],
                     );
-                    for (let i = 0; i < colors.length; i++) {
-                        gradient.addColorStop(i * step, colors[i]);
-                        gradient.addColorStop(
-                            Math.min(1, (i + 1) * step),
-                            colors[i],
-                        );
-                    }
-                    cx.fillStyle = gradient;
-                    cx.fillRect(rx, y, rw, TILE_HEIGHT);
-                } else {
-                    const ry = y - over;
-                    const rh = TILE_HEIGHT + over * 2;
-                    const gradient = cx.createLinearGradient(
-                        x,
-                        ry,
-                        x + TILE_WIDTH,
-                        ry,
-                    );
-                    for (let i = 0; i < colors.length; i++) {
-                        gradient.addColorStop(i * step, colors[i]);
-                        gradient.addColorStop(
-                            Math.min(1, (i + 1) * step),
-                            colors[i],
-                        );
-                    }
-                    cx.fillStyle = gradient;
-                    cx.fillRect(x, ry, TILE_WIDTH, rh);
                 }
+                cx.fillStyle = gradient;
+                cx.fillRect(startX, y, width, TILE_HEIGHT);
+
                 cx.restore();
             }
         }
     }
 
+    // PASS 4: Draw highlighted area
+    if (highlightedArea) {
+        const x = highlightedArea.ix * TILE_WIDTH;
+        const y = highlightedArea.iy * TILE_HEIGHT;
+
+        cx.save();
+        cx.strokeStyle = HIGHLIGHT_COLOR;
+        cx.strokeRect(
+            x + 1,
+            y + 1,
+            highlightedArea.xCount * TILE_WIDTH - 2,
+            highlightedArea.yCount * TILE_HEIGHT - 2,
+        );
+        cx.restore();
+    }
+
     objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
-    // PASS 4: Rest of the objects
+    // PASS 5: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
         switch (o.type) {
