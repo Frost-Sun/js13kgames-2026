@@ -32,18 +32,11 @@ export const resizeCanvasMaintainingAspectRatio = (
     maxHeight: number,
 ): void => {
     const aspectRatio = maxWidth / maxHeight;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = maxWidth;
+    let height = maxHeight;
 
-    // Ensure the width and height do not exceed the maximum resolution
-    if (width > maxWidth) {
-        width = maxWidth;
-        height = maxWidth / aspectRatio;
-    }
-    if (height > maxHeight) {
-        height = maxHeight;
-        width = maxHeight * aspectRatio;
-    }
+    height = maxWidth / aspectRatio;
+    width = maxHeight * aspectRatio;
 
     const finalWidth = Math.floor(width);
     const finalHeight = Math.floor(height);
@@ -56,6 +49,8 @@ export const resizeCanvasMaintainingAspectRatio = (
     const scale = Math.min(scaleX, scaleY);
 
     canvasScale = scale;
+
+    console.info(scale);
 
     canvas.style.position = "absolute";
     // Calculate offsets and floor them to ensure they are on the pixel grid
