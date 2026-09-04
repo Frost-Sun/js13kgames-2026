@@ -104,7 +104,7 @@ export const applyCamera = (
 
     cx.save();
     cx.translate(view.width / 2, view.height / 2);
-    cx.scale(camera.zoom, camera.zoom);
+    cx.scale(Math.floor(camera.zoom), Math.floor(camera.zoom));
     cx.translate(-camera.x, -camera.y);
 
     draw();

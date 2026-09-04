@@ -121,8 +121,6 @@ const draw = (time: TimeStep): void => {
 
             renderText(GAME_TITLE, TextSize.Huge);
 
-            renderGradient(canvas, cx, 0.5);
-
             renderWaitForProgressInput();
 
             cx.restore();
@@ -130,6 +128,7 @@ const draw = (time: TimeStep): void => {
         }
         case "levels": {
             drawLevelSelection(time, state);
+
             break;
         }
         case "run":
@@ -163,6 +162,7 @@ const draw = (time: TimeStep): void => {
             }
 
             cx.restore();
+
             break;
         }
         case "win": {
@@ -179,6 +179,7 @@ const draw = (time: TimeStep): void => {
             break;
         }
     }
+    renderGradient(canvas, cx, 0.5);
 };
 
 const handleMouseMove = (event: MouseEvent): void => {

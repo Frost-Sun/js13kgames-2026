@@ -374,9 +374,9 @@ export const drawMap = (
 
     // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
-        const y = iy * TILE_HEIGHT;
+        const y = Math.floor(iy * TILE_HEIGHT);
         for (let ix = 0; ix < map.xCount; ix++) {
-            const x = ix * TILE_WIDTH;
+            const x = Math.floor(ix * TILE_WIDTH);
             const tile = tileMapGet(map, ix, iy);
 
             if (!tile) continue;
@@ -497,9 +497,9 @@ export const drawMap = (
 
     // PASS 2: Draw all Water Tiles (Bay curves spill over to trim land corners)
     for (let iy = 0; iy < map.yCount; iy++) {
-        const y = iy * TILE_HEIGHT;
+        const y = Math.floor(iy * TILE_HEIGHT);
         for (let ix = 0; ix < map.xCount; ix++) {
-            const x = ix * TILE_WIDTH;
+            const x = Math.floor(ix * TILE_WIDTH);
             const tile = tileMapGet(map, ix, iy);
 
             if (tile?.type === "water" || tile?.type === "rainbow") {
@@ -600,6 +600,7 @@ export const drawMap = (
                     }
                     cx.fill();
                 }
+
                 // 3. Main Water Layer
                 cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
                 cx.beginPath();

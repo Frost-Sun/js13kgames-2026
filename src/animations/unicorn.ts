@@ -41,6 +41,22 @@ export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
     cx.save();
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
 
+    // Shadow
+    const shadowWidth = (obj.height / 8) * (1.5 - dy * 0.05);
+    const shadowHeight = (obj.height / 8) * 0.4;
+    cx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    cx.beginPath();
+    cx.ellipse(
+        0,
+        obj.height * 0.02,
+        shadowWidth,
+        shadowHeight,
+        0,
+        0,
+        Math.PI * 2,
+    );
+    cx.fill();
+
     if (highlight) {
         cx.strokeStyle = HIGHLIGHT_COLOR;
         cx.beginPath();

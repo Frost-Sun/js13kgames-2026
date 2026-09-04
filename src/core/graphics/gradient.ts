@@ -52,7 +52,9 @@ export const renderGradient = (
     if (!gradient) {
         gradient = createGradient(canvas, cx);
     }
+    cx.save();
     cx.fillStyle = gradient;
     cx.globalAlpha = opacity;
     cx.fillRect(0, 0, canvas.width, canvas.height);
+    cx.restore();
 };
