@@ -31,18 +31,9 @@ export const resizeCanvasMaintainingAspectRatio = (
     maxWidth: number,
     maxHeight: number,
 ): void => {
-    // Calculate the aspect ratio
     const aspectRatio = maxWidth / maxHeight;
-
-    // Calculate the width and height based on the window size while maintaining the aspect ratio
     let width = window.innerWidth;
     let height = window.innerHeight;
-
-    if (width / height > aspectRatio) {
-        width = height * aspectRatio;
-    } else {
-        height = width / aspectRatio;
-    }
 
     // Ensure the width and height do not exceed the maximum resolution
     if (width > maxWidth) {
@@ -54,23 +45,26 @@ export const resizeCanvasMaintainingAspectRatio = (
         width = maxHeight * aspectRatio;
     }
 
-    // Set the canvas width and height
-    canvas.width = width;
-    canvas.height = height;
+    const finalWidth = Math.floor(width);
+    const finalHeight = Math.floor(height);
 
-    // Calculate the scale factor to fill the screen
-    const scaleX = window.innerWidth / width;
-    const scaleY = window.innerHeight / height;
+    canvas.width = finalWidth;
+    canvas.height = finalHeight;
+
+    const scaleX = window.innerWidth / finalWidth;
+    const scaleY = window.innerHeight / finalHeight;
     const scale = Math.min(scaleX, scaleY);
 
     canvasScale = scale;
 
-    // Center the canvas
     canvas.style.position = "absolute";
-    canvas.style.left = `${(window.innerWidth - width * scale) / 2}px`;
-    canvas.style.top = `${(window.innerHeight - height * scale) / 2}px`;
+    // Calculate offsets and floor them to ensure they are on the pixel grid
+    const offsetX = Math.floor((window.innerWidth - finalWidth * scale) / 2);
+    const offsetY = Math.floor((window.innerHeight - finalHeight * scale) / 2);
 
-    // Apply the scaling
+    canvas.style.left = `${offsetX}px`;
+    canvas.style.top = `${offsetY}px`;
+
     canvas.style.transform = `scale(${scale})`;
     canvas.style.transformOrigin = "top left";
 };

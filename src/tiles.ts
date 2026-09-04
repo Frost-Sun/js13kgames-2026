@@ -600,6 +600,7 @@ export const drawMap = (
                     }
                     cx.fill();
                 }
+
                 // 3. Main Water Layer
                 cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
                 cx.beginPath();
