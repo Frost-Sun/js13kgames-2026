@@ -62,7 +62,6 @@ import {
     getCenter,
     includesArea,
     includesPoint,
-    overlap,
     type Area,
     type Dimensions,
 } from "./core/math/Area";
