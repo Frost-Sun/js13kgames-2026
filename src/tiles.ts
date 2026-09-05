@@ -610,18 +610,10 @@ export const drawMap = (
                 cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                 cx.fill();
             }
-
-            if (tile === highlightedTile || tile === deniedTile) {
-                cx.save();
-                cx.strokeStyle =
-                    tile === highlightedTile ? HIGHLIGHT_COLOR : DENIED_COLOR;
-                cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
-                cx.restore();
-            }
         }
     }
 
-    // PASS 3: Draw Rainbow Bridges
+    // PASS 3: Draw Rainbow Bridges and highlighted/denied tiles
     for (let iy = 0; iy < map.yCount; iy++) {
         const y = iy * TILE_HEIGHT;
         for (let ix = 0; ix < map.xCount; ix++) {
@@ -694,6 +686,14 @@ export const drawMap = (
                     cx.fillStyle = gradient;
                     cx.fillRect(x, ry, TILE_WIDTH, rh);
                 }
+                cx.restore();
+            }
+
+            if (tile === highlightedTile || tile === deniedTile) {
+                cx.save();
+                cx.strokeStyle =
+                    tile === highlightedTile ? HIGHLIGHT_COLOR : DENIED_COLOR;
+                cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
                 cx.restore();
             }
         }

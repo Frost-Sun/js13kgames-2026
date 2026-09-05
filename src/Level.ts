@@ -62,7 +62,6 @@ import {
     getCenter,
     includesArea,
     includesPoint,
-    overlap,
     type Area,
     type Dimensions,
 } from "./core/math/Area";
@@ -265,9 +264,9 @@ export const updateLevel = (
         if (o.type === "character") {
             moveObject(time, level, o);
 
-            if (overlap(o, level.finishArea)) {
-                o.toDelete = true;
+            if (includesArea(level.finishArea, o)) {
                 level.charactersFinished++;
+                playTune(SFX_HOME);
 
                 if (
                     state.type === "run" &&
@@ -275,7 +274,7 @@ export const updateLevel = (
                 ) {
                     setStateLevelFinished(state, time);
                 }
-                playTune(SFX_HOME);
+                o.toDelete = true;
             }
 
             const center = getCenter(o);
@@ -284,17 +283,19 @@ export const updateLevel = (
 
             if (
                 tile?.type === "water" &&
-                includesArea(tileToArea(tilePos), o)
+                includesArea(tileToArea(tilePos), o) &&
+                !o.toDelete
             ) {
                 playTune(SFX_SPLASH);
 
-                killCharacter(time, state, o);
                 level.objectsToAdd.push(
                     createSplash(time, {
                         x: o.x + o.width / 2,
                         y: o.y + o.height / 2,
                     }),
                 );
+
+                killCharacter(time, state, o);
             } else if (
                 tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
@@ -514,51 +515,68 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
     });
 
     // Draw button row
-    const buttonWidth = canvas.width / actionButtons.length;
-    const buttonRowX = 0;
+    const buttonWidth = 100;
+    const buttonRowX = (canvas.width - buttonWidth * actionButtons.length) / 2;
+
+    cx.fillStyle = "rgb(93, 0, 32)";
+    cx.fillRect(0, buttonRowY, canvas.width, buttonRowHeight);
+    cx.fillStyle = "rgb(73, 0, 12)";
+    cx.fillRect(
+        0,
+        buttonRowY + buttonRowHeight / 2,
+        canvas.width,
+        buttonRowHeight,
+    );
+
+    if (
+        level.charactersFinished >= level.charactersToFinish ||
+        level.charactersToFinish > level.characterCount - level.charactersLost
+    )
+        return;
 
     const fontSize = Math.floor(28 * (canvas.width / 1000));
 
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         const count =
-            button.action != null &&
-            (level.actionCounts[button.action] ?? 0) -
-                (level.actionsUsed[button.action] ?? 0);
+            button.action != null
+                ? (level.actionCounts[button.action] ?? 0) -
+                  (level.actionsUsed[button.action] ?? 0)
+                : undefined;
 
         button.x = buttonRowX + i * buttonWidth;
         button.y = buttonRowY;
-        button.width = buttonWidth - 2;
+        button.width = buttonWidth - 1;
         button.height = buttonRowHeight;
 
         cx.save();
 
-        // Determine color based on selection or hover
-        let fillColor = "rgb(133, 11, 72)";
         if (button.action) {
-            fillColor =
-                i === level.selectedActionIndex
+            // Determine color based on selection or hover
+            let fillColor = count
+                ? i === level.selectedActionIndex
                     ? "rgb(219, 52, 141)"
-                    : "rgb(172, 15, 94)";
+                    : "rgb(172, 15, 94)"
+                : "rgb(133, 11, 72)";
+
+            cx.fillStyle = fillColor;
+
+            cx.fillRect(button.x, button.y, button.width, button.height);
+
+            cx.fillStyle = "rgba(0, 0, 0, 0.25)";
+
+            cx.fillRect(
+                button.x,
+                button.y + button.height / 2,
+                button.width,
+                button.height / 2,
+            );
         }
-
-        cx.fillStyle = fillColor;
-
-        cx.fillRect(button.x, button.y, button.width, button.height);
-
-        cx.fillStyle = "rgba(0, 0, 0, 0.25)";
-
-        cx.fillRect(
-            button.x,
-            button.y + button.height / 2,
-            button.width,
-            button.height / 2,
-        );
 
         cx.textAlign = "center";
         cx.textBaseline = "middle";
-
-        cx.fillStyle = "rgb(253, 240, 247)";
+        cx.fillStyle = count ? "rgb(255, 209, 234)" : "rgb(219, 52, 141)";
+        cx.globalAlpha = count || !button.action ? 1 : 0.6;
         cx.font = `${fontSize}px Courier New`;
         cx.fillText(
             button.text,
@@ -569,7 +587,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
         if (button.action) {
             cx.font = `${fontSize}px Courier New`;
             cx.fillText(
-                count.toString(),
+                (count ?? "-").toString(),
                 button.x + button.width / 2,
                 button.y + button.height * 0.75,
             );
