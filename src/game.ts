@@ -166,9 +166,7 @@ const draw = (time: TimeStep): void => {
         case "win": {
             cx.save();
 
-            // Blank screen
-            cx.fillStyle = "black";
-            cx.fillRect(0, 0, canvas.width, canvas.height);
+            drawRainbowBackground(time, state.start);
 
             renderText("YOU WIN!", TextSize.Huge);
             renderWaitForProgressInput();

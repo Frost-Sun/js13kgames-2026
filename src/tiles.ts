@@ -39,6 +39,7 @@ import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
 import {
     ArrowColorByTheme,
+    DENIED_COLOR,
     HIGHLIGHT_COLOR,
     LandColorByTheme,
     StrawColorByTheme,
@@ -363,6 +364,7 @@ export const drawMap = (
     map: TileMap<Tile>,
     objects: GameObject[],
     highlightedTile: Tile | undefined,
+    deniedTile: Tile | undefined,
     highlightedCharacter: GameObject | undefined,
     theme: Theme,
 ): void => {
@@ -371,6 +373,7 @@ export const drawMap = (
     const landColor = LandColorByTheme[theme];
     const strawColor = StrawColorByTheme[theme];
     const arrowColor = ArrowColorByTheme[theme];
+    const waterColor = "rgb(40, 30, 150)";
 
     // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
@@ -403,7 +406,7 @@ export const drawMap = (
 
                 // Draw Water background for outer capes so the rounded corners reveal water
                 if (tl > 0 || tr > 0 || br > 0 || bl > 0) {
-                    cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                    cx.fillStyle = waterColor;
                     cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
                 }
 
@@ -602,15 +605,16 @@ export const drawMap = (
                 }
 
                 // 3. Main Water Layer
-                cx.fillStyle = `rgb(40, 30, ${150 + (ix * iy) / 2})`;
+                cx.fillStyle = waterColor;
                 cx.beginPath();
                 cx.roundRect(x, y, TILE_WIDTH, TILE_HEIGHT, [tl, tr, br, bl]);
                 cx.fill();
             }
 
-            if (tile === highlightedTile) {
+            if (tile === highlightedTile || tile === deniedTile) {
                 cx.save();
-                cx.strokeStyle = HIGHLIGHT_COLOR;
+                cx.strokeStyle =
+                    tile === highlightedTile ? HIGHLIGHT_COLOR : DENIED_COLOR;
                 cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
                 cx.restore();
             }
@@ -715,14 +719,53 @@ export const drawMap = (
             }
             case "splash": {
                 const phase = (time.t - (o.createTime ?? 0)) / 1000;
+
                 if (phase > 1) {
                     o.toDelete = true;
+                } else {
+                    const rippleR = TILE_WIDTH * 0.25 * phase;
+                    const rippleAlpha = 1 - phase;
+
+                    cx.beginPath();
+                    cx.arc(o.x, o.y, rippleR, 0, 2 * Math.PI);
+                    cx.lineWidth = 0.3 + rippleAlpha * 0.5;
+                    cx.strokeStyle = `rgba(150, 220, 255, ${rippleAlpha})`;
+                    cx.stroke();
+
+                    const jumpHeight =
+                        Math.sin(phase * Math.PI) * (TILE_HEIGHT * 0.35);
+                    const splashY = o.y - jumpHeight;
+
+                    const splashRadius = 1.0 + Math.sin(phase * Math.PI) * 1.0;
+                    const splashAlpha = 1 - Math.pow(phase, 2);
+
+                    cx.fillStyle = `rgba(180, 230, 255, ${splashAlpha})`;
+
+                    cx.beginPath();
+                    cx.arc(o.x, splashY, splashRadius, 0, 2 * Math.PI);
+                    cx.fill();
+
+                    const sideSpread = phase * 8;
+                    const sideHeight =
+                        Math.sin(phase * Math.PI) * (TILE_HEIGHT * 0.2);
+
+                    cx.beginPath();
+                    cx.arc(
+                        o.x - sideSpread,
+                        o.y - sideHeight,
+                        splashRadius * 0.5,
+                        0,
+                        2 * Math.PI,
+                    );
+                    cx.arc(
+                        o.x + sideSpread,
+                        o.y - sideHeight,
+                        splashRadius * 0.5,
+                        0,
+                        2 * Math.PI,
+                    );
+                    cx.fill();
                 }
-                const r = (TILE_WIDTH / 2) * phase;
-                cx.fillStyle = "rgb(40, 130, 200)";
-                cx.beginPath();
-                cx.arc(o.x, o.y, r, 0, 2 * Math.PI);
-                cx.fill();
                 break;
             }
             case "rock": {

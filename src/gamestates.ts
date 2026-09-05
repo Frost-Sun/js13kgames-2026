@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { waitForKey, waitForSpace } from "./core/controls/keyboard";
+import { waitForKey, waitForInteraction } from "./core/controls/keyboard";
 import { SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
@@ -39,7 +39,7 @@ export const setStateLoaded = (time: TimeStep): void => {
         type: "loaded",
         start: time.t,
     });
-    waitForSpace(SFX_RUNNING).then(() => setStateIntro(time));
+    waitForInteraction(SFX_RUNNING).then(() => setStateIntro(time));
 };
 
 export const setStateIntro = (time: TimeStep): void => {
@@ -47,7 +47,7 @@ export const setStateIntro = (time: TimeStep): void => {
         type: "intro",
         start: time.t,
     });
-    waitForSpace().then(() => setStateLevelSelection(time));
+    waitForInteraction().then(() => setStateLevelSelection(time));
 };
 
 export const setStateLevelSelection = (time: TimeStep): void => {
@@ -57,6 +57,7 @@ export const setStateLevelSelection = (time: TimeStep): void => {
         start: time.t,
         highestLevel: persistentState.highestLevel,
     });
+    waitForKey("Escape").then(() => setStateIntro(time));
 };
 
 export const setStateRun = (
@@ -101,7 +102,7 @@ export const setStateLevelFinished = (
         level: currentState.level,
     });
     saveHighestLevel(currentState.level.number + 1);
-    waitForSpace().then(() => setStateRun(time));
+    waitForInteraction().then(() => setStateRun(time));
 };
 
 export const setStateLose = (
@@ -112,7 +113,7 @@ export const setStateLose = (
         type: "lose",
         level: currentState.level,
     });
-    waitForSpace().then(() => setStateIntro(time));
+    waitForInteraction().then(() => setStateIntro(time));
 };
 
 export const setStateWin = (
@@ -124,5 +125,5 @@ export const setStateWin = (
         start: time.t,
         level: currentState.level,
     });
-    waitForSpace().then(() => setStateIntro(time));
+    waitForInteraction().then(() => setStateIntro(time));
 };

@@ -5,6 +5,7 @@ import type { GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";
+import { renderText, TextSize } from "./text";
 import { HIGHLIGHT_COLOR } from "./theme";
 
 interface Button extends Area {
@@ -40,6 +41,8 @@ export const drawLevelSelection = (
 
     cx.lineWidth = 5;
     cx.font = "38px Courier New";
+
+    renderText("Map selection", TextSize.Normal, 1, 34, false);
 
     for (let i = 0; i < maps.length; i++) {
         const x = marginX + (i % iconsPerRow) * (iconWidth + marginX);

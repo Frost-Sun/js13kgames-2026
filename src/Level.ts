@@ -69,7 +69,7 @@ import {
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
-import { playTune, SFX_HOME } from "./audio/sfx";
+import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 
@@ -286,6 +286,8 @@ export const updateLevel = (
                 tile?.type === "water" &&
                 includesArea(tileToArea(tilePos), o)
             ) {
+                playTune(SFX_SPLASH);
+
                 killCharacter(time, state, o);
                 level.objectsToAdd.push(
                     createSplash(time, {
@@ -368,6 +370,7 @@ const consumeAction = (level: Level, action: Action, tile: Tile): boolean => {
 
 let highlightedCharacter: GameObject | undefined;
 let highlightedTile: Tile | undefined;
+let deniedTile: Tile | undefined;
 
 export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
@@ -399,13 +402,16 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
             } else {
                 if (isApplicable(selectedAction, tile)) {
                     highlightedTile = tile;
+                    deniedTile = undefined;
                 } else {
                     highlightedTile = undefined;
+                    deniedTile = tile;
                 }
             }
         } else {
             highlightedTile = undefined;
             highlightedCharacter = undefined;
+            deniedTile = undefined;
         }
     }
 };
@@ -501,6 +507,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
             level,
             level.objects,
             highlightedTile,
+            deniedTile,
             highlightedCharacter,
             level.theme ?? "summer",
         );
