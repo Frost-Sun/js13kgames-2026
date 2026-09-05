@@ -121,7 +121,7 @@ const draw = (time: TimeStep): void => {
 
             renderText(GAME_TITLE, TextSize.Huge);
 
-            renderWaitForProgressInput();
+            renderWaitForProgressInput("start the game");
 
             cx.restore();
             break;
@@ -154,10 +154,10 @@ const draw = (time: TimeStep): void => {
                 }
             } else if (state.type === "finished") {
                 renderText("LEVEL FINISHED!", TextSize.Large);
-                renderWaitForProgressInput();
+                renderWaitForProgressInput("to proceed to the next map", 15.5);
             } else if (state.type === "lose") {
                 renderText("GAME OVER", TextSize.Large);
-                renderWaitForProgressInput();
+                renderWaitForProgressInput("start over", 15.5);
             }
 
             cx.restore();
@@ -169,7 +169,7 @@ const draw = (time: TimeStep): void => {
             drawRainbowBackground(time, state.start);
 
             renderText("YOU WIN!", TextSize.Huge);
-            renderWaitForProgressInput();
+            renderWaitForProgressInput("continue", 15.5);
 
             cx.restore();
             break;

@@ -528,6 +528,12 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
         buttonRowHeight,
     );
 
+    if (
+        level.charactersFinished >= level.charactersToFinish ||
+        level.charactersToFinish > level.characterCount - level.charactersLost
+    )
+        return;
+
     const fontSize = Math.floor(28 * (canvas.width / 1000));
 
     for (let i = 0; i < actionButtons.length; i++) {

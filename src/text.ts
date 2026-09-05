@@ -78,7 +78,7 @@ export const renderText = (
 
 export const renderWaitForProgressInput = (
     action = "continue",
-    y = 7.7,
+    y = 7,
 ): void => {
     const text = "Click to " + action;
     renderText(text, TextSize.Small, 1, y, true, 0, text);
