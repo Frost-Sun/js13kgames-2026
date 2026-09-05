@@ -1,4 +1,5 @@
 export const HIGHLIGHT_COLOR = "rgb(200, 200, 150)";
+export const DENIED_COLOR = "rgb(200, 100, 100)";
 
 export type Theme = "spring" | "summer" | "autumn" | "winter";
 

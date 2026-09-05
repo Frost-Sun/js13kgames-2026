@@ -39,6 +39,7 @@ import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
 import {
     ArrowColorByTheme,
+    DENIED_COLOR,
     HIGHLIGHT_COLOR,
     LandColorByTheme,
     StrawColorByTheme,
@@ -363,6 +364,7 @@ export const drawMap = (
     map: TileMap<Tile>,
     objects: GameObject[],
     highlightedTile: Tile | undefined,
+    deniedTile: Tile | undefined,
     highlightedCharacter: GameObject | undefined,
     theme: Theme,
 ): void => {
@@ -609,9 +611,10 @@ export const drawMap = (
                 cx.fill();
             }
 
-            if (tile === highlightedTile) {
+            if (tile === highlightedTile || tile === deniedTile) {
                 cx.save();
-                cx.strokeStyle = HIGHLIGHT_COLOR;
+                cx.strokeStyle =
+                    tile === highlightedTile ? HIGHLIGHT_COLOR : DENIED_COLOR;
                 cx.strokeRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2);
                 cx.restore();
             }
