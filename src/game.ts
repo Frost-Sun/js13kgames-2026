@@ -153,10 +153,10 @@ const draw = (time: TimeStep): void => {
                     renderText(level.introduction, TextSize.Normal, 1, -10);
                 }
             } else if (state.type === "finished") {
-                renderText("LEVEL FINISHED", TextSize.Large);
+                renderText("LEVEL FINISHED!", TextSize.Large);
                 renderWaitForProgressInput();
             } else if (state.type === "lose") {
-                renderText("YOU LOSE :( ", TextSize.Large);
+                renderText("GAME OVER", TextSize.Large);
                 renderWaitForProgressInput();
             }
 

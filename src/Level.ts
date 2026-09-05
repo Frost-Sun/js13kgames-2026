@@ -266,16 +266,24 @@ export const updateLevel = (
             moveObject(time, level, o);
 
             if (overlap(o, level.finishArea)) {
-                o.toDelete = true;
-                level.charactersFinished++;
+                if (!o.finishTime) {
+                    o.finishTime = time.t;
+                    level.charactersFinished++;
+                    playTune(SFX_HOME);
 
-                if (
-                    state.type === "run" &&
-                    level.charactersFinished >= level.charactersToFinish
-                ) {
-                    setStateLevelFinished(state, time);
+                    if (
+                        state.type === "run" &&
+                        level.charactersFinished >= level.charactersToFinish
+                    ) {
+                        setStateLevelFinished(state, time);
+                    }
                 }
-                playTune(SFX_HOME);
+
+                const timeInFinish = time.t - o.finishTime;
+
+                if (timeInFinish > 600) {
+                    o.toDelete = true;
+                }
             }
 
             const center = getCenter(o);
@@ -284,17 +292,19 @@ export const updateLevel = (
 
             if (
                 tile?.type === "water" &&
-                includesArea(tileToArea(tilePos), o)
+                includesArea(tileToArea(tilePos), o) &&
+                !o.toDelete
             ) {
                 playTune(SFX_SPLASH);
 
-                killCharacter(time, state, o);
                 level.objectsToAdd.push(
                     createSplash(time, {
                         x: o.x + o.width / 2,
                         y: o.y + o.height / 2,
                     }),
                 );
+
+                killCharacter(time, state, o);
             } else if (
                 tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
