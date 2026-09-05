@@ -80,6 +80,6 @@ export const renderWaitForProgressInput = (
     action = "continue",
     y = 7.7,
 ): void => {
-    const text = "Press SPACE to " + action;
+    const text = "Click to " + action;
     renderText(text, TextSize.Small, 1, y, true, 0, text);
 };
