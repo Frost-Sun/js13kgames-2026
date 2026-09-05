@@ -141,8 +141,8 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, level);
 
             renderText(
-                `🦄 in: ${level.charactersFinished} - target: ${level.charactersToFinish}`,
-                TextSize.Normal,
+                `🦄 IN: ${level.charactersFinished} / ${level.characterCount} - TO FINISH: ${level.charactersToFinish}`,
+                TextSize.Small,
                 1,
                 3,
                 false,
@@ -150,7 +150,7 @@ const draw = (time: TimeStep): void => {
 
             if (state.type === "run") {
                 if (time.t - state.start < IntroductionTextTime) {
-                    renderText(level.introduction, TextSize.Normal, 1, -10);
+                    renderText(level.introduction, TextSize.Large, 1, 10);
                 }
             } else if (state.type === "finished") {
                 renderText("LEVEL FINISHED!", TextSize.Large);
