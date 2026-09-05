@@ -265,23 +265,17 @@ export const updateLevel = (
         if (o.type === "character") {
             moveObject(time, level, o);
 
-            if (overlap(o, level.finishArea)) {
-                if (!o.finishTime) {
-                    o.finishTime = time.t;
-                    level.charactersFinished++;
-                    playTune(SFX_HOME);
+            if (includesArea(level.finishArea, o)) {
+                level.charactersFinished++;
+                playTune(SFX_HOME);
 
-                    if (
-                        state.type === "run" &&
-                        level.charactersFinished >= level.charactersToFinish
-                    ) {
-                        setStateLevelFinished(state, time);
-                    }
+                if (
+                    state.type === "run" &&
+                    level.charactersFinished >= level.charactersToFinish
+                ) {
+                    setStateLevelFinished(state, time);
                 }
-
-                if (includesArea(level.finishArea, o)) {
-                    o.toDelete = true;
-                }
+                o.toDelete = true;
             }
 
             const center = getCenter(o);
