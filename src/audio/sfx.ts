@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { kbSfx, startSong, clickSfx, homeSfx } from "./sfxData.ts";
+import { kbSfx, startSong, clickSfx, homeSfx, splashSfx } from "./sfxData.ts";
 
 import { createTune, FadeOutIn, type SongData } from "../core/audio/music.js";
 
@@ -39,6 +39,7 @@ export const SFX_CHASE = "chase";
 export const SFX_HOME = "home";
 export const SFX_KB = "keyboard";
 export const SFX_GAMEOVER = "gameover";
+export const SFX_SPLASH = "splash";
 export const SFX_CLICK = "click";
 
 type Tune = {
@@ -112,6 +113,10 @@ export const playTune = async (tune: string, vol: number = 1) => {
         }
         case SFX_KB: {
             zzfx(0.5, ...kbSfx);
+            break;
+        }
+        case SFX_SPLASH: {
+            zzfx(vol, ...splashSfx);
             break;
         }
         case SFX_CLICK: {

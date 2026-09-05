@@ -42,7 +42,7 @@ export const drawLevelSelection = (
     cx.lineWidth = 5;
     cx.font = "38px Courier New";
 
-    renderText("Level selection", TextSize.Normal, 1, 34, false);
+    renderText("Map selection", TextSize.Normal, 1, 34, false);
 
     for (let i = 0; i < maps.length; i++) {
         const x = marginX + (i % iconsPerRow) * (iconWidth + marginX);

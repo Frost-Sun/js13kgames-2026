@@ -69,7 +69,7 @@ import {
 import { setStateLevelFinished, setStateLose } from "./gamestates";
 import { Action, actionIsArrow, actionToArrow, isApplicable } from "./Action";
 import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
-import { playTune, SFX_HOME } from "./audio/sfx";
+import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 
@@ -286,6 +286,8 @@ export const updateLevel = (
                 tile?.type === "water" &&
                 includesArea(tileToArea(tilePos), o)
             ) {
+                playTune(SFX_SPLASH);
+
                 killCharacter(time, state, o);
                 level.objectsToAdd.push(
                     createSplash(time, {
