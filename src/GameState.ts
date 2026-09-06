@@ -58,6 +58,7 @@ export type GameStateLevelFinished = {
 
 export type GameStateLose = {
     type: "lose";
+    start: number;
     level: Level;
 };
 

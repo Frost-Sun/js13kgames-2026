@@ -6,7 +6,7 @@ import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
 import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
-import { setStateLoaded } from "./gamestates";
+import { isLastLevel, setStateLoaded } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import {
     drawLevel,
@@ -141,7 +141,7 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, state);
 
             renderText(
-                `🦄 IN: ${level.charactersFinished} / ${level.characterCount} - TO FINISH: ${level.charactersToFinish}`,
+                `🦄 SAVED: ${level.charactersFinished} (${((level.charactersFinished / level.charactersToFinish) * 100).toFixed(0)}%) 🦄 OUT: ${level.characterCount - level.charactersLost - level.charactersFinished}`,
                 TextSize.Small,
                 1,
                 3,
@@ -154,10 +154,20 @@ const draw = (time: TimeStep): void => {
                 }
             } else if (state.type === "finished") {
                 renderText("LEVEL FINISHED!", TextSize.Large);
-                renderWaitForProgressInput("to proceed to the next map", 15.5);
+                if (isLastLevel(state)) {
+                    renderWaitForProgressInput("to continue", 15.5);
+                    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+                } else {
+                    renderWaitForProgressInput(
+                        "to proceed to the next map",
+                        15.5,
+                    );
+                    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+                }
             } else if (state.type === "lose") {
-                renderText("GAME OVER", TextSize.Large);
-                renderWaitForProgressInput("start over", 15.5);
+                renderText("MAP FAILED!", TextSize.Large);
+                renderWaitForProgressInput("try again", 15.5);
+                renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
             }
 
             cx.restore();

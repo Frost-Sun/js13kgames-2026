@@ -112,9 +112,12 @@ export const setStateLose = (
 ): void => {
     setGameState({
         type: "lose",
+        start: time.t,
         level: currentState.level,
     });
-    waitForInteraction().then(() => setStateIntro(time));
+    waitForInteraction().then(() =>
+        setStateRun(time, currentState.level.number),
+    );
 };
 
 export const setStateWin = (
