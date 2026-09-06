@@ -353,6 +353,9 @@ const hasActionsLeft = (level: Level, action: Action): boolean =>
     (level.actionsUsed[action] == null ||
         level.actionsUsed[action] < level.actionCounts[action]);
 
+const rainbowCanExtend = (tile: Tile | undefined): boolean =>
+    tile?.type === "water" || tile?.type === "rainbow";
+
 const getApplicableArea = (
     level: Level,
     action: Action,
@@ -369,12 +372,12 @@ const getApplicableArea = (
         let ixLeftmost = tilePos.ix;
         let ixRightMost = tilePos.ix;
         while (
-            tileMapGet(level, ixLeftmost - 1, tilePos.iy)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, ixLeftmost - 1, tilePos.iy))
         ) {
             ixLeftmost--;
         }
         while (
-            tileMapGet(level, ixRightMost + 1, tilePos.iy)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, ixRightMost + 1, tilePos.iy))
         ) {
             ixRightMost++;
         }
@@ -398,11 +401,11 @@ const getApplicableArea = (
     if (action === Action.RainbowVertical) {
         let ixTopMost = tilePos.iy;
         let ixBottomMost = tilePos.iy;
-        while (tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type === "water") {
+        while (rainbowCanExtend(tileMapGet(level, tilePos.ix, ixTopMost - 1))) {
             ixTopMost--;
         }
         while (
-            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, tilePos.ix, ixBottomMost + 1))
         ) {
             ixBottomMost++;
         }
