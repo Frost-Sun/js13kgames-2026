@@ -628,7 +628,11 @@ const findClosestCharacter = (
     return closestCharacter;
 };
 
-export const drawLevel = (time: TimeStep, level: Level): void => {
+export const drawLevel = (
+    time: TimeStep,
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
+): void => {
+    const { level } = state;
     const { camera } = level;
 
     const ButtonRowHeightFraction = 0.15;
@@ -667,11 +671,7 @@ export const drawLevel = (time: TimeStep, level: Level): void => {
         buttonRowHeight,
     );
 
-    if (
-        level.charactersFinished >= level.charactersToFinish ||
-        level.charactersToFinish > level.characterCount - level.charactersLost
-    )
-        return;
+    if (state.type !== "run") return;
 
     const fontSize = Math.floor(28 * (canvas.width / 1000));
 

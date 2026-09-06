@@ -138,7 +138,7 @@ const draw = (time: TimeStep): void => {
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
-            drawLevel(time, level);
+            drawLevel(time, state);
 
             renderText(
                 `🦄 IN: ${level.charactersFinished} / ${level.characterCount} - TO FINISH: ${level.charactersToFinish}`,
