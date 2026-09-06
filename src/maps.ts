@@ -27,8 +27,10 @@ import { createLevel, type Level } from "./Level";
 import {
     carve,
     carveBottom,
+    carveLeft,
     carveRight,
     carveTop,
+    carveX,
     carveY,
     core,
     coreX,
@@ -44,6 +46,7 @@ import {
     sliceRight,
     sliceTop,
     splitX,
+    splitX3,
     splitY,
 } from "./core/tiles/TileArea";
 import { fill, findTilePosition, tileToArea } from "./tiles";
@@ -205,11 +208,82 @@ const createMapRainbowIslands = (number: number): Level => {
     return level;
 };
 
+const createMapCaves = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Use wisely what you've got.",
+        xCount: 24,
+        yCount: 20,
+        characterCount: 8,
+        charactersToFinish: 5,
+        actionCounts: {
+            [Action.Up]: 1,
+            [Action.Down]: 1,
+            [Action.Left]: 1,
+            [Action.Right]: 1,
+            [Action.Dig]: 2,
+            [Action.RainbowHorizontal]: 1,
+            [Action.RainbowVertical]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+    fill(level, inner, "land");
+
+    const [a, b, c, _d, e, f, _g, h, _i] = segment9(
+        inner,
+        inner.yCount / 4,
+        inner.yCount / 2,
+        inner.xCount / 6,
+        inner.xCount * (4 / 6),
+    );
+
+    const water1 = extendRight(extendDown(a, 2));
+    const [waterBottom1, waterBottom2] = splitX(carveX(h, 2));
+    const water3 = f;
+    const water4 = extendLeft(carve(c), 5);
+    const landPassage2 = carveBottom(sliceRight(water3), 4);
+    const landPassage3 = coreY(water3);
+    const bigRock1 = sliceBottom(coreX(b, 8), 2);
+    const bigRock2 = extendUp(sliceLeft(bigRock1, 4));
+    const bigRock3 = extendUp(sliceLeft(bigRock2), 2);
+    const caveArea = e;
+    const rooms = carve(caveArea, 2);
+    const [leftRoom, walls, rightRoom] = splitX3(rooms, rooms.xCount / 3, 5);
+
+    fill(level, water1, "water");
+    fill(level, waterBottom1, "water");
+    fill(level, waterBottom2, "water");
+    fill(level, water3, "water");
+    fill(level, water4, "water");
+    fill(level, sliceRight(waterBottom1), "land");
+    fill(level, sliceBottom(waterBottom1), "land");
+    fill(level, landPassage2, "land");
+    fill(level, landPassage3, "land");
+
+    fill(level, bigRock1, "rock");
+    fill(level, bigRock2, "rock");
+    fill(level, bigRock3, "rock");
+    fill(level, caveArea, "rock");
+    fill(level, leftRoom, "land");
+    fill(level, rightRoom, "land");
+    fill(level, sliceLeft(carveLeft(walls)), "land");
+    fill(level, sliceRight(carveRight(walls)), "land");
+
+    fill(level, coreY(sliceLeft(leftRoom)), "start");
+    fill(level, coreY(carveBottom(sliceLeft(rightRoom), 2)), "finish");
+
+    return level;
+};
+
 export const maps: CreateMapFunction[] = [
     createMapRockTutorial,
     createMapRainbowTutorial,
     createMapRocks,
     createMapRainbowIslands,
+    createMapCaves,
 ];
 
 export const createMap = (number: number): Level => {
