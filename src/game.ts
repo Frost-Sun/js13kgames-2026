@@ -141,10 +141,16 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, state);
 
             renderText(
-                `🦄 SAVED: ${level.charactersFinished} (${((level.charactersFinished / level.charactersToFinish) * 100).toFixed(0)}%) 🦄 OUT: ${level.characterCount - level.charactersLost - level.charactersFinished}`,
+                `🦄 IN ${level.charactersFinished.toString().padStart(2, "0")}/${level.charactersToFinish.toString().padStart(2, "0")} 🦄 OUT ${(
+                    level.characterCount -
+                    level.charactersLost -
+                    level.charactersFinished
+                )
+                    .toFixed(0)
+                    .padStart(2, "0")}`,
                 TextSize.Small,
                 1,
-                3,
+                2,
                 false,
             );
 
