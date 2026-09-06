@@ -692,7 +692,7 @@ export const drawLevel = (
 
     if (previousLevel !== state.level) {
         previousLevel = state.level;
-        fadeStartTime = performance.now();
+        fadeStartTime = time.t;
     }
     const ButtonRowHeightFraction = 0.15;
     const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
@@ -809,7 +809,7 @@ export const drawLevel = (
         cx.restore();
     }
 
-    const fadeElapsed = performance.now() - fadeStartTime;
+    const fadeElapsed = time.t - fadeStartTime;
     if (fadeElapsed < 1000) {
         const alpha = 1 - fadeElapsed / 1000;
         cx.save();
