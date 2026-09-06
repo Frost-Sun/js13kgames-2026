@@ -135,7 +135,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "🌈H",
+        text: "🌈⟺",
         action: Action.RainbowHorizontal,
     },
     {
@@ -143,7 +143,7 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
-        text: "🌈V",
+        text: "🌈⇳",
         action: Action.RainbowVertical,
     },
     {
