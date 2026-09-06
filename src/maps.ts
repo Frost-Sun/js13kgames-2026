@@ -84,7 +84,7 @@ const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "How shall we get over the water?",
-        xCount: 14,
+        xCount: 16,
         yCount: 7,
         characterCount: 3,
         charactersToFinish: 2,
@@ -96,7 +96,7 @@ const createMapRainbowTutorial = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
+    const inner = carveY(carveX(level, 2));
     const [left, right] = splitX(inner, inner.xCount * 0.6);
 
     const leftIsland = carveRight(carveBottom(left, 2), 2);
@@ -115,7 +115,7 @@ const createMapRocks = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Keep digging.",
-        xCount: 18,
+        xCount: 20,
         yCount: 10,
         characterCount: 10,
         charactersToFinish: 8,
@@ -132,7 +132,7 @@ const createMapRocks = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const island = carve(level);
+    const island = carveY(carveX(level, 2));
     fill(level, island, "land");
     const [left, right] = splitX(island);
 
@@ -161,7 +161,7 @@ const createMapRainbowIslands = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Rainbow islands",
-        xCount: 20,
+        xCount: 30,
         yCount: 14,
         characterCount: 10,
         charactersToFinish: 10,
@@ -177,7 +177,7 @@ const createMapRainbowIslands = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
+    const inner = carveY(carveX(level, 6));
     const [a, b, c, d, _e, _f, _g, h, _i] = segment9(inner);
 
     const startIsland = a;
@@ -212,7 +212,7 @@ const createMapCaves = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Use wisely what you've got.",
-        xCount: 24,
+        xCount: 42,
         yCount: 20,
         characterCount: 8,
         charactersToFinish: 5,
@@ -229,7 +229,7 @@ const createMapCaves = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
+    const inner = carveY(carveX(level, 10));
     fill(level, inner, "land");
 
     const [a, b, c, _d, e, f, _g, h, _i] = segment9(
