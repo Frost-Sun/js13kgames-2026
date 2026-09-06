@@ -102,15 +102,8 @@ const actionButtons: Button[] = [
         y: 0,
         width: 0,
         height: 0,
-        text: "🡸",
-        action: Action.Back,
-    },
-    {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "🗺️",
+        action: Action.Back,
     },
     {
         x: 0,
