@@ -77,7 +77,7 @@ import type { TileArea } from "./core/tiles/TileArea";
 
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
-const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
+const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 1.25;
 
 // The portion of canvas on which the map is drawn.
 const levelDrawArea: Dimensions = {
