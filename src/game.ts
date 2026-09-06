@@ -217,7 +217,7 @@ const handleClick = (event: MouseEvent): void => {
             break;
         }
         case "run": {
-            levelHandleClick(state.level, event);
+            levelHandleClick(state.level, event, time);
             playTune(SFX_CLICK);
             break;
         }

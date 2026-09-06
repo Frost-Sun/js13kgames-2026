@@ -67,7 +67,7 @@ import {
     type Area,
     type Dimensions,
 } from "./core/math/Area";
-import { setStateLevelFinished, setStateLose } from "./gamestates";
+import { setStateLevelFinished, setStateLose, setStateRun } from "./gamestates";
 import { Action, actionIsArrow, ActionTiles, actionToArrow } from "./Action";
 import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
@@ -75,6 +75,7 @@ import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TileArea } from "./core/tiles/TileArea";
 
+const FIRST_CHARACTER_SPAWN_INTERVAL = 2000;
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
 const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
@@ -94,7 +95,7 @@ const actionButtons: Button[] = [
     {
         x: 0,
         y: 0,
-        width: 50,
+        width: 25,
         height: 50,
         text: "🗺️",
     },
@@ -149,7 +150,7 @@ const actionButtons: Button[] = [
     {
         x: 0,
         y: 0,
-        width: 50,
+        width: 25,
         height: 50,
         text: "🦄",
     },
@@ -160,6 +161,14 @@ const actionButtons: Button[] = [
         height: 50,
         text: "⛏️",
         action: Action.Dig,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
+        text: "☢",
+        action: Action.Restart,
     },
 ];
 
@@ -255,9 +264,18 @@ export const updateLevel = (
 ): void => {
     const { level } = state;
 
+    if (level.lastSpawnTime === 0) {
+        level.lastSpawnTime = time.t;
+    }
+
+    const isFirstCharacter = level.charactersLeft === level.characterCount;
+    const currentInterval = isFirstCharacter
+        ? FIRST_CHARACTER_SPAWN_INTERVAL
+        : CHARACTER_SPAWN_INTERVAL;
+
     if (
         level.charactersLeft > 0 &&
-        CHARACTER_SPAWN_INTERVAL < time.t - level.lastSpawnTime
+        time.t - level.lastSpawnTime > currentInterval
     ) {
         level.lastSpawnTime = time.t;
         level.charactersLeft--;
@@ -511,13 +529,22 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     }
 };
 
-export const levelHandleClick = (level: Level, event: MouseEvent): void => {
+export const levelHandleClick = (
+    level: Level,
+    event: MouseEvent,
+    time: TimeStep,
+): void => {
     const position = mousePositionToCanvasPosition(canvas, event);
 
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         if (includesPoint(button, position)) {
+            if (button.action === Action.Restart) {
+                setStateRun(time, level.number);
+                return;
+            }
+
             toggleActionButton(level, i);
             return;
         }
@@ -628,6 +655,9 @@ const findClosestCharacter = (
     return closestCharacter;
 };
 
+let previousLevel: Level | undefined;
+let fadeStartTime = 0;
+
 export const drawLevel = (
     time: TimeStep,
     state: GameStateRun | GameStateLose | GameStateLevelFinished,
@@ -635,6 +665,10 @@ export const drawLevel = (
     const { level } = state;
     const { camera } = level;
 
+    if (previousLevel !== state.level) {
+        previousLevel = state.level;
+        fadeStartTime = performance.now();
+    }
     const ButtonRowHeightFraction = 0.15;
     const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
     const buttonRowY = canvas.height - buttonRowHeight;
@@ -677,6 +711,8 @@ export const drawLevel = (
 
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
+        const isRestartButton = button.action === Action.Restart;
+
         const count =
             button.action != null
                 ? (level.actionCounts[button.action] ?? 0) -
@@ -692,11 +728,12 @@ export const drawLevel = (
 
         if (button.action) {
             // Determine color based on selection or hover
-            let fillColor = count
-                ? i === level.selectedActionIndex
-                    ? "rgb(219, 52, 141)"
-                    : "rgb(172, 15, 94)"
-                : "rgb(133, 11, 72)";
+            let fillColor =
+                count || isRestartButton
+                    ? i === level.selectedActionIndex
+                        ? "rgb(219, 52, 141)"
+                        : "rgb(172, 15, 94)"
+                    : "rgb(133, 11, 72)";
 
             cx.fillStyle = fillColor;
 
@@ -714,8 +751,11 @@ export const drawLevel = (
 
         cx.textAlign = "center";
         cx.textBaseline = "middle";
-        cx.fillStyle = count ? "rgb(255, 209, 234)" : "rgb(219, 52, 141)";
-        cx.globalAlpha = count || !button.action ? 1 : 0.6;
+        cx.fillStyle =
+            count || isRestartButton
+                ? "rgb(255, 209, 234)"
+                : "rgb(219, 52, 141)";
+        cx.globalAlpha = count || !button.action || isRestartButton ? 1 : 0.6;
         cx.font = `${fontSize}px Courier New`;
         cx.fillText(
             button.text,
@@ -726,12 +766,21 @@ export const drawLevel = (
         if (button.action) {
             cx.font = `${fontSize}px Courier New`;
             cx.fillText(
-                (count ?? "-").toString(),
+                isRestartButton ? "" : count ? (count?.toString() ?? "-") : "-",
                 button.x + button.width / 2,
                 button.y + button.height * 0.75,
             );
         }
 
+        cx.restore();
+    }
+
+    const fadeElapsed = performance.now() - fadeStartTime;
+    if (fadeElapsed < 1000) {
+        const alpha = 1 - fadeElapsed / 1000;
+        cx.save();
+        cx.fillStyle = `rgb(219, 52, 141, ${alpha})`;
+        cx.fillRect(0, 0, canvas.width, canvas.height);
         cx.restore();
     }
 };
