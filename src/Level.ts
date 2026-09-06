@@ -167,6 +167,13 @@ const actionButtons: Button[] = [
         y: 0,
         width: 50,
         height: 50,
+        text: "",
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 50,
+        height: 50,
         text: "☢",
         action: Action.Restart,
     },
@@ -751,10 +758,11 @@ export const drawLevel = (
 
         cx.textAlign = "center";
         cx.textBaseline = "middle";
-        cx.fillStyle =
-            count || isRestartButton
-                ? "rgb(255, 209, 234)"
-                : "rgb(219, 52, 141)";
+        cx.fillStyle = isRestartButton
+            ? "rgb(255, 132, 132)"
+            : count
+              ? "rgb(255, 209, 234)"
+              : "rgb(219, 52, 141)";
         cx.globalAlpha = count || !button.action || isRestartButton ? 1 : 0.6;
         cx.font = `${fontSize}px Courier New`;
         cx.fillText(
