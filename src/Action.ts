@@ -1,4 +1,4 @@
-import type { Arrow, Tile, TileType } from "./tiles";
+import type { Arrow, TileType } from "./tiles";
 
 export const enum Action {
     // The directions should match with values of Arrow enum
@@ -7,7 +7,8 @@ export const enum Action {
     Down = 2,
     Left = 3,
     Right = 4,
-    Rainbow,
+    RainbowHorizontal,
+    RainbowVertical,
     Dig,
 }
 
@@ -23,19 +24,12 @@ export const actionToArrow = (
     action: Action.Up | Action.Down | Action.Left | Action.Right,
 ): Arrow => action as unknown as Arrow;
 
-const ActionTiles: Record<Action, TileType | undefined> = {
+export const ActionTiles: Record<Action, TileType | undefined> = {
     [Action.Up]: "land",
     [Action.Down]: "land",
     [Action.Left]: "land",
     [Action.Right]: "land",
-    [Action.Rainbow]: "water",
+    [Action.RainbowHorizontal]: "water",
+    [Action.RainbowVertical]: "water",
     [Action.Dig]: undefined,
-};
-
-export const isApplicable = (action: Action, tile: Tile): boolean => {
-    const tileType = ActionTiles[action];
-    return (
-        (tileType == null || tileType === tile.type) &&
-        (!actionIsArrow(action) || tile.arrow !== actionToArrow(action))
-    );
 };

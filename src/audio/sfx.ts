@@ -86,7 +86,10 @@ const initMusicPlayer = (
 };
 
 export const initializeAudio = () => {
-    return Promise.all([initMusicPlayer(startTune, startSong, true)]);
+    // Keep lint happy while is no more than one item.
+    // return Promise.all([initMusicPlayer(startTune, startSong, true)]);
+
+    return initMusicPlayer(startTune, startSong, true);
 };
 
 export const playTune = async (tune: string, vol: number = 1) => {

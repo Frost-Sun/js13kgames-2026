@@ -29,6 +29,7 @@ import {
     getGameState,
     setGameState,
     type GameStateLevelFinished,
+    type GameStateLose,
     type GameStateRun,
 } from "./GameState";
 import { createMap, maps } from "./maps";
@@ -127,3 +128,7 @@ export const setStateWin = (
     });
     waitForInteraction().then(() => setStateIntro(time));
 };
+
+export const isLastLevel = (
+    state: GameStateRun | GameStateLose | GameStateLevelFinished,
+): boolean => state.level.number === maps.length - 1;
