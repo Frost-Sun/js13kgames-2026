@@ -91,102 +91,55 @@ const levelDrawArea: Dimensions = {
     height: canvas.height,
 };
 
-interface Button extends Area {
+interface Button {
     text: string;
     action?: Action;
+    width?: number;
+    height?: number;
+    x?: number;
+    y?: number;
 }
 
 const actionButtons: Button[] = [
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        text: "🡸",
+        text: "🗺️",
         action: Action.Back,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        text: "🗺️",
-    },
-    {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "▲",
         action: Action.Up,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "▼",
         action: Action.Down,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "◀",
         action: Action.Left,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "▶",
         action: Action.Right,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "🌈⟺",
         action: Action.RainbowHorizontal,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "🌈⇳",
         action: Action.RainbowVertical,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "🦄",
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "⛏️",
         action: Action.Dig,
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "",
     },
     {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
         text: "☢",
         action: Action.Restart,
     },
@@ -559,7 +512,7 @@ export const levelHandleClick = (
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
-        if (includesPoint(button, position)) {
+        if (includesPoint(button as Area, position)) {
             if (button.action === Action.Back) {
                 setStateLevelSelection(time);
                 return;
