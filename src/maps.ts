@@ -27,15 +27,18 @@ import { createLevel, type Level } from "./Level";
 import {
     carve,
     carveBottom,
-    carveLeft,
     carveRight,
     carveTop,
-    carveX,
     carveY,
     core,
     coreX,
     coreY,
+    extendDown,
+    extendLeft,
+    extendRight,
+    extendUp,
     segment4,
+    segment9,
     sliceBottom,
     sliceLeft,
     sliceRight,
@@ -47,7 +50,7 @@ import { fill, findTilePosition, tileToArea } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
 
-const createMapRockSimple = (number: number): Level => {
+const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "There's something blocking my way",
@@ -81,7 +84,7 @@ const createMapRockSimple = (number: number): Level => {
     return level;
 };
 
-const createMapRiver = (number: number): Level => {
+const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "How shall we get over the water?",
@@ -100,7 +103,7 @@ const createMapRiver = (number: number): Level => {
     const inner = carve(level);
     const [left, right] = splitX(inner, inner.xCount * 0.6);
 
-    const leftIsland = carveRight(carveBottom(left, left.yCount / 2), 2);
+    const leftIsland = carveRight(carveBottom(left, 2), 2);
     const rightIsland = carve(right);
 
     fill(level, leftIsland, "land");
@@ -172,14 +175,14 @@ const createMapRocks = (number: number): Level => {
     return level;
 };
 
-const createMapIslands = (number: number): Level => {
+const createMapRainbowIslands = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Islands",
+        introduction: "Rainbow islands",
         xCount: 20,
         yCount: 14,
-        characterCount: 3,
-        charactersToFinish: 3,
+        characterCount: 10,
+        charactersToFinish: 10,
         actionCounts: {
             [Action.Up]: 3,
             [Action.Down]: 3,
@@ -193,32 +196,41 @@ const createMapIslands = (number: number): Level => {
     fill(level, level, "water");
 
     const inner = carve(level);
-    const [topLeft, topRight, _bottomLeft, bottomRight] = segment4(inner);
+    const [a, b, c, d, _e, _f, _g, h, _i] = segment9(inner);
 
-    const startIsland = carveX(topLeft);
-    const middleIsland = carveLeft(carve(topRight));
-    const middle2 = coreX(sliceTop(bottomRight, 2), 4);
-    const finishIsland = carveTop(carveRight(bottomRight, 4), 3);
+    const startIsland = a;
+    const startExtend = extendRight(extendDown(sliceRight(sliceBottom(a)), 2));
+    const finishIsland = extendDown(
+        carveRight(carveTop(d, d.yCount / 2), 3),
+        3,
+    );
+    const rocks = extendDown(core(b, 2));
+    const rocks2 = sliceTop(extendUp(finishIsland));
+    const tempIsland = core(c, 2);
+    const tempLeft = extendLeft(tempIsland, 3);
+    const tempDown = extendDown(tempIsland, 3);
+    const temp2Island = extendRight(carve(h), 2);
 
     fill(level, startIsland, "land");
-    fill(level, sliceRight(sliceTop(startIsland, 2), 3), "water");
-    fill(level, sliceRight(sliceBottom(startIsland, 1), 3), "water");
-    fill(level, middleIsland, "land");
-    fill(level, middle2, "land");
+    fill(level, startExtend, "land");
+    fill(level, rocks, "rock");
+    fill(level, tempLeft, "land");
+    fill(level, tempDown, "land");
+    fill(level, temp2Island, "land");
+    fill(level, rocks2, "rock");
     fill(level, finishIsland, "land");
-    fill(level, carveRight(sliceTop(finishIsland), 2), "rock");
 
-    fill(level, coreY(sliceLeft(startIsland)), "start");
-    fill(level, sliceLeft(coreY(finishIsland)), "finish");
+    fill(level, sliceLeft(coreY(startIsland)), "start");
+    fill(level, sliceTop(coreX(finishIsland)), "finish");
 
     return level;
 };
 
 export const maps: CreateMapFunction[] = [
-    createMapRockSimple,
-    createMapRiver,
+    createMapRockTutorial,
+    createMapRainbowTutorial,
     createMapRocks,
-    createMapIslands,
+    createMapRainbowIslands,
 ];
 
 export const createMap = (number: number): Level => {
