@@ -94,6 +94,10 @@ const levelDrawArea: Dimensions = {
 interface Button {
     text: string;
     action?: Action;
+    width?: number;
+    height?: number;
+    x?: number;
+    y?: number;
 }
 
 const actionButtons: Button[] = [
@@ -508,7 +512,7 @@ export const levelHandleClick = (
     // Check buttons
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
-        if (includesPoint(button, position)) {
+        if (includesPoint(button as Area, position)) {
             if (button.action === Action.Back) {
                 setStateLevelSelection(time);
                 return;
