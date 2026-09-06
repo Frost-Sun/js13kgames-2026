@@ -165,7 +165,7 @@ const draw = (time: TimeStep): void => {
                     renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
                 } else {
                     renderWaitForProgressInput(
-                        "to proceed to the next map",
+                        "continue to the next map",
                         15.5,
                     );
                     renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
