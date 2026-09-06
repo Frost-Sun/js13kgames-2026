@@ -74,13 +74,6 @@ const createMapRockTutorial = (number: number): Level => {
     fill(level, coreY(sliceLeft(inner)), "start");
     fill(level, coreY(sliceRight(inner)), "finish");
 
-    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
-    const finishPosition = findTilePosition(level, "finish") ?? {
-        ix: 0,
-        iy: 0,
-    };
-    level.finishArea = tileToArea(finishPosition);
-
     return level;
 };
 
@@ -111,13 +104,6 @@ const createMapRainbowTutorial = (number: number): Level => {
 
     fill(level, coreY(sliceLeft(leftIsland)), "start");
     fill(level, coreX(sliceBottom(rightIsland)), "finish");
-
-    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
-    const finishPosition = findTilePosition(level, "finish") ?? {
-        ix: 0,
-        iy: 0,
-    };
-    level.finishArea = tileToArea(finishPosition);
 
     return level;
 };
@@ -164,13 +150,6 @@ const createMapRocks = (number: number): Level => {
 
     fill(level, coreY(sliceLeft(bottomLeft)), "start");
     fill(level, sliceTop(sliceRight(topLeft)), "finish");
-
-    level.startTile = findTilePosition(level, "start") ?? { ix: 0, iy: 0 };
-    const finishPosition = findTilePosition(level, "finish") ?? {
-        ix: 0,
-        iy: 0,
-    };
-    level.finishArea = tileToArea(finishPosition);
 
     return level;
 };
