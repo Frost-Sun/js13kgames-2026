@@ -56,7 +56,7 @@ export type CreateMapFunction = (number: number) => Level;
 const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "There's something blocking my way",
+        introduction: "Use the tools available to guide the unicorns.",
         xCount: 11,
         yCount: 5,
         characterCount: 1,
@@ -83,7 +83,7 @@ const createMapRockTutorial = (number: number): Level => {
 const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "How shall we get over the water?",
+        introduction: "The unicorns are dumb. You must guide them.",
         xCount: 16,
         yCount: 7,
         characterCount: 3,
