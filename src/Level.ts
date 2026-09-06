@@ -778,7 +778,7 @@ export const drawLevel = (
         cx.textAlign = "center";
         cx.textBaseline = "middle";
         cx.fillStyle = isRestartButton
-            ? "rgb(255, 132, 132)"
+            ? "rgb(255, 176, 176)"
             : count || isBackButton
               ? "rgb(255, 209, 234)"
               : "rgb(219, 52, 141)";
