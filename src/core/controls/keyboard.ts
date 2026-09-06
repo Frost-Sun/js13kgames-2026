@@ -155,20 +155,30 @@ export const waitForKey = (key: Key): Promise<void> => {
     });
 };
 
-export const waitForSpace = (soundToPlay?: string): Promise<void> => {
+export const waitForInteraction = (soundToPlay?: string): Promise<void> => {
     return new Promise((resolve) => {
-        const listener = (event: KeyboardEvent): void => {
+        const finish = () => {
+            if (soundToPlay) {
+                playTune(soundToPlay);
+            }
+            window.removeEventListener("keydown", keyListener);
+            window.removeEventListener("mousedown", mouseListener);
+            resolve();
+        };
+
+        const keyListener = (event: KeyboardEvent): void => {
             playTune(SFX_KB);
             if (event.code === "Space") {
-                if (soundToPlay) {
-                    playTune(soundToPlay);
-                }
-                window.removeEventListener("keydown", listener);
-                resolve();
+                finish();
             }
         };
 
-        window.addEventListener("keydown", listener);
+        const mouseListener = (): void => {
+            finish();
+        };
+
+        window.addEventListener("keydown", keyListener);
+        window.addEventListener("mousedown", mouseListener);
     });
 };
 
