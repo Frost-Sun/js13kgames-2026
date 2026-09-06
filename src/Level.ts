@@ -83,7 +83,7 @@ import type { TileArea } from "./core/tiles/TileArea";
 const FIRST_CHARACTER_SPAWN_INTERVAL = 2000;
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
-const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 0.75;
+const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 1.25;
 
 // The portion of canvas on which the map is drawn.
 const levelDrawArea: Dimensions = {
@@ -153,7 +153,7 @@ export interface LevelParameters {
     readonly characterCount: number;
     readonly charactersToFinish: number;
     readonly actionCounts: Partial<Record<Action, number>>;
-    readonly theme?: Theme;
+    readonly theme: Theme;
 }
 
 export interface Level extends TileMap<Tile>, LevelParameters {
@@ -344,6 +344,9 @@ const hasActionsLeft = (level: Level, action: Action): boolean =>
     (level.actionsUsed[action] == null ||
         level.actionsUsed[action] < level.actionCounts[action]);
 
+const rainbowCanExtend = (tile: Tile | undefined): boolean =>
+    tile?.type === "water" || tile?.type === "rainbow";
+
 const getApplicableArea = (
     level: Level,
     action: Action,
@@ -360,12 +363,12 @@ const getApplicableArea = (
         let ixLeftmost = tilePos.ix;
         let ixRightMost = tilePos.ix;
         while (
-            tileMapGet(level, ixLeftmost - 1, tilePos.iy)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, ixLeftmost - 1, tilePos.iy))
         ) {
             ixLeftmost--;
         }
         while (
-            tileMapGet(level, ixRightMost + 1, tilePos.iy)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, ixRightMost + 1, tilePos.iy))
         ) {
             ixRightMost++;
         }
@@ -389,11 +392,11 @@ const getApplicableArea = (
     if (action === Action.RainbowVertical) {
         let ixTopMost = tilePos.iy;
         let ixBottomMost = tilePos.iy;
-        while (tileMapGet(level, tilePos.ix, ixTopMost - 1)?.type === "water") {
+        while (rainbowCanExtend(tileMapGet(level, tilePos.ix, ixTopMost - 1))) {
             ixTopMost--;
         }
         while (
-            tileMapGet(level, tilePos.ix, ixBottomMost + 1)?.type === "water"
+            rainbowCanExtend(tileMapGet(level, tilePos.ix, ixBottomMost + 1))
         ) {
             ixBottomMost++;
         }
@@ -665,7 +668,7 @@ export const drawLevel = (
             highlightedArea,
             areaHighlightMode,
             highlightedCharacter,
-            level.theme ?? "summer",
+            level.theme,
         );
     });
 
