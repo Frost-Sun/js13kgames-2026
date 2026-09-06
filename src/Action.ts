@@ -1,6 +1,7 @@
 import type { Arrow, TileType } from "./tiles";
 
 export const enum Action {
+    Back,
     // The directions should match with values of Arrow enum
     // so that we get away with a small mapping function.
     Up = 1,
@@ -26,6 +27,7 @@ export const actionToArrow = (
 ): Arrow => action as unknown as Arrow;
 
 export const ActionTiles: Record<Action, TileType | undefined> = {
+    [Action.Back]: undefined,
     [Action.Up]: "land",
     [Action.Down]: "land",
     [Action.Left]: "land",

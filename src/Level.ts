@@ -67,7 +67,12 @@ import {
     type Area,
     type Dimensions,
 } from "./core/math/Area";
-import { setStateLevelFinished, setStateLose, setStateRun } from "./gamestates";
+import {
+    setStateLevelFinished,
+    setStateLose,
+    setStateRun,
+    setStateLevelSelection,
+} from "./gamestates";
 import { Action, actionIsArrow, ActionTiles, actionToArrow } from "./Action";
 import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
 import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
@@ -95,85 +100,93 @@ const actionButtons: Button[] = [
     {
         x: 0,
         y: 0,
-        width: 25,
-        height: 50,
+        width: 0,
+        height: 0,
+        text: "🡸",
+        action: Action.Back,
+    },
+    {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
         text: "🗺️",
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "▲",
         action: Action.Up,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "▼",
         action: Action.Down,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "◀",
         action: Action.Left,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "▶",
         action: Action.Right,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "🌈⟺",
         action: Action.RainbowHorizontal,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "🌈⇳",
         action: Action.RainbowVertical,
     },
     {
         x: 0,
         y: 0,
-        width: 25,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "🦄",
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "⛏️",
         action: Action.Dig,
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "",
     },
     {
         x: 0,
         y: 0,
-        width: 50,
-        height: 50,
+        width: 0,
+        height: 0,
         text: "☢",
         action: Action.Restart,
     },
@@ -547,6 +560,11 @@ export const levelHandleClick = (
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         if (includesPoint(button, position)) {
+            if (button.action === Action.Back) {
+                setStateLevelSelection(time);
+                return;
+            }
+
             if (button.action === Action.Restart) {
                 setStateRun(time, level.number);
                 return;
@@ -719,6 +737,7 @@ export const drawLevel = (
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         const isRestartButton = button.action === Action.Restart;
+        const isBackButton = button.action === Action.Back;
 
         const count =
             button.action != null
@@ -736,7 +755,7 @@ export const drawLevel = (
         if (button.action) {
             // Determine color based on selection or hover
             let fillColor =
-                count || isRestartButton
+                count || isRestartButton || isBackButton
                     ? i === level.selectedActionIndex
                         ? "rgb(219, 52, 141)"
                         : "rgb(172, 15, 94)"
@@ -760,10 +779,13 @@ export const drawLevel = (
         cx.textBaseline = "middle";
         cx.fillStyle = isRestartButton
             ? "rgb(255, 132, 132)"
-            : count
+            : count || isBackButton
               ? "rgb(255, 209, 234)"
               : "rgb(219, 52, 141)";
-        cx.globalAlpha = count || !button.action || isRestartButton ? 1 : 0.6;
+        cx.globalAlpha =
+            count || !button.action || isRestartButton || isBackButton
+                ? 1
+                : 0.6;
         cx.font = `${fontSize}px Courier New`;
         cx.fillText(
             button.text,
@@ -774,7 +796,11 @@ export const drawLevel = (
         if (button.action) {
             cx.font = `${fontSize}px Courier New`;
             cx.fillText(
-                isRestartButton ? "" : count ? (count?.toString() ?? "-") : "-",
+                isRestartButton || isBackButton
+                    ? ""
+                    : count
+                      ? (count?.toString() ?? "-")
+                      : "-",
                 button.x + button.width / 2,
                 button.y + button.height * 0.75,
             );
