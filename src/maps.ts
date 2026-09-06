@@ -64,7 +64,7 @@ const createMapRockTutorial = (number: number): Level => {
         actionCounts: {
             [Action.Dig]: 2,
         },
-        theme: "spring",
+        theme: "summer",
     });
     fill(level, level, "water");
 
@@ -128,7 +128,7 @@ const createMapRocks = (number: number): Level => {
             [Action.RainbowHorizontal]: 1,
             [Action.RainbowVertical]: 1,
         },
-        theme: "autumn",
+        theme: "spring",
     });
     fill(level, level, "water");
 
@@ -173,7 +173,7 @@ const createMapRainbowIslands = (number: number): Level => {
             [Action.RainbowHorizontal]: 4,
             [Action.RainbowVertical]: 4,
         },
-        theme: "summer",
+        theme: "autumn",
     });
     fill(level, level, "water");
 
@@ -225,7 +225,7 @@ const createMapCaves = (number: number): Level => {
             [Action.RainbowHorizontal]: 1,
             [Action.RainbowVertical]: 1,
         },
-        theme: "summer",
+        theme: "winter",
     });
     fill(level, level, "water");
 
