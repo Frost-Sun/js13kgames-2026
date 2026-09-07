@@ -24,13 +24,12 @@
 
 import { type GameObject } from "../GameObject";
 import { cx, drawPart, type DrawCommand } from "../graphics";
-import { HIGHLIGHT_COLOR } from "../theme";
 
 /**
  * The function that actually renders the unicorn.
  * This is what you call in your main draw loop.
  */
-export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
+export const renderUnicorn = (obj: GameObject, highlightColor?: string) => {
     const age = performance.now() / 1000;
     const P = Math.PI;
     const scaleX = obj.velocity.x < 0 ? -1 : 1;
@@ -57,8 +56,8 @@ export const renderUnicorn = (obj: GameObject, highlight: boolean = false) => {
     );
     cx.fill();
 
-    if (highlight) {
-        cx.strokeStyle = HIGHLIGHT_COLOR;
+    if (highlightColor) {
+        cx.strokeStyle = highlightColor;
         cx.beginPath();
         cx.arc(0, 0, obj.width / 4, 0, Math.PI * 2);
         cx.fillStyle = "green";

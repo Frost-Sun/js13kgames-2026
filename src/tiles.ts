@@ -39,8 +39,8 @@ import { random } from "./core/math/random";
 import { renderUnicorn } from "./animations/unicorn";
 import {
     ArrowColorByTheme,
-    DENIED_COLOR,
-    HIGHLIGHT_COLOR,
+    DenyColorByTheme,
+    HighlightColorByTheme,
     LandColorByTheme,
     StrawColorByTheme,
     type Theme,
@@ -392,6 +392,8 @@ export const drawMap = (
     const strawColor = StrawColorByTheme[theme];
     const arrowColor = ArrowColorByTheme[theme];
     const waterColor = "rgb(40, 30, 150)";
+    const highlightColor = HighlightColorByTheme[theme];
+    const denyColor = DenyColorByTheme[theme];
 
     // PASS 1: Draw all Land Tiles
     for (let iy = 0; iy < map.yCount; iy++) {
@@ -706,8 +708,8 @@ export const drawMap = (
         cx.save();
         cx.strokeStyle =
             areaHighlightMode === HighlightMode.Allow
-                ? HIGHLIGHT_COLOR
-                : DENIED_COLOR;
+                ? highlightColor
+                : denyColor;
         cx.strokeRect(
             x + 1,
             y + 1,
@@ -725,7 +727,10 @@ export const drawMap = (
         const o = objectsToDraw[i];
         switch (o.type) {
             case "character": {
-                renderUnicorn(o, o === highlightedCharacter);
+                renderUnicorn(
+                    o,
+                    o === highlightedCharacter ? highlightColor : undefined,
+                );
                 if (o.action === GameObjectAction.Dig) {
                     cx.save();
                     cx.fillStyle = "rgb(29, 26, 26)";
