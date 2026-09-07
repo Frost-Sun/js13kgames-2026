@@ -22,7 +22,14 @@
  * SOFTWARE.
  */
 
-import { kbSfx, startSong, clickSfx, homeSfx, splashSfx } from "./sfxData.ts";
+import {
+    kbSfx,
+    mainSong,
+    clickSfx,
+    homeSfx,
+    splashSfx,
+    introSong,
+} from "./sfxData.ts";
 
 import { createTune, FadeOutIn, type SongData } from "../core/audio/music.js";
 
@@ -33,12 +40,10 @@ import { zzfx } from "../core/audio/sfxPlayer.js";
 // @ts-ignore
 import CPlayer from "../core/audio/musicplayer.js";
 
-export const SFX_START = "start";
+export const SFX_INTRO = "intro";
 export const SFX_RUNNING = "gamestarted";
-export const SFX_CHASE = "chase";
 export const SFX_HOME = "home";
 export const SFX_KB = "keyboard";
-export const SFX_GAMEOVER = "gameover";
 export const SFX_SPLASH = "splash";
 export const SFX_CLICK = "click";
 
@@ -50,8 +55,8 @@ type Tune = {
     numChannels: number;
 };
 
-const startTune = createTune();
-const gameTune = createTune();
+const introTune = createTune();
+const mainTune = createTune();
 
 const initMusicPlayer = (
     audioTrack: { src: string; loop: boolean },
@@ -87,9 +92,10 @@ const initMusicPlayer = (
 
 export const initializeAudio = () => {
     // Keep lint happy while is no more than one item.
-    // return Promise.all([initMusicPlayer(startTune, startSong, true)]);
-
-    return initMusicPlayer(startTune, startSong, true);
+    return Promise.all([
+        initMusicPlayer(introTune, introSong, true),
+        initMusicPlayer(mainTune, mainSong, true),
+    ]);
 };
 
 export const playTune = async (tune: string, vol: number = 1) => {
@@ -97,17 +103,13 @@ export const playTune = async (tune: string, vol: number = 1) => {
 
     switch (tune) {
         case SFX_RUNNING: {
-            FadeOutIn(gameTune, startTune, 0.75);
+            if (mainTune.volume === 0) mainTune.currentTime = 0;
+            FadeOutIn(introTune, mainTune);
             break;
         }
-        case SFX_START: {
-            startTune.currentTime = 0;
-            FadeOutIn(gameTune, startTune);
-            break;
-        }
-        case SFX_CHASE: {
-            gameTune.currentTime = 0;
-            FadeOutIn(startTune, gameTune);
+        case SFX_INTRO: {
+            if (introTune.volume === 0) introTune.currentTime = 0;
+            FadeOutIn(mainTune, introTune);
             break;
         }
         case SFX_HOME: {

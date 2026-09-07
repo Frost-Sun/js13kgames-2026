@@ -134,6 +134,7 @@ const draw = (time: TimeStep): void => {
         case "finished":
         case "lose": {
             const { level } = state;
+
             cx.save();
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);

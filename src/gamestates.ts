@@ -23,7 +23,7 @@
  */
 
 import { waitForKey, waitForInteraction } from "./core/controls/keyboard";
-import { SFX_RUNNING } from "./audio/sfx";
+import { playTune, SFX_INTRO, SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
     getGameState,
@@ -40,7 +40,7 @@ export const setStateLoaded = (time: TimeStep): void => {
         type: "loaded",
         start: time.t,
     });
-    waitForInteraction(SFX_RUNNING).then(() => setStateIntro(time));
+    waitForInteraction(SFX_INTRO).then(() => setStateIntro(time));
 };
 
 export const setStateIntro = (time: TimeStep): void => {
@@ -48,6 +48,7 @@ export const setStateIntro = (time: TimeStep): void => {
         type: "intro",
         start: time.t,
     });
+    playTune(SFX_INTRO);
     waitForInteraction().then(() => setStateLevelSelection(time));
 };
 
@@ -58,6 +59,7 @@ export const setStateLevelSelection = (time: TimeStep): void => {
         start: time.t,
         highestLevel: persistentState.highestLevel,
     });
+    playTune(SFX_INTRO);
     waitForKey("Escape").then(() => setStateIntro(time));
 };
 
@@ -66,7 +68,7 @@ export const setStateRun = (
     mapIndex: number | undefined = undefined,
 ): void => {
     const currentState = getGameState();
-
+    playTune(SFX_RUNNING);
     if (mapIndex != null) {
         setGameState({
             type: "run",
