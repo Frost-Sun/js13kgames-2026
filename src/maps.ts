@@ -57,8 +57,8 @@ const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Use the tools available to guide the unicorns.",
-        xCount: 11,
-        yCount: 5,
+        xCount: 15,
+        yCount: 9,
         characterCount: 1,
         charactersToFinish: 1,
         actionCounts: {
@@ -68,7 +68,7 @@ const createMapRockTutorial = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
+    const inner = carveY(carve(level), 2);
     fill(level, inner, "land");
 
     const [_left, right] = splitX(inner);
@@ -96,11 +96,11 @@ const createMapRainbowTutorial = (number: number): Level => {
     });
     fill(level, level, "water");
 
-    const inner = carveY(carveX(level, 2));
+    const inner = carve(level);
     const [left, right] = splitX(inner, inner.xCount * 0.6);
 
-    const leftIsland = carveRight(carveBottom(left, 2), 2);
-    const rightIsland = carve(right);
+    const leftIsland = carveRight(carveBottom(left, 2), 1);
+    const rightIsland = carveTop(carveLeft(right, 2));
 
     fill(level, leftIsland, "land");
     fill(level, rightIsland, "land");
