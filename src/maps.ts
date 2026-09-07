@@ -83,7 +83,7 @@ const createMapRockTutorial = (number: number): Level => {
 const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "The unicorns are dumb. You must guide them.",
+        introduction: "Rainbows are your friend.",
         xCount: 16,
         yCount: 7,
         characterCount: 3,
