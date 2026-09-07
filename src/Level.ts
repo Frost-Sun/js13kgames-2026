@@ -87,7 +87,7 @@ import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TileArea } from "./core/tiles/TileArea";
 
-const FIRST_CHARACTER_SPAWN_INTERVAL = 2000;
+const FIRST_CHARACTER_SPAWN_INTERVAL = 4000;
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
 const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 1.25;
