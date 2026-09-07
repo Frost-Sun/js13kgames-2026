@@ -24,7 +24,6 @@
 
 import {
     applyCamera,
-    CameraMode,
     screenToLevel,
     type Camera,
 } from "./core/gameplay/Camera";
@@ -32,6 +31,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
     GameObjectAction,
+    RAINBOW_SPEED,
     UNICORN_HEIGHT,
     UNICORN_WIDTH,
     VELOCITY_DOWN,
@@ -74,7 +74,14 @@ import {
     setStateLevelSelection,
 } from "./gamestates";
 import { Action, actionIsArrow, ActionTiles, actionToArrow } from "./Action";
-import { distanceSquared, ZERO_VECTOR, type Vector } from "./core/math/Vector";
+import {
+    distanceSquared,
+    divide,
+    length,
+    multiply,
+    ZERO_VECTOR,
+    type Vector,
+} from "./core/math/Vector";
 import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
@@ -180,7 +187,7 @@ export const createLevel = (params: LevelParameters): Level => ({
     width: params.xCount * TILE_WIDTH,
     height: params.yCount * TILE_HEIGHT,
     camera: {
-        mode: CameraMode.ShowWholeLevel,
+        // mode: CameraMode.ShowWholeLevel,
         x: 50,
         y: 50,
         zoom: 8,
@@ -277,6 +284,18 @@ export const updateLevel = (
             const center = getCenter(o);
             const tile = getTileAt(level, center);
             const tilePos = getTilePosAt(center);
+            const speed = length(o.velocity);
+
+            // Go faster on a rainbow
+            if (tile?.type === "rainbow") {
+                if (0 < speed && speed < RAINBOW_SPEED) {
+                    const direction = divide(o.velocity, speed);
+                    o.velocity = multiply(direction, RAINBOW_SPEED);
+                }
+            } else if (speed > CHARACTER_SPEED) {
+                const direction = divide(o.velocity, speed);
+                o.velocity = multiply(direction, CHARACTER_SPEED);
+            }
 
             if (
                 tile?.type === "water" &&

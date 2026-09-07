@@ -83,7 +83,7 @@ const createMapRockTutorial = (number: number): Level => {
 const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "The unicorns are dumb. You must guide them.",
+        introduction: "Rainbows are your friend.",
         xCount: 16,
         yCount: 7,
         characterCount: 3,
@@ -208,6 +208,73 @@ const createMapRainbowIslands = (number: number): Level => {
     return level;
 };
 
+const createMapMoreIslands = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "You're doing well, keep going.",
+        xCount: 42,
+        yCount: 20,
+        characterCount: 30,
+        charactersToFinish: 25,
+        actionCounts: {
+            [Action.Up]: 5,
+            [Action.Down]: 5,
+            [Action.Left]: 5,
+            [Action.Right]: 5,
+            [Action.Dig]: 4,
+            [Action.RainbowHorizontal]: 5,
+            [Action.RainbowVertical]: 5,
+        },
+        theme: "autumn",
+    });
+    fill(level, level, "water");
+
+    const inner = carveTop(carve(level));
+    const [_a, b, c, d, e, f, g, h, i] = segment9(inner);
+
+    const topArea = sliceTop(b, b.yCount / 2);
+    const [startIsland, _middle, r] = splitX3(topArea, topArea.xCount / 2);
+    const finishIsland = carveRight(r, 2);
+
+    const [middleLeft, _middleRight] = splitX(carve(e));
+    const middleIsland1 = carveBottom(carveRight(middleLeft, 3));
+    const middleIsland2 = sliceLeft(f, 2);
+    const rockIsland = extendUp(coreX(d, 3), 4);
+    const rockIslandRocks = carveY(rockIsland, 2);
+    const rockIslandRocks2 = extendRight(carveTop(rockIslandRocks, 2), 2);
+    const bottom1 = carveRight(sliceRight(g, 6));
+    const rockIsland2 = core(c, 4);
+
+    const little1 = core(i, 2);
+    const little2 = extendRight(core(f, 2));
+    const little3 = extendUp(core(f), 5);
+    const little4 = extendRight(core(h), 2);
+
+    fill(level, startIsland, "land");
+    fill(level, finishIsland, "land");
+    fill(level, sliceLeft(finishIsland), "rock");
+
+    fill(level, middleIsland1, "land");
+
+    fill(level, middleIsland2, "land");
+    fill(level, sliceRight(middleIsland2), "rock");
+
+    fill(level, rockIsland, "land");
+    fill(level, rockIslandRocks, "rock");
+    fill(level, rockIslandRocks2, "rock");
+    fill(level, bottom1, "land");
+    fill(level, little1, "land");
+    fill(level, little2, "land");
+    fill(level, little3, "land");
+    fill(level, little4, "land");
+    fill(level, rockIsland2, "rock");
+
+    fill(level, coreY(sliceLeft(startIsland)), "start");
+    fill(level, core(finishIsland), "finish");
+
+    return level;
+};
+
 const createMapCaves = (number: number): Level => {
     const level = createLevel({
         number,
@@ -283,6 +350,7 @@ export const maps: CreateMapFunction[] = [
     createMapRainbowTutorial,
     createMapRocks,
     createMapRainbowIslands,
+    createMapMoreIslands,
     createMapCaves,
 ];
 

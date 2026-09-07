@@ -25,6 +25,7 @@
 import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
 
+export const RAINBOW_SPEED = 0.03;
 export const CHARACTER_SPEED = 0.005;
 export const DIGGING_SPEED = 0.001;
 
