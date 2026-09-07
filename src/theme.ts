@@ -1,7 +1,20 @@
-export const HIGHLIGHT_COLOR = "rgba(200, 200, 150, 0.9)";
-export const DENIED_COLOR = "rgba(200, 40, 40, 0.5)";
-
 export type Theme = "spring" | "summer" | "autumn" | "winter";
+
+export const HighlightColorByTheme: Readonly<Record<Theme, string>> = {
+    winter: "rgba(130, 130, 80, 0.9)",
+    spring: "rgba(200, 200, 150, 0.9)",
+    summer: "rgba(200, 200, 150, 0.9)",
+    autumn: "rgba(200, 200, 150, 0.9)",
+};
+
+export const DEFAULT_HIGHLIGHT_COLOR = HighlightColorByTheme["summer"];
+
+export const DenyColorByTheme: Readonly<Record<Theme, string>> = {
+    winter: "rgba(200, 40, 40, 0.5)",
+    spring: "rgba(200, 40, 40, 0.5)",
+    summer: "rgba(200, 40, 40, 0.5)",
+    autumn: "rgba(230, 10, 10, 0.5)",
+};
 
 export const LandColorByTheme: Readonly<Record<Theme, string>> = {
     winter: "rgb(200, 200, 255)",

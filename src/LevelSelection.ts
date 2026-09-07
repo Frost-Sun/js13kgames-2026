@@ -6,7 +6,7 @@ import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";
 import { renderText, TextSize } from "./text";
-import { HIGHLIGHT_COLOR, LandColorByTheme } from "./theme";
+import { DEFAULT_HIGHLIGHT_COLOR, LandColorByTheme } from "./theme";
 
 interface Button extends Area {
     text: string;
@@ -62,7 +62,9 @@ export const drawLevelSelection = (
 
         cx.fillStyle = button.enabled ? button.background : "gray";
         cx.strokeStyle =
-            button === highlightedButton ? HIGHLIGHT_COLOR : "rgb(10, 100, 10)";
+            button === highlightedButton
+                ? DEFAULT_HIGHLIGHT_COLOR
+                : "rgb(10, 100, 10)";
         cx.fillRect(button.x, button.y, button.width, button.height);
         cx.strokeRect(button.x, button.y, button.width, button.height);
         cx.fillStyle = "yellow";
