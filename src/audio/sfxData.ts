@@ -248,14 +248,14 @@ const track4 = {
     121, // FX_DELAY_AMT
     5 // FX_DELAY_TIME
   ],
-  p: [6,,6,,6,,6,,6,,6,,6,,6,,,,,,,,,,,,,,,,,,6,,6,,6,,6],
+  p: [3,1,3,2,3,1,3,2,3,1,3,2,3,1,3,2,,,,,,,,,3,1,3,2,3,1,3,2],
   c: [
-    {n: [129], f: []},
-    {n: [134,,,,,,,,,,,,,,,,137], f: []},
-    {n: [137,,,,,,,,,,,,,,,,134], f: []},
-    {n: [141], f: []},
-    {n: [113], f: []},
-    {n: [141], f: []}
+    {n: [146,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,137],
+      f: []},
+    {n: [137,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,146],
+      f: []},
+    {n: [141],
+      f: []}
   ]
 };
 
@@ -375,45 +375,6 @@ const track7 = {
 
 const track8 = {
   i: [
-    2, // OSC1_WAVEFORM
-    138, // OSC1_VOL
-    116, // OSC1_SEMI
-    0, // OSC1_XENV
-    2, // OSC2_WAVEFORM
-    138, // OSC2_VOL
-    128, // OSC2_SEMI
-    4, // OSC2_DETUNE
-    0, // OSC2_XENV
-    0, // NOISE_VOL
-    47, // ENV_ATTACK
-    48, // ENV_SUSTAIN
-    255, // ENV_RELEASE
-    63, // ENV_EXP_DECAY
-    124, // ARP_CHORD
-    3, // ARP_SPEED
-    0, // LFO_WAVEFORM
-    139, // LFO_AMT
-    4, // LFO_FREQ
-    1, // LFO_FX_FREQ
-    3, // FX_FILTER
-    64, // FX_FREQ
-    160, // FX_RESONANCE
-    3, // FX_DIST
-    32, // FX_DRIVE
-    147, // FX_PAN_AMT
-    4, // FX_PAN_FREQ
-    121, // FX_DELAY_AMT
-    5 // FX_DELAY_TIME
-  ],
-  p: [,2,,1,,2,,1,,2,,1,,2,,1,,,,,,,,,,,,,,,,,,2,,1,,2,,1],
-  c: [
-    {n: [137,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,146], f: []},
-    {n: [146,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,137], f: []}
-  ]
-};
-
-const track9 = {
-  i: [
     1, // OSC1_WAVEFORM
     220, // OSC1_VOL
     128, // OSC1_SEMI
@@ -452,7 +413,7 @@ const track9 = {
   ]
 };
 
-const track10 = {
+const track9 = {
   i: [
     3, // OSC1_WAVEFORM
     0, // OSC1_VOL
@@ -491,7 +452,7 @@ const track10 = {
   ]
 };
 
-const track11 = {
+const track10 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -543,22 +504,20 @@ export const mainSong = {
     track7,
     track8,
     track9,
-    track10,
-    track11
+    track10
   ],
   rowLen: 5168,
   patternLen: 32,
   endPattern: 40,
-  numChannels: 12
+  numChannels: 11
 };
 
 export const introSong = {
   songData: [
     track4,
-    track8,
   ],
   rowLen: 5168,
   patternLen: 32,
   endPattern: 15,
-  numChannels: 2
+  numChannels: 1
 };
