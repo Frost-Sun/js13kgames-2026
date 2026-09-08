@@ -729,6 +729,7 @@ export const drawMap = (
             case "character": {
                 renderUnicorn(
                     o,
+                    time,
                     o === highlightedCharacter ? highlightColor : undefined,
                 );
                 if (o.action === GameObjectAction.Dig) {

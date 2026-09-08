@@ -92,32 +92,41 @@ const draw = (time: TimeStep): void => {
             const currentVelocity =
                 direction > 0 ? VELOCITY_LEFT : VELOCITY_RIGHT;
 
-            renderUnicorn({
-                x: canvas.width / 128,
-                y: canvas.height / 1.4,
-                width: canvas.width / 2.5,
-                height: canvas.height / 2.5,
-                type: "character",
-                velocity: currentVelocity,
-            });
+            renderUnicorn(
+                {
+                    x: canvas.width / 128,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
 
-            renderUnicorn({
-                x: canvas.width / 3.5,
-                y: canvas.height / 1.3,
-                width: canvas.width / 2.5,
-                height: canvas.height / 2.5,
-                type: "character",
-                velocity: currentVelocity,
-            });
+            renderUnicorn(
+                {
+                    x: canvas.width / 3.5,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 3.5,
+                    height: canvas.height / 3.5,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
 
-            renderUnicorn({
-                x: canvas.width / 1.75,
-                y: canvas.height / 1.4,
-                width: canvas.width / 2.5,
-                height: canvas.height / 2.5,
-                type: "character",
-                velocity: currentVelocity,
-            });
+            renderUnicorn(
+                {
+                    x: canvas.width / 1.75,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
 
             renderText(GAME_TITLE, TextSize.Huge);
 
