@@ -250,6 +250,7 @@ const createMapRocks = (
 
     fill(level, core(right, 2), "water");
     fill(level, core(a, 3), "water");
+    fill(level, extendLeft(sliceTop(core(a, 3))), "water");
     fill(level, coreY(sliceLeft(a)), "water");
     fill(level, rock3, "rock");
     fill(level, sliceBottom(c), "water");
