@@ -56,7 +56,7 @@ export type CreateMapFunction = (number: number) => Level;
 const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Use the tools available to guide the unicorns.",
+        introduction: "The unicorn digs it.",
         xCount: 15,
         yCount: 9,
         characterCount: 1,
@@ -80,10 +80,67 @@ const createMapRockTutorial = (number: number): Level => {
     return level;
 };
 
+const createMapArrowsTutorial = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Merry go round and round.",
+        xCount: 15,
+        yCount: 9,
+        characterCount: 1,
+        charactersToFinish: 1,
+        actionCounts: {
+            [Action.Up]: 1,
+            [Action.Down]: 1,
+            [Action.Left]: 1,
+            [Action.Right]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carveY(carve(level), 1);
+    fill(level, inner, "land");
+
+    const center = carveX(carve(inner), 3);
+    fill(level, center, "rock");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    return level;
+};
+
 const createMapRainbowTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Rainbows are your friend.",
+        introduction: "Rainbows are your friends.",
+        xCount: 15,
+        yCount: 9,
+        characterCount: 1,
+        charactersToFinish: 1,
+        actionCounts: {
+            [Action.RainbowHorizontal]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carveY(carve(level), 2);
+    fill(level, inner, "land");
+
+    const [_left, right] = splitX(inner);
+    fill(level, sliceLeft(right), "water");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    return level;
+};
+
+const createMapCombineTutorial = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Combine your skills.",
         xCount: 16,
         yCount: 7,
         characterCount: 3,
@@ -346,8 +403,10 @@ const createMapCaves = (number: number): Level => {
 };
 
 export const maps: CreateMapFunction[] = [
-    createMapRockTutorial,
     createMapRainbowTutorial,
+    createMapRockTutorial,
+    createMapArrowsTutorial,
+    createMapCombineTutorial,
     createMapRocks,
     createMapRainbowIslands,
     createMapMoreIslands,
