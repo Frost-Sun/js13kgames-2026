@@ -39,6 +39,7 @@ import {
     extendLeft,
     extendRight,
     extendUp,
+    moveLeft,
     segment4,
     segment9,
     sliceBottom,
@@ -52,6 +53,33 @@ import {
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
+
+const createMapRainbowTutorial = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Rainbows are your friends.",
+        xCount: 15,
+        yCount: 9,
+        characterCount: 1,
+        charactersToFinish: 1,
+        actionCounts: {
+            [Action.RainbowHorizontal]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carveY(carve(level), 2);
+    fill(level, inner, "land");
+
+    const [_left, right] = splitX(inner);
+    fill(level, sliceLeft(right), "water");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    return level;
+};
 
 const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
@@ -109,29 +137,31 @@ const createMapArrowsTutorial = (number: number): Level => {
     return level;
 };
 
-const createMapRainbowTutorial = (number: number): Level => {
+const createMapBounceTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Rainbows are your friends.",
+        introduction: "Please avoid the water. The unicorns hate it.",
         xCount: 15,
-        yCount: 9,
+        yCount: 11,
         characterCount: 1,
         charactersToFinish: 1,
         actionCounts: {
-            [Action.RainbowHorizontal]: 1,
+            [Action.Down]: 1,
         },
         theme: "summer",
     });
     fill(level, level, "water");
 
-    const inner = carveY(carve(level), 2);
-    fill(level, inner, "land");
+    const island = carveY(carve(level), 3);
+    const cape = extendDown(sliceLeft(island, 3), 2);
+    fill(level, island, "land");
+    fill(level, cape, "land");
 
-    const [_left, right] = splitX(inner);
-    fill(level, sliceLeft(right), "water");
+    const [left, wall, _right] = splitX3(island, island.xCount * 0.75);
+    fill(level, wall, "rock");
 
-    fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, coreY(sliceRight(inner)), "finish");
+    fill(level, moveLeft(coreY(sliceRight(left))), "start");
+    fill(level, core(sliceBottom(cape, 2)), "finish");
 
     return level;
 };
@@ -426,6 +456,7 @@ export const maps: CreateMapFunction[] = [
     createMapRainbowTutorial,
     createMapRockTutorial,
     createMapArrowsTutorial,
+    createMapBounceTutorial,
     createMapCombineTutorial,
     createMapRocks.bind(null, {}),
     createMapRainbowIslands,
