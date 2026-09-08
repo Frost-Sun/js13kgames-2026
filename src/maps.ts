@@ -101,7 +101,7 @@ const createMapArrowsTutorial = (number: number): Level => {
     const inner = carveY(carve(level), 1);
     fill(level, inner, "land");
 
-    const center = carveX(carve(inner), 1);
+    const center = carveX(carve(inner), 3);
     fill(level, center, "rock");
 
     fill(level, coreY(sliceLeft(inner)), "start");
