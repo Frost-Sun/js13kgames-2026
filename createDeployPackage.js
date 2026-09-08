@@ -34,15 +34,14 @@ function createBuildZip() {
             // Generate zip with compression
             zip.generateAsync({
                 type: "nodebuffer",
-                compression: "DEFLATE",
-                compressionOptions: { level: 9 },
+                compression: "STORE",
             })
                 .then((data) => {
                     fs.writeFileSync("build.zip", data);
 
                     // Try advzip if available (optional post-processing)
                     exec(
-                        "advzip -z -4 -i 100 build.zip",
+                        "advzip -z -4 -i 300 build.zip",
                         { timeout: 5000 },
                         (advErr) => {
                             if (!advErr) {

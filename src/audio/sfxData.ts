@@ -6,7 +6,7 @@ export const clickSfx = [1.4, , 225, , , , 3, 1.7, -7, , , , , , , , .19, .1, , 
 export const homeSfx = [1.4, ,539, , .04, .29, 1,1.92 , , , 567 , .02, .02 , , , , .04];
 export const splashSfx = [1.4,,1100,.01,,.71,4,2.5,,4.5,,,,,.3,,,.15,.05];
 
-const instrument0 = {
+const track0 = {
   i: [
     1, // OSC1_WAVEFORM
     160, // OSC1_VOL
@@ -72,7 +72,7 @@ const instrument0 = {
   ]
 };
 
-const instrument1 = {
+const track1 = {
   i: [
     3, // OSC1_WAVEFORM
     194, // OSC1_VOL
@@ -136,7 +136,7 @@ const instrument1 = {
   ]
 };
 
-const instrument2 = {
+const track2 = {
   i: [
     0, // OSC1_WAVEFORM
     255, // OSC1_VOL
@@ -175,7 +175,7 @@ const instrument2 = {
   ]
 };
 
-const instrument3 = {
+const track3 = {
   i: [
     1, // OSC1_WAVEFORM
     192, // OSC1_VOL
@@ -216,7 +216,7 @@ const instrument3 = {
   ]
 };
 
-const instrument4 = {
+const track4 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -259,7 +259,7 @@ const instrument4 = {
   ]
 };
 
-const instrument5 = {
+const track5 = {
   i: [
     0, // OSC1_WAVEFORM
     214, // OSC1_VOL
@@ -297,7 +297,7 @@ const instrument5 = {
   ]
 };
 
-const instrument6 = {
+const track6 = {
   i: [
     0, // OSC1_WAVEFORM
     0, // OSC1_VOL
@@ -335,7 +335,7 @@ const instrument6 = {
   ]
 };
 
-const instrument7 = {
+const track7 = {
   i: [
     0, // OSC1_WAVEFORM
     214, // OSC1_VOL
@@ -373,7 +373,7 @@ const instrument7 = {
   ]
 };
 
-const instrument8 = {
+const track8 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -412,7 +412,7 @@ const instrument8 = {
   ]
 };
 
-const instrument9 = {
+const track9 = {
   i: [
     1, // OSC1_WAVEFORM
     220, // OSC1_VOL
@@ -452,7 +452,7 @@ const instrument9 = {
   ]
 };
 
-const instrument10 = {
+const track10 = {
   i: [
     3, // OSC1_WAVEFORM
     0, // OSC1_VOL
@@ -491,7 +491,7 @@ const instrument10 = {
   ]
 };
 
-const instrument11 = {
+const track11 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -533,18 +533,18 @@ const instrument11 = {
 
 export const mainSong = {
   songData: [
-    instrument0,
-    instrument1,
-    instrument2,
-    instrument3,
-    instrument4,
-    instrument5,
-    instrument6,
-    instrument7,
-    instrument8,
-    instrument9,
-    instrument10,
-    instrument11
+    track0,
+    track1,
+    track2,
+    track3,
+    track4,
+    track5,
+    track6,
+    track7,
+    track8,
+    track9,
+    track10,
+    track11
   ],
   rowLen: 5168,
   patternLen: 32,
@@ -554,11 +554,11 @@ export const mainSong = {
 
 export const introSong = {
   songData: [
-    instrument4,
-    instrument8,
+    track4,
+    track8,
   ],
   rowLen: 5168,
   patternLen: 32,
-  endPattern: 4,
+  endPattern: 15,
   numChannels: 2
 };
