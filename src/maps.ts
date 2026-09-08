@@ -92,7 +92,7 @@ const createMapArrowsTutorial = (number: number): Level => {
             [Action.Up]: 1,
             [Action.Down]: 1,
             [Action.Left]: 1,
-            [Action.Right]: 1,
+            [Action.Right]: 2,
         },
         theme: "summer",
     });

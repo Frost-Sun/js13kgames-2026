@@ -732,9 +732,9 @@ export const drawLevel = (
             let fillColor =
                 count || isRestartButton || isBackButton
                     ? i === level.selectedActionIndex
-                        ? "rgb(219, 52, 141)"
+                        ? "rgb(191, 85, 218)"
                         : "rgb(172, 15, 94)"
-                    : "rgb(133, 11, 72)";
+                    : "rgb(114, 10, 62)";
 
             cx.fillStyle = fillColor;
 
