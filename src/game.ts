@@ -145,7 +145,7 @@ const draw = (time: TimeStep): void => {
             const { level } = state;
 
             cx.save();
-            cx.fillStyle = "black";
+            cx.fillStyle = "rgb(40, 30, 150)";
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
             drawLevel(time, state);
