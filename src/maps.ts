@@ -140,7 +140,7 @@ const createMapRainbowTutorial = (number: number): Level => {
 const createMapRainbows = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Combine your skills",
+        introduction: "Combine your skills.",
         xCount: 16,
         yCount: 7,
         characterCount: 3,
