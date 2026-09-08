@@ -89,19 +89,18 @@ const createMapArrowsTutorial = (number: number): Level => {
         characterCount: 1,
         charactersToFinish: 1,
         actionCounts: {
-            [Action.Up]: 1,
-            [Action.Down]: 1,
-            [Action.Left]: 1,
-            [Action.Right]: 1,
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
         },
         theme: "summer",
     });
-    fill(level, level, "water");
+    fill(level, level, "rock");
+    const inner = carve(level);
+    const center = core(inner, 3);
 
-    const inner = carveY(carve(level), 1);
     fill(level, inner, "land");
-
-    const center = carveX(carve(inner), 3);
     fill(level, center, "rock");
 
     fill(level, coreY(sliceLeft(inner)), "start");
