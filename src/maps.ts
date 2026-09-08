@@ -197,8 +197,54 @@ const createMapCombineTutorial = (number: number): Level => {
     return level;
 };
 
+const createMapKeepDigging = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Keep digging.",
+        xCount: 20,
+        yCount: 10,
+        characterCount: 10,
+        charactersToFinish: 8,
+        actionCounts: {
+            [Action.Up]: 3,
+            [Action.Down]: 3,
+            [Action.Left]: 3,
+            [Action.Right]: 3,
+            [Action.Dig]: 2,
+            [Action.RainbowHorizontal]: 1,
+            [Action.RainbowVertical]: 1,
+        },
+        theme: "spring",
+    });
+    fill(level, level, "water");
+
+    const island = carveY(carveX(level, 2));
+    fill(level, island, "land");
+    const [left, right] = splitX(island);
+
+    const [topLeft, bottomLeft] = splitY(left);
+    fill(level, topLeft, "water");
+
+    const rockWall = carveRight(sliceRight(bottomLeft, 3));
+    fill(level, rockWall, "rock");
+
+    fill(level, core(right, 2), "water");
+
+    const [a, b, c, d] = segment4(right);
+    fill(level, core(a, 3), "water");
+    fill(level, coreY(sliceLeft(a)), "water");
+    fill(level, carveY(sliceRight(b, 2)), "rock");
+    fill(level, sliceBottom(c), "water");
+    fill(level, sliceRight(d, 2), "water");
+
+    fill(level, coreY(sliceLeft(bottomLeft)), "start");
+    fill(level, sliceTop(sliceRight(topLeft)), "finish");
+
+    return level;
+};
+
 const RocksMapAlternativeParameters: Partial<LevelParameters> = {
-    introduction: "Keep on digging... oh, wait.",
+    introduction: "Just keep on dig... oh, wait.",
     actionCounts: {
         [Action.Up]: 3,
         [Action.Down]: 1,
@@ -214,7 +260,7 @@ const createMapRocks = (
 ): Level => {
     const level = createLevel({
         number,
-        introduction: "Keep digging.",
+        introduction: "Just keep on digging.",
         xCount: 20,
         yCount: 10,
         characterCount: 10,
@@ -459,6 +505,7 @@ export const maps: CreateMapFunction[] = [
     createMapArrowsTutorial,
     createMapBounceTutorial,
     createMapCombineTutorial,
+    createMapKeepDigging,
     createMapRocks.bind(null, {}),
     createMapRainbowIslands,
     createMapRocks.bind(null, RocksMapAlternativeParameters),
