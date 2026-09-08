@@ -729,13 +729,14 @@ export const drawMap = (
             case "character": {
                 renderUnicorn(
                     o,
+                    time,
                     o === highlightedCharacter ? highlightColor : undefined,
                 );
                 if (o.action === GameObjectAction.Dig) {
                     cx.save();
                     cx.fillStyle = "rgb(29, 26, 26)";
-                    cx.font = "2px Courier New";
-                    cx.fillText("⛏", o.x + o.width / 2 - 1, o.y - 1);
+                    cx.font = "3px Courier New";
+                    cx.fillText("⛏︎", o.x + o.width / 2 - 1, o.y - 3);
                     cx.restore();
                 }
                 break;

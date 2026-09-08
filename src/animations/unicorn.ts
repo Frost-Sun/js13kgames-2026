@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import type { TimeStep } from "../core/time/TimeStep";
 import { type GameObject } from "../GameObject";
 import { cx, drawPart, type DrawCommand } from "../graphics";
 
@@ -29,8 +30,12 @@ import { cx, drawPart, type DrawCommand } from "../graphics";
  * The function that actually renders the unicorn.
  * This is what you call in your main draw loop.
  */
-export const renderUnicorn = (obj: GameObject, highlightColor?: string) => {
-    const age = performance.now() / 1000;
+export const renderUnicorn = (
+    obj: GameObject,
+    time: TimeStep,
+    highlightColor?: string,
+) => {
+    const age = time.t / 1000;
     const P = Math.PI;
     const scaleX = obj.velocity.x < 0 ? -1 : 1;
 
@@ -41,8 +46,8 @@ export const renderUnicorn = (obj: GameObject, highlightColor?: string) => {
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
 
     // Shadow
-    const shadowWidth = (obj.height / 8) * (1.5 - dy * 0.05);
-    const shadowHeight = (obj.height / 8) * 0.4;
+    const shadowWidth = (obj.height / 4) * (1.5 - dy * 0.05);
+    const shadowHeight = obj.height * 0.1;
     cx.fillStyle = "rgba(0, 0, 0, 0.2)";
     cx.beginPath();
     cx.ellipse(
@@ -65,7 +70,7 @@ export const renderUnicorn = (obj: GameObject, highlightColor?: string) => {
         cx.fill();
     }
 
-    cx.scale((obj.height / 100) * scaleX, obj.height / 100);
+    cx.scale((obj.height / 50) * scaleX, obj.height / 50);
     cx.translate(0, -25 + Math.sin(age * P * 4) * 2);
 
     if (obj.velocity.y > 0) {

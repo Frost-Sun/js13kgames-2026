@@ -6,7 +6,7 @@ export const clickSfx = [1.4, , 225, , , , 3, 1.7, -7, , , , , , , , .19, .1, , 
 export const homeSfx = [1.4, ,539, , .04, .29, 1,1.92 , , , 567 , .02, .02 , , , , .04];
 export const splashSfx = [1.4,,1100,.01,,.71,4,2.5,,4.5,,,,,.3,,,.15,.05];
 
-const instrument0 = {
+const track0 = {
   i: [
     1, // OSC1_WAVEFORM
     160, // OSC1_VOL
@@ -72,7 +72,7 @@ const instrument0 = {
   ]
 };
 
-const instrument1 = {
+const track1 = {
   i: [
     3, // OSC1_WAVEFORM
     194, // OSC1_VOL
@@ -136,7 +136,7 @@ const instrument1 = {
   ]
 };
 
-const instrument2 = {
+const track2 = {
   i: [
     0, // OSC1_WAVEFORM
     255, // OSC1_VOL
@@ -175,7 +175,7 @@ const instrument2 = {
   ]
 };
 
-const instrument3 = {
+const track3 = {
   i: [
     1, // OSC1_WAVEFORM
     192, // OSC1_VOL
@@ -216,7 +216,7 @@ const instrument3 = {
   ]
 };
 
-const instrument4 = {
+const track4 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -248,18 +248,18 @@ const instrument4 = {
     121, // FX_DELAY_AMT
     5 // FX_DELAY_TIME
   ],
-  p: [6,,6,,6,,6,,6,,6,,6,,6,,,,,,,,,,,,,,,,,,6,,6,,6,,6],
+  p: [3,1,3,2,3,1,3,2,3,1,3,2,3,1,3,2,,,,,,,,,3,1,3,2,3,1,3,2],
   c: [
-    {n: [129], f: []},
-    {n: [134,,,,,,,,,,,,,,,,137], f: []},
-    {n: [137,,,,,,,,,,,,,,,,134], f: []},
-    {n: [141], f: []},
-    {n: [113], f: []},
-    {n: [141], f: []}
+    {n: [146,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,137],
+      f: []},
+    {n: [137,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,146],
+      f: []},
+    {n: [141],
+      f: []}
   ]
 };
 
-const instrument5 = {
+const track5 = {
   i: [
     0, // OSC1_WAVEFORM
     214, // OSC1_VOL
@@ -297,7 +297,7 @@ const instrument5 = {
   ]
 };
 
-const instrument6 = {
+const track6 = {
   i: [
     0, // OSC1_WAVEFORM
     0, // OSC1_VOL
@@ -335,7 +335,7 @@ const instrument6 = {
   ]
 };
 
-const instrument7 = {
+const track7 = {
   i: [
     0, // OSC1_WAVEFORM
     214, // OSC1_VOL
@@ -373,46 +373,7 @@ const instrument7 = {
   ]
 };
 
-const instrument8 = {
-  i: [
-    2, // OSC1_WAVEFORM
-    138, // OSC1_VOL
-    116, // OSC1_SEMI
-    0, // OSC1_XENV
-    2, // OSC2_WAVEFORM
-    138, // OSC2_VOL
-    128, // OSC2_SEMI
-    4, // OSC2_DETUNE
-    0, // OSC2_XENV
-    0, // NOISE_VOL
-    47, // ENV_ATTACK
-    48, // ENV_SUSTAIN
-    255, // ENV_RELEASE
-    63, // ENV_EXP_DECAY
-    124, // ARP_CHORD
-    3, // ARP_SPEED
-    0, // LFO_WAVEFORM
-    139, // LFO_AMT
-    4, // LFO_FREQ
-    1, // LFO_FX_FREQ
-    3, // FX_FILTER
-    64, // FX_FREQ
-    160, // FX_RESONANCE
-    3, // FX_DIST
-    32, // FX_DRIVE
-    147, // FX_PAN_AMT
-    4, // FX_PAN_FREQ
-    121, // FX_DELAY_AMT
-    5 // FX_DELAY_TIME
-  ],
-  p: [,2,,1,,2,,1,,2,,1,,2,,1,,,,,,,,,,,,,,,,,,2,,1,,2,,1],
-  c: [
-    {n: [137,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,146], f: []},
-    {n: [146,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,137], f: []}
-  ]
-};
-
-const instrument9 = {
+const track8 = {
   i: [
     1, // OSC1_WAVEFORM
     220, // OSC1_VOL
@@ -452,7 +413,7 @@ const instrument9 = {
   ]
 };
 
-const instrument10 = {
+const track9 = {
   i: [
     3, // OSC1_WAVEFORM
     0, // OSC1_VOL
@@ -491,7 +452,7 @@ const instrument10 = {
   ]
 };
 
-const instrument11 = {
+const track10 = {
   i: [
     2, // OSC1_WAVEFORM
     138, // OSC1_VOL
@@ -533,32 +494,30 @@ const instrument11 = {
 
 export const mainSong = {
   songData: [
-    instrument0,
-    instrument1,
-    instrument2,
-    instrument3,
-    instrument4,
-    instrument5,
-    instrument6,
-    instrument7,
-    instrument8,
-    instrument9,
-    instrument10,
-    instrument11
+    track0,
+    track1,
+    track2,
+    track3,
+    track4,
+    track5,
+    track6,
+    track7,
+    track8,
+    track9,
+    track10
   ],
   rowLen: 5168,
   patternLen: 32,
   endPattern: 40,
-  numChannels: 12
+  numChannels: 11
 };
 
 export const introSong = {
   songData: [
-    instrument4,
-    instrument8,
+    track4,
   ],
   rowLen: 5168,
   patternLen: 32,
-  endPattern: 4,
-  numChannels: 2
+  endPattern: 15,
+  numChannels: 1
 };
