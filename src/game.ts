@@ -94,7 +94,7 @@ const draw = (time: TimeStep): void => {
 
             renderUnicorn(
                 {
-                    x: canvas.width / 128,
+                    x: canvas.width / 12,
                     y: canvas.height / 1.4,
                     width: canvas.width / 4,
                     height: canvas.height / 4,
@@ -106,7 +106,7 @@ const draw = (time: TimeStep): void => {
 
             renderUnicorn(
                 {
-                    x: canvas.width / 3.5,
+                    x: canvas.width / 3,
                     y: canvas.height / 1.4,
                     width: canvas.width / 3.5,
                     height: canvas.height / 3.5,
@@ -118,7 +118,7 @@ const draw = (time: TimeStep): void => {
 
             renderUnicorn(
                 {
-                    x: canvas.width / 1.75,
+                    x: canvas.width / 1.5,
                     y: canvas.height / 1.4,
                     width: canvas.width / 4,
                     height: canvas.height / 4,
