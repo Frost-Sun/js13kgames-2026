@@ -25,17 +25,14 @@
 import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
 
-export const RAINBOW_SPEED = 0.03;
+export const RAINBOW_SPEED = 0.02;
 export const CHARACTER_SPEED = 0.005;
 export const DIGGING_SPEED = 0.001;
 
+export let speedRatio = 1;
+
 export const UNICORN_WIDTH = 5;
 export const UNICORN_HEIGHT = 4;
-
-export const VELOCITY_UP: Vector = { x: 0, y: -CHARACTER_SPEED };
-export const VELOCITY_DOWN: Vector = { x: 0, y: CHARACTER_SPEED };
-export const VELOCITY_LEFT: Vector = { x: -CHARACTER_SPEED, y: 0 };
-export const VELOCITY_RIGHT: Vector = { x: CHARACTER_SPEED, y: 0 };
 
 export type GameObjectType = "rock" | "character" | "splash" | "finish";
 
@@ -65,4 +62,8 @@ export const getUnicornCollisionArea = (o: GameObject): Area => {
         width: o.width - 2 * xMargin,
         height: o.height - 2 * yMargin,
     };
+};
+
+export const setSpeedRatio = (newSpeedRatio: number): void => {
+    speedRatio = newSpeedRatio;
 };
