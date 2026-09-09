@@ -28,6 +28,7 @@ import {
     CHARACTER_SPEED,
     DIGGING_SPEED,
     GameObjectAction,
+    speedRatio,
     type GameObject,
 } from "./GameObject";
 import { cx, RainbowColors } from "./graphics";
@@ -301,16 +302,17 @@ const digHorizontally = (
         return;
     }
 
-    const dx = o.velocity.x * time.dt;
     const tilePos = getTilePosAt(objectCenter);
     const nextTile = tileMapGet(map, tilePos.ix + xDirection, tilePos.iy);
     const rock = currentTile.type === "rock" ? currentTile : nextTile;
 
     if (rock?.type === "rock" && rock?.object) {
         // Set slower speed for digging
-        if (Math.abs(o.velocity.x) > DIGGING_SPEED) {
-            o.velocity = { x: xDirection * DIGGING_SPEED, y: 0 };
+        if (Math.abs(o.velocity.x) > DIGGING_SPEED * speedRatio) {
+            o.velocity = { x: xDirection * DIGGING_SPEED * speedRatio, y: 0 };
         }
+
+        const dx = o.velocity.x * time.dt;
 
         // Adjust rock size
         if (xDirection > 0) {
@@ -327,7 +329,10 @@ const digHorizontally = (
             // Check if there are no more rocks to dig
             if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
                 o.action = GameObjectAction.Walk;
-                o.velocity = { x: xDirection * CHARACTER_SPEED, y: 0 };
+                o.velocity = {
+                    x: xDirection * CHARACTER_SPEED * speedRatio,
+                    y: 0,
+                };
             }
         }
     }
@@ -345,16 +350,17 @@ const digVertically = (
         return;
     }
 
-    const dy = o.velocity.y * time.dt;
     const tilePos = getTilePosAt(objectCenter);
     const nextTile = tileMapGet(map, tilePos.ix, tilePos.iy + yDirection);
     const rock = currentTile.type === "rock" ? currentTile : nextTile;
 
     if (rock?.type === "rock" && rock?.object) {
         // Set slower speed for digging
-        if (Math.abs(o.velocity.y) > DIGGING_SPEED) {
-            o.velocity = { x: 0, y: yDirection * DIGGING_SPEED };
+        if (Math.abs(o.velocity.y) > DIGGING_SPEED * speedRatio) {
+            o.velocity = { x: 0, y: yDirection * DIGGING_SPEED * speedRatio };
         }
+
+        const dy = o.velocity.y * time.dt;
 
         // Adjust rock size
         if (yDirection > 0) {
@@ -371,7 +377,10 @@ const digVertically = (
             // Check if there are no more rocks to dig
             if (currentTile.type !== "rock" && nextTile?.type !== "rock") {
                 o.action = GameObjectAction.Walk;
-                o.velocity = { x: 0, y: yDirection * CHARACTER_SPEED };
+                o.velocity = {
+                    x: 0,
+                    y: yDirection * CHARACTER_SPEED * speedRatio,
+                };
             }
         }
     }

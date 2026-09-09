@@ -11,6 +11,7 @@ export const enum Action {
     RainbowHorizontal,
     RainbowVertical,
     Dig,
+    Fastforward,
     Restart,
 }
 
@@ -35,5 +36,6 @@ export const ActionTiles: Record<Action, TileType | undefined> = {
     [Action.RainbowHorizontal]: "water",
     [Action.RainbowVertical]: "water",
     [Action.Dig]: undefined,
+    [Action.Fastforward]: undefined,
     [Action.Restart]: undefined,
 };
