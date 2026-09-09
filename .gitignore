@@ -27,4 +27,4 @@ dist-ssr
 
 build.zip
 
-temp_gc.js
+tmp/*
