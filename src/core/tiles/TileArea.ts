@@ -256,6 +256,15 @@ export const extendDown = (area: TileArea, size: number = 1): TileArea => ({
     yCount: area.yCount + size,
 });
 
+export const extendX = (area: TileArea, size: number = 1): TileArea =>
+    extendLeft(extendRight(area, size), size);
+
+export const extendY = (area: TileArea, size: number = 1): TileArea =>
+    extendUp(extendDown(area, size), size);
+
+export const extend = (area: TileArea, size: number = 1): TileArea =>
+    extendX(extendY(area, size), size);
+
 export const walk = (
     a: TileArea,
     b: TileArea,
