@@ -73,7 +73,7 @@ const createMapRainbowTutorial = (number: number): Level => {
     fill(level, inner, "land");
 
     const [_left, right] = splitX(inner);
-    fill(level, sliceLeft(right), "water");
+    fill(level, sliceLeft(right, 3), "water");
 
     fill(level, coreY(sliceLeft(inner)), "start");
     fill(level, coreY(sliceRight(inner)), "finish");
