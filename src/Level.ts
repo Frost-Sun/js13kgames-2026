@@ -252,8 +252,8 @@ export const updateLevel = (
 
     const isFirstCharacter = level.charactersLeft === level.characterCount;
     const currentInterval = isFirstCharacter
-        ? FIRST_CHARACTER_SPAWN_INTERVAL
-        : CHARACTER_SPAWN_INTERVAL;
+        ? FIRST_CHARACTER_SPAWN_INTERVAL / speedRatio
+        : CHARACTER_SPAWN_INTERVAL / speedRatio;
 
     if (
         level.charactersLeft > 0 &&
