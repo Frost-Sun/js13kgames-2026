@@ -4,7 +4,6 @@ import { initializeAudio, playTune, SFX_CLICK } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
-import { VELOCITY_LEFT, VELOCITY_RIGHT } from "./GameObject";
 import { getGameState } from "./GameState";
 import { isLastLevel, setStateLoaded } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
@@ -20,6 +19,7 @@ import {
     levelSelectionHandleClick,
 } from "./LevelSelection";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
+import { CHARACTER_SPEED, speedRatio } from "./GameObject";
 
 export const IntroductionTextTime = 4000;
 
@@ -90,7 +90,9 @@ const draw = (time: TimeStep): void => {
             const direction = drawRainbowBackground(time, state.start);
 
             const currentVelocity =
-                direction > 0 ? VELOCITY_LEFT : VELOCITY_RIGHT;
+                direction > 0
+                    ? { x: -CHARACTER_SPEED, y: 0 }
+                    : { x: CHARACTER_SPEED, y: 0 };
 
             renderUnicorn(
                 {

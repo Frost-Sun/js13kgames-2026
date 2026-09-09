@@ -32,12 +32,10 @@ import {
     CHARACTER_SPEED,
     GameObjectAction,
     RAINBOW_SPEED,
+    setSpeedRatio,
+    speedRatio,
     UNICORN_HEIGHT,
     UNICORN_WIDTH,
-    VELOCITY_DOWN,
-    VELOCITY_LEFT,
-    VELOCITY_RIGHT,
-    VELOCITY_UP,
     type GameObject,
 } from "./GameObject";
 import type {
@@ -145,6 +143,10 @@ const actionButtons: Button[] = [
     },
     {
         text: "",
+    },
+    {
+        text: "▶▶",
+        action: Action.Fastforward,
     },
     {
         text: "☢",
@@ -284,17 +286,24 @@ export const updateLevel = (
             const center = getCenter(o);
             const tile = getTileAt(level, center);
             const tilePos = getTilePosAt(center);
-            const speed = length(o.velocity);
+            const direction = divide(o.velocity, length(o.velocity));
+            const currentVelocity = (o.velocity = multiply(
+                direction,
+                RAINBOW_SPEED * speedRatio,
+            ));
+            const speed = length(currentVelocity);
 
             // Go faster on a rainbow
             if (tile?.type === "rainbow") {
-                if (0 < speed && speed < RAINBOW_SPEED) {
-                    const direction = divide(o.velocity, speed);
-                    o.velocity = multiply(direction, RAINBOW_SPEED);
+                if (0 < speed && speed < RAINBOW_SPEED * speedRatio) {
+                    o.velocity = multiply(
+                        direction,
+                        RAINBOW_SPEED * speedRatio,
+                    );
                 }
-            } else if (speed > CHARACTER_SPEED) {
+            } else if (speed > CHARACTER_SPEED * speedRatio) {
                 const direction = divide(o.velocity, speed);
-                o.velocity = multiply(direction, CHARACTER_SPEED);
+                o.velocity = multiply(direction, CHARACTER_SPEED * speedRatio);
             }
 
             if (
@@ -316,22 +325,22 @@ export const updateLevel = (
                 tile?.arrow === Arrow.Up &&
                 includesArea(tileToArea(tilePos), o)
             ) {
-                o.velocity = VELOCITY_UP;
+                o.velocity = { x: 0, y: -CHARACTER_SPEED * speedRatio };
             } else if (
                 tile?.arrow === Arrow.Down &&
                 includesArea(tileToArea(tilePos), o)
             ) {
-                o.velocity = VELOCITY_DOWN;
+                o.velocity = { x: 0, y: CHARACTER_SPEED * speedRatio };
             } else if (
                 tile?.arrow === Arrow.Left &&
                 includesArea(tileToArea(tilePos), o)
             ) {
-                o.velocity = VELOCITY_LEFT;
+                o.velocity = { x: -CHARACTER_SPEED * speedRatio, y: 0 };
             } else if (
                 tile?.arrow === Arrow.Right &&
                 includesArea(tileToArea(tilePos), o)
             ) {
-                o.velocity = VELOCITY_RIGHT;
+                o.velocity = { x: CHARACTER_SPEED * speedRatio, y: 0 };
             }
         }
     }
@@ -545,6 +554,15 @@ export const levelHandleClick = (
                 return;
             }
 
+            if (button.action === Action.Fastforward) {
+                if (speedRatio === 1) {
+                    setSpeedRatio(10);
+                } else {
+                    setSpeedRatio(1);
+                }
+                return;
+            }
+
             toggleActionButton(level, i);
             return;
         }
@@ -712,6 +730,7 @@ export const drawLevel = (
     for (let i = 0; i < actionButtons.length; i++) {
         const button = actionButtons[i];
         const isRestartButton = button.action === Action.Restart;
+        const isFastforwardButton = button.action === Action.Fastforward;
         const isBackButton = button.action === Action.Back;
 
         const count =
@@ -730,8 +749,9 @@ export const drawLevel = (
         if (button.action) {
             // Determine color based on selection or hover
             let fillColor =
-                count || isRestartButton || isBackButton
-                    ? i === level.selectedActionIndex
+                count || isRestartButton || isFastforwardButton || isBackButton
+                    ? i === level.selectedActionIndex ||
+                      (isFastforwardButton && speedRatio > 1)
                         ? "rgb(191, 85, 218)"
                         : "rgb(172, 15, 94)"
                     : "rgb(114, 10, 62)";
@@ -754,11 +774,15 @@ export const drawLevel = (
         cx.textBaseline = "middle";
         cx.fillStyle = isRestartButton
             ? "rgb(255, 176, 176)"
-            : count || isBackButton
+            : count || isBackButton || isFastforwardButton
               ? "rgb(255, 209, 234)"
               : "rgb(219, 52, 141)";
         cx.globalAlpha =
-            count || !button.action || isRestartButton || isBackButton
+            count ||
+            !button.action ||
+            isRestartButton ||
+            isBackButton ||
+            isFastforwardButton
                 ? 1
                 : 0.6;
         cx.font = `${fontSize}px Courier New`;
@@ -771,7 +795,7 @@ export const drawLevel = (
         if (button.action) {
             cx.font = `${fontSize}px Courier New`;
             cx.fillText(
-                isRestartButton || isBackButton
+                isRestartButton || isBackButton || isFastforwardButton
                     ? ""
                     : count
                       ? (count?.toString() ?? "-")

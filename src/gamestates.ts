@@ -34,6 +34,7 @@ import {
 } from "./GameState";
 import { createMap, maps } from "./maps";
 import { load, saveHighestLevel } from "./storage";
+import { setSpeedRatio } from "./GameObject";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -69,6 +70,7 @@ export const setStateRun = (
 ): void => {
     const currentState = getGameState();
     playTune(SFX_RUNNING);
+    setSpeedRatio(1);
     if (mapIndex != null) {
         setGameState({
             type: "run",
