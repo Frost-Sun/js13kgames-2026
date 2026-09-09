@@ -229,6 +229,11 @@ export const coreY = (area: TileArea, size: number = 1): TileArea => {
 export const core = (area: TileArea, size: number = 1): TileArea =>
     coreX(coreY(area, size), size);
 
+export const moveLeft = (area: TileArea, size: number = 1): TileArea => ({
+    ...area,
+    ix: area.ix - size,
+});
+
 export const extendLeft = (area: TileArea, size: number = 1): TileArea => ({
     ...area,
     ix: area.ix - size,

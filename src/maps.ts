@@ -23,7 +23,7 @@
  */
 
 import { Action } from "./Action";
-import { createLevel, type Level } from "./Level";
+import { createLevel, type Level, type LevelParameters } from "./Level";
 import {
     carve,
     carveBottom,
@@ -39,6 +39,7 @@ import {
     extendLeft,
     extendRight,
     extendUp,
+    moveLeft,
     segment4,
     segment9,
     sliceBottom,
@@ -52,6 +53,33 @@ import {
 import { fill, findTilePosition, tileToArea } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
+
+const createMapRainbowTutorial = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Rainbows are your friends.",
+        xCount: 15,
+        yCount: 9,
+        characterCount: 1,
+        charactersToFinish: 1,
+        actionCounts: {
+            [Action.RainbowHorizontal]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carveY(carve(level), 2);
+    fill(level, inner, "land");
+
+    const [_left, right] = splitX(inner);
+    fill(level, sliceLeft(right, 3), "water");
+
+    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, coreY(sliceRight(inner)), "finish");
+
+    return level;
+};
 
 const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
@@ -96,12 +124,11 @@ const createMapArrowsTutorial = (number: number): Level => {
         },
         theme: "summer",
     });
-    fill(level, level, "water");
+    fill(level, level, "rock");
+    const inner = carve(level);
+    const center = core(inner, 3);
 
-    const inner = carveY(carve(level), 1);
     fill(level, inner, "land");
-
-    const center = carveX(carve(inner), 3);
     fill(level, center, "rock");
 
     fill(level, coreY(sliceLeft(inner)), "start");
@@ -110,29 +137,31 @@ const createMapArrowsTutorial = (number: number): Level => {
     return level;
 };
 
-const createMapRainbowTutorial = (number: number): Level => {
+const createMapBounceTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Rainbows are your friends.",
+        introduction: "Please avoid the water. The unicorns hate it.",
         xCount: 15,
-        yCount: 9,
+        yCount: 11,
         characterCount: 1,
         charactersToFinish: 1,
         actionCounts: {
-            [Action.RainbowHorizontal]: 1,
+            [Action.Down]: 1,
         },
         theme: "summer",
     });
     fill(level, level, "water");
 
-    const inner = carveY(carve(level), 2);
-    fill(level, inner, "land");
+    const island = carveY(carve(level), 3);
+    const cape = extendDown(sliceLeft(island, 3), 2);
+    fill(level, island, "land");
+    fill(level, cape, "land");
 
-    const [_left, right] = splitX(inner);
-    fill(level, sliceLeft(right), "water");
+    const [left, wall, _right] = splitX3(island, island.xCount * 0.75);
+    fill(level, wall, "rock");
 
-    fill(level, coreY(sliceLeft(inner)), "start");
-    fill(level, coreY(sliceRight(inner)), "finish");
+    fill(level, moveLeft(coreY(sliceRight(left))), "start");
+    fill(level, core(sliceBottom(cape, 2)), "finish");
 
     return level;
 };
@@ -168,7 +197,7 @@ const createMapCombineTutorial = (number: number): Level => {
     return level;
 };
 
-const createMapRocks = (number: number): Level => {
+const createMapKeepDigging = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Keep digging.",
@@ -207,6 +236,74 @@ const createMapRocks = (number: number): Level => {
     fill(level, carveY(sliceRight(b, 2)), "rock");
     fill(level, sliceBottom(c), "water");
     fill(level, sliceRight(d, 2), "water");
+
+    fill(level, coreY(sliceLeft(bottomLeft)), "start");
+    fill(level, sliceTop(sliceRight(topLeft)), "finish");
+
+    return level;
+};
+
+const RocksMapAlternativeParameters: Partial<LevelParameters> = {
+    introduction: "Just keep on dig... oh, wait.",
+    actionCounts: {
+        [Action.Up]: 3,
+        [Action.Down]: 1,
+        [Action.Left]: 2,
+        [Action.Right]: 2,
+        [Action.RainbowHorizontal]: 2,
+    },
+};
+
+const createMapRocks = (
+    params: Partial<LevelParameters>,
+    number: number,
+): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Just keep on digging.",
+        xCount: 20,
+        yCount: 10,
+        characterCount: 10,
+        charactersToFinish: 8,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
+            [Action.Dig]: 3,
+        },
+        theme: "spring",
+        ...params,
+    });
+    fill(level, level, "water");
+
+    const island = carveY(carveX(level, 2));
+    fill(level, island, "land");
+
+    const [left, right] = splitX(island);
+    const [topLeft, bottomLeft] = splitY(left);
+    const rockWall = carveBottom(carveRight(sliceRight(bottomLeft, 2)));
+    const cape = extendUp(extendLeft(sliceLeft(bottomLeft, 2)), 2);
+
+    const [a, b, c, d] = segment4(right);
+    const rock2 = extendRight(coreY(c, 2));
+    const rock3 = core(b, 2);
+
+    fill(level, topLeft, "water");
+    fill(level, cape, "land");
+    fill(level, sliceTop(sliceRight(cape)), "water");
+    fill(level, rockWall, "rock");
+
+    fill(level, core(right, 2), "water");
+    fill(level, core(a, 3), "water");
+    fill(level, extendLeft(sliceTop(core(a, 3))), "water");
+    fill(level, coreY(sliceLeft(a)), "water");
+    fill(level, rock3, "rock");
+    fill(level, sliceBottom(c), "water");
+    fill(level, sliceRight(d, 2), "water");
+    fill(level, rock2, "rock");
+    fill(level, sliceTop(sliceLeft(rock2)), "land");
+    fill(level, sliceBottom(sliceRight(rock2)), "land");
 
     fill(level, coreY(sliceLeft(bottomLeft)), "start");
     fill(level, sliceTop(sliceRight(topLeft)), "finish");
@@ -406,9 +503,12 @@ export const maps: CreateMapFunction[] = [
     createMapRainbowTutorial,
     createMapRockTutorial,
     createMapArrowsTutorial,
+    createMapBounceTutorial,
     createMapCombineTutorial,
-    createMapRocks,
+    createMapKeepDigging,
+    createMapRocks.bind(null, {}),
     createMapRainbowIslands,
+    createMapRocks.bind(null, RocksMapAlternativeParameters),
     createMapMoreIslands,
     createMapCaves,
 ];

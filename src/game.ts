@@ -21,7 +21,7 @@ import {
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
 import { CHARACTER_SPEED } from "./GameObject";
 
-export const IntroductionTextTime = 4000;
+export const IntroductionTextTime = 6000;
 
 const TIME_STEP = 1000 / 60;
 const MAX_FRAME = TIME_STEP * 5;
