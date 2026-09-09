@@ -12,5 +12,6 @@ var ProtectedProperties = {
     winter: null,
     spring: null,
     summer: null,
-    autumn: null
+    autumn: null,
+    highestLevel: null,
 };
