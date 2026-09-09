@@ -19,7 +19,7 @@ import {
     levelSelectionHandleClick,
 } from "./LevelSelection";
 import { renderText, renderWaitForProgressInput, TextSize } from "./text";
-import { CHARACTER_SPEED, speedRatio } from "./GameObject";
+import { CHARACTER_SPEED } from "./GameObject";
 
 export const IntroductionTextTime = 4000;
 
