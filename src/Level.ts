@@ -211,6 +211,11 @@ export const createLevel = (params: LevelParameters): Level => ({
     areaHighlightMode: HighlightMode.Allow,
 });
 
+export const clearLevelControls = (level: Level): void => {
+    level.highlightedCharacter = undefined;
+    level.highlightedArea = undefined;
+};
+
 const toggleActionButton = (level: Level, i: number): void => {
     if (i === level.selectedActionIndex) {
         level.selectedActionIndex = undefined;

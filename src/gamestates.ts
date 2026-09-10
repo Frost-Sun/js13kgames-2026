@@ -37,6 +37,7 @@ import { createMap, maps } from "./maps";
 import { load, saveHighestLevel } from "./storage";
 import { setSpeedRatio } from "./GameObject";
 import { sleep } from "./core/time/sleep";
+import { clearLevelControls } from "./Level";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -120,6 +121,7 @@ export const setStateLose = (
     currentState: GameStateRun,
     time: TimeStep,
 ): void => {
+    clearLevelControls(currentState.level);
     setGameState({
         type: "lose",
         start: time.t,
@@ -134,6 +136,7 @@ export const setStateWin = (
     currentState: GameStateLevelFinished,
     time: TimeStep,
 ): void => {
+    clearLevelControls(currentState.level);
     setGameState({
         type: "win",
         start: time.t,
