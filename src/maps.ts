@@ -248,7 +248,7 @@ const createMapKeepDigging = (number: number): Level => {
 const createMapBaboonIsland = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Baboon island",
+        introduction: "Baboon Island",
         xCount: 30,
         yCount: 18,
         characterCount: 10,
@@ -301,6 +301,80 @@ const createMapBaboonIsland = (number: number): Level => {
 
     fill(level, sliceLeft(sliceTop(coreIsland)), "start");
     fill(level, sliceRight(sliceBottom(coreIsland)), "finish");
+
+    return level;
+};
+
+const createMapReturnToBaboonIsland = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Return to Baboon Island",
+        xCount: 30,
+        yCount: 18,
+        characterCount: 10,
+        charactersToFinish: 5,
+        actionCounts: {
+            [Action.Up]: 4,
+            [Action.Down]: 4,
+            [Action.Left]: 4,
+            [Action.Right]: 4,
+            [Action.Dig]: 4,
+            [Action.RainbowHorizontal]: 2,
+            [Action.RainbowVertical]: 1,
+        },
+        theme: "autumn",
+    });
+    fill(level, level, "water");
+
+    const coreIsland = core(level, level.yCount * 0.7);
+    const wider = carveY(extendX(coreIsland));
+    const higher = carveX(extendY(coreIsland));
+
+    const cape1 = extendRight(sliceRight(sliceTop(wider)), 6);
+    const cape2 = extendDown(sliceRight(cape1, 3), 8);
+
+    const rocks = carve(coreIsland, 3);
+    const rocksWider = carve(wider, 3);
+    const rocksHigher = carve(higher, 3);
+
+    const smallRock1 = sliceRight(sliceTop(coreIsland, 2), 2);
+    const smallRock2 = sliceLeft(sliceBottom(coreIsland, 2), 2);
+    const smallRock3 = sliceRight(coreY(wider, 3), 3);
+
+    const water = sliceLeft(coreY(wider, 4), 3);
+
+    const [tempUpper, tempLower] = splitY(carve(rocks));
+    const [upperLeft, upperRight] = splitX(carveBottom(tempUpper));
+    const [lowerLeft, lowerRight] = splitX(tempLower);
+    const leftEye = carveRight(upperLeft);
+    const rightEye = upperRight;
+    const w3 = carveRight(lowerLeft);
+    const w4 = lowerRight;
+
+    fill(level, coreIsland, "land");
+    fill(level, wider, "land");
+    fill(level, higher, "land");
+
+    fill(level, cape1, "land");
+    fill(level, cape2, "land");
+
+    fill(level, rocks, "rock");
+    fill(level, rocksWider, "rock");
+    fill(level, rocksHigher, "rock");
+
+    fill(level, leftEye, "water");
+    fill(level, rightEye, "water");
+    fill(level, w3, "water");
+    fill(level, w4, "water");
+
+    fill(level, smallRock1, "rock");
+    fill(level, smallRock2, "rock");
+    fill(level, smallRock3, "rock");
+
+    fill(level, water, "water");
+
+    fill(level, sliceLeft(sliceTop(coreIsland)), "start");
+    fill(level, moveLeft(sliceTop(coreX(tempLower))), "finish");
 
     return level;
 };
@@ -571,6 +645,7 @@ export const maps: CreateMapFunction[] = [
     createMapBaboonIsland,
     createMapRocks.bind(null, {}),
     createMapRainbowIslands,
+    createMapReturnToBaboonIsland,
     createMapRocks.bind(null, RocksMapAlternativeParameters),
     createMapMoreIslands,
     createMapCaves,
