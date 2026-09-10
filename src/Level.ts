@@ -180,6 +180,9 @@ export interface Level extends TileMap<Tile>, LevelParameters {
     lastSpawnTime: number;
     selectedActionIndex?: number;
     actionsUsed: Partial<Record<Action, number>>;
+    highlightedCharacter?: GameObject;
+    highlightedArea?: TileArea;
+    areaHighlightMode: HighlightMode;
 }
 
 export const createLevel = (params: LevelParameters): Level => ({
@@ -204,6 +207,7 @@ export const createLevel = (params: LevelParameters): Level => ({
     charactersFinished: 0,
     lastSpawnTime: 0,
     actionsUsed: {},
+    areaHighlightMode: HighlightMode.Allow,
 });
 
 const toggleActionButton = (level: Level, i: number): void => {
@@ -480,10 +484,6 @@ const consumeAction = (
     return undefined;
 };
 
-let highlightedCharacter: GameObject | undefined;
-let highlightedArea: TileArea | undefined;
-let areaHighlightMode: HighlightMode;
-
 export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
     if (level.selectedActionIndex != null) {
         const { camera } = level;
@@ -508,27 +508,31 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     )) &&
                     character.action !== GameObjectAction.Dig
                 ) {
-                    highlightedCharacter = character;
+                    level.highlightedCharacter = character;
                 } else {
-                    highlightedCharacter = undefined;
+                    level.highlightedCharacter = undefined;
                 }
             } else {
-                highlightedArea = getApplicableArea(
+                level.highlightedArea = getApplicableArea(
                     level,
                     selectedAction,
                     tile,
                     tilePos,
                 );
-                if (highlightedArea) {
-                    areaHighlightMode = HighlightMode.Allow;
+                if (level.highlightedArea) {
+                    level.areaHighlightMode = HighlightMode.Allow;
                 } else {
-                    highlightedArea = { ...tilePos, xCount: 1, yCount: 1 };
-                    areaHighlightMode = HighlightMode.Deny;
+                    level.highlightedArea = {
+                        ...tilePos,
+                        xCount: 1,
+                        yCount: 1,
+                    };
+                    level.areaHighlightMode = HighlightMode.Deny;
                 }
             }
         } else {
-            highlightedArea = undefined;
-            highlightedCharacter = undefined;
+            level.highlightedArea = undefined;
+            level.highlightedCharacter = undefined;
         }
     }
 };
@@ -702,9 +706,9 @@ export const drawLevel = (
             time,
             level,
             level.objects,
-            highlightedArea,
-            areaHighlightMode,
-            highlightedCharacter,
+            level.highlightedArea,
+            level.areaHighlightMode,
+            level.highlightedCharacter,
             level.theme,
         );
     });
