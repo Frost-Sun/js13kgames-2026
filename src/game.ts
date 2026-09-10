@@ -4,7 +4,7 @@ import { initializeAudio, playTune, SFX_CLICK } from "./audio/sfx";
 import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
-import { getGameState } from "./GameState";
+import { getGameState, WAIT_FOR_NEXT_STATE } from "./GameState";
 import { isLastLevel, setStateLoaded } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import {
@@ -132,7 +132,9 @@ const draw = (time: TimeStep): void => {
 
             renderText(GAME_TITLE, TextSize.Huge);
 
-            renderWaitForProgressInput("start the game");
+            if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
+                renderWaitForProgressInput("start the game");
+            }
 
             cx.restore();
             break;
@@ -172,20 +174,26 @@ const draw = (time: TimeStep): void => {
                 }
             } else if (state.type === "finished") {
                 renderText("LEVEL FINISHED!", TextSize.Large);
-                if (isLastLevel(state)) {
-                    renderWaitForProgressInput("to continue", 15.5);
-                    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
-                } else {
-                    renderWaitForProgressInput(
-                        "continue to the next map",
-                        15.5,
-                    );
-                    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+
+                if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
+                    if (isLastLevel(state)) {
+                        renderWaitForProgressInput("to continue", 15.5);
+                        renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+                    } else {
+                        renderWaitForProgressInput(
+                            "continue to the next map",
+                            15.5,
+                        );
+                        renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+                    }
                 }
             } else if (state.type === "lose") {
                 renderText("MAP FAILED!", TextSize.Large);
-                renderWaitForProgressInput("try again", 15.5);
-                renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+
+                if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
+                    renderWaitForProgressInput("try again", 15.5);
+                    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+                }
             }
 
             cx.restore();
@@ -197,7 +205,10 @@ const draw = (time: TimeStep): void => {
             drawRainbowBackground(time, state.start);
 
             renderText("YOU WIN!", TextSize.Huge);
-            renderWaitForProgressInput("continue", 15.5);
+
+            if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
+                renderWaitForProgressInput("continue", 15.5);
+            }
 
             cx.restore();
             break;

@@ -28,6 +28,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     getGameState,
     setGameState,
+    WAIT_FOR_NEXT_STATE,
     type GameStateLevelFinished,
     type GameStateLose,
     type GameStateRun,
@@ -35,6 +36,7 @@ import {
 import { createMap, maps } from "./maps";
 import { load, saveHighestLevel } from "./storage";
 import { setSpeedRatio } from "./GameObject";
+import { sleep } from "./core/time/sleep";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -50,7 +52,9 @@ export const setStateIntro = (time: TimeStep): void => {
         start: time.t,
     });
     playTune(SFX_INTRO);
-    waitForInteraction().then(() => setStateLevelSelection(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateLevelSelection(time));
 };
 
 export const setStateLevelSelection = (time: TimeStep): void => {
@@ -107,7 +111,9 @@ export const setStateLevelFinished = (
         level: currentState.level,
     });
     saveHighestLevel(currentState.level.number + 1);
-    waitForInteraction().then(() => setStateRun(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateRun(time));
 };
 
 export const setStateLose = (
@@ -119,9 +125,9 @@ export const setStateLose = (
         start: time.t,
         level: currentState.level,
     });
-    waitForInteraction().then(() =>
-        setStateRun(time, currentState.level.number),
-    );
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateRun(time, currentState.level.number));
 };
 
 export const setStateWin = (
@@ -133,7 +139,9 @@ export const setStateWin = (
         start: time.t,
         level: currentState.level,
     });
-    waitForInteraction().then(() => setStateIntro(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateIntro(time));
 };
 
 export const isLastLevel = (
