@@ -42,10 +42,10 @@ export const drawLevelSelection = (
     );
 
     cx.lineWidth = 5;
-    cx.font = "38px Courier New";
+    cx.font = "38px Courier New semi-bold";
 
-    renderText("Select a map", TextSize.Normal, 1, 33, false);
-    renderText("ESC to quit", TextSize.Tiny, 0.8, 17);
+    renderText("Select a map", TextSize.Normal, 1, 32, false);
+    renderText("ESC to quit", TextSize.Tiny, 0.8, 16);
 
     for (let i = 0; i < maps.length; i++) {
         const x = marginX + (i % iconsPerRow) * (iconWidth + marginX);
@@ -60,17 +60,18 @@ export const drawLevelSelection = (
         button.width = iconWidth;
         button.height = iconHeight;
 
-        cx.fillStyle = button.enabled ? button.background : "gray";
+        cx.fillStyle = button.background;
+        cx.globalAlpha = button.enabled ? 1 : 0.3;
         cx.strokeStyle =
             button === highlightedButton
                 ? DEFAULT_HIGHLIGHT_COLOR
                 : "rgb(10, 100, 10)";
         cx.fillRect(button.x, button.y, button.width, button.height);
         cx.strokeRect(button.x, button.y, button.width, button.height);
-        cx.fillStyle = "yellow";
+        cx.fillStyle = "white";
         cx.fillText(
-            button.text,
-            button.x + iconWidth * 0.4,
+            button.text.padStart(2, "0"),
+            button.x + iconWidth * 0.35,
             button.y + iconHeight * 0.6,
         );
     }
