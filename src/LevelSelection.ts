@@ -1,7 +1,10 @@
 import { includesPoint, type Area } from "./core/math/Area";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TimeStep } from "./core/time/TimeStep";
-import type { GameStateLevelSelection } from "./GameState";
+import {
+    WAIT_FOR_LEVEL_SELECTION_CLICK,
+    type GameStateLevelSelection,
+} from "./GameState";
 import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";
@@ -94,9 +97,13 @@ export const levelSelectionHandeMouseMove = (event: MouseEvent): void => {
 };
 
 export const levelSelectionHandleClick = (
+    state: GameStateLevelSelection,
     time: TimeStep,
     event: MouseEvent,
 ): void => {
+    if (!(WAIT_FOR_LEVEL_SELECTION_CLICK < time.t - state.start)) {
+        return;
+    }
     const position = mousePositionToCanvasPosition(canvas, event);
 
     for (let i = 0; i < buttons.length; i++) {

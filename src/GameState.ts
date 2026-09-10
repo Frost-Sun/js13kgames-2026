@@ -25,6 +25,7 @@
 import type { Level } from "./Level";
 
 export const WAIT_FOR_NEXT_STATE = 2000;
+export const WAIT_FOR_LEVEL_SELECTION_CLICK = 200;
 
 export type GameStateLoad = {
     type: "load";

@@ -235,7 +235,7 @@ const handleClick = (event: MouseEvent): void => {
     const state = getGameState();
     switch (state.type) {
         case "levels": {
-            levelSelectionHandleClick(time, event);
+            levelSelectionHandleClick(state, time, event);
             playTune(SFX_CLICK);
             break;
         }
