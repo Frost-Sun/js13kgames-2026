@@ -51,11 +51,17 @@ const zoomToLevel = (
     camera.x = level.width / 2;
     camera.y = level.height / 2;
 
+    let zoom: number;
     if (level.width / level.height >= view.width / view.height) {
-        camera.zoom = view.width / level.width;
+        zoom = view.width / level.width;
     } else {
-        camera.zoom = view.height / level.height;
+        zoom = view.height / level.height;
     }
+
+    // No fraction number for zoom so that drawing a tile map
+    // would not produce lines between the tiles due to rounding
+    // errors.
+    camera.zoom = Math.floor(zoom);
 };
 
 // Commented out code not needed in this game
@@ -100,6 +106,8 @@ export const applyCamera = (
     level: Dimensions,
     draw: () => void,
 ): void => {
+    // Commented out code not needed in this game
+    //
     // if (camera.mode === CameraMode.ShowWholeLevel) {
     zoomToLevel(camera, view, level);
     // } else {
@@ -108,8 +116,7 @@ export const applyCamera = (
 
     cx.save();
     cx.translate(view.width / 2, view.height / 2);
-    const zoom = Math.floor(camera.zoom);
-    cx.scale(zoom, zoom);
+    cx.scale(camera.zoom, camera.zoom);
     cx.translate(-camera.x, -camera.y);
 
     draw();
