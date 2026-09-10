@@ -32,8 +32,8 @@ export const DIGGING_SPEED = 0.001;
 
 export let speedRatio = 1;
 
-export const UNICORN_WIDTH = (TILE_WIDTH * 5) / 10;
-export const UNICORN_HEIGHT = (TILE_HEIGHT * 4) / 10;
+export const UNICORN_WIDTH = TILE_WIDTH * 0.5;
+export const UNICORN_HEIGHT = TILE_HEIGHT * 0.4;
 
 export type GameObjectType = "rock" | "character" | "splash" | "finish";
 
