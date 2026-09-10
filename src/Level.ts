@@ -31,6 +31,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
     GameObjectAction,
+    getUnicornCollisionArea,
     RAINBOW_SPEED,
     setSpeedRatio,
     speedRatio,
@@ -293,6 +294,16 @@ export const updateLevel = (
             ));
             const speed = length(currentVelocity);
 
+            // How much (relative to the size) the unicorn should go
+            // inside an arrow for the action to take effect.
+            // Not too much or the collision area won't fit within
+            // a tile.
+            const insideTileCheckMargin = 0.4;
+            const insideTileCheckArea = getUnicornCollisionArea(
+                o,
+                insideTileCheckMargin,
+            );
+
             // Go faster on a rainbow
             if (tile?.type === "rainbow") {
                 if (0 < speed && speed < RAINBOW_SPEED * speedRatio) {
@@ -323,22 +334,26 @@ export const updateLevel = (
                 killCharacter(time, state, o);
             } else if (
                 tile?.arrow === Arrow.Up &&
-                includesArea(tileToArea(tilePos), o)
+                o.velocity.y >= 0 &&
+                includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
                 o.velocity = { x: 0, y: -CHARACTER_SPEED * speedRatio };
             } else if (
                 tile?.arrow === Arrow.Down &&
-                includesArea(tileToArea(tilePos), o)
+                o.velocity.y <= 0 &&
+                includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
                 o.velocity = { x: 0, y: CHARACTER_SPEED * speedRatio };
             } else if (
                 tile?.arrow === Arrow.Left &&
-                includesArea(tileToArea(tilePos), o)
+                o.velocity.x >= 0 &&
+                includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
                 o.velocity = { x: -CHARACTER_SPEED * speedRatio, y: 0 };
             } else if (
                 tile?.arrow === Arrow.Right &&
-                includesArea(tileToArea(tilePos), o)
+                o.velocity.x <= 0 &&
+                includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
                 o.velocity = { x: CHARACTER_SPEED * speedRatio, y: 0 };
             }

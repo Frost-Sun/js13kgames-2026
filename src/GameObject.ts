@@ -24,6 +24,7 @@
 
 import type { Area } from "./core/math/Area";
 import type { Vector } from "./core/math/Vector";
+import { TILE_HEIGHT, TILE_WIDTH } from "./tiles";
 
 export const RAINBOW_SPEED = 0.02;
 export const CHARACTER_SPEED = 0.005;
@@ -31,8 +32,8 @@ export const DIGGING_SPEED = 0.001;
 
 export let speedRatio = 1;
 
-export const UNICORN_WIDTH = 5;
-export const UNICORN_HEIGHT = 4;
+export const UNICORN_WIDTH = TILE_WIDTH * 0.5;
+export const UNICORN_HEIGHT = TILE_HEIGHT * 0.4;
 
 export type GameObjectType = "rock" | "character" | "splash" | "finish";
 
@@ -53,14 +54,17 @@ export interface GameObject extends Area {
     toDelete?: boolean;
 }
 
-export const getUnicornCollisionArea = (o: GameObject): Area => {
-    const xMargin = 0.2 * o.width;
-    const yMargin = 0.2 * o.height;
+export const getUnicornCollisionArea = (
+    o: GameObject,
+    marginRatio: number,
+): Area => {
+    const xMargin = marginRatio * o.width;
+    const yMargin = marginRatio * o.height;
     return {
-        x: o.x + xMargin,
-        y: o.y + yMargin,
-        width: o.width - 2 * xMargin,
-        height: o.height - 2 * yMargin,
+        x: o.x - xMargin,
+        y: o.y - yMargin,
+        width: o.width + 2 * xMargin,
+        height: o.height + 2 * yMargin,
     };
 };
 
