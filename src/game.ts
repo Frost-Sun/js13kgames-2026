@@ -232,16 +232,16 @@ const handleMouseMove = (event: MouseEvent): void => {
 };
 
 const handleClick = (event: MouseEvent): void => {
-    event.preventDefault();
-
     const state = getGameState();
     switch (state.type) {
         case "levels": {
+            event.stopImmediatePropagation();
             levelSelectionHandleClick(time, event);
             playTune(SFX_CLICK);
             break;
         }
         case "run": {
+            event.stopImmediatePropagation();
             levelHandleClick(state.level, event, time);
             playTune(SFX_CLICK);
             break;

@@ -174,7 +174,7 @@ export const waitForInteraction = (soundToPlay?: string): Promise<void> => {
         };
 
         const mouseListener = (event: MouseEvent): void => {
-            event.preventDefault();
+            event.stopImmediatePropagation();
             finish();
         };
 
