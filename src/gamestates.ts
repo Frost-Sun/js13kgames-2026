@@ -28,6 +28,7 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     getGameState,
     setGameState,
+    WAIT_FOR_NEXT_STATE,
     type GameStateLevelFinished,
     type GameStateLose,
     type GameStateRun,
@@ -35,6 +36,8 @@ import {
 import { createMap, maps } from "./maps";
 import { load, saveHighestLevel } from "./storage";
 import { setSpeedRatio } from "./GameObject";
+import { sleep } from "./core/time/sleep";
+import { clearLevelControls } from "./Level";
 
 export const setStateLoaded = (time: TimeStep): void => {
     setGameState({
@@ -50,7 +53,9 @@ export const setStateIntro = (time: TimeStep): void => {
         start: time.t,
     });
     playTune(SFX_INTRO);
-    waitForInteraction().then(() => setStateLevelSelection(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateLevelSelection(time));
 };
 
 export const setStateLevelSelection = (time: TimeStep): void => {
@@ -107,33 +112,39 @@ export const setStateLevelFinished = (
         level: currentState.level,
     });
     saveHighestLevel(currentState.level.number + 1);
-    waitForInteraction().then(() => setStateRun(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateRun(time));
 };
 
 export const setStateLose = (
     currentState: GameStateRun,
     time: TimeStep,
 ): void => {
+    clearLevelControls(currentState.level);
     setGameState({
         type: "lose",
         start: time.t,
         level: currentState.level,
     });
-    waitForInteraction().then(() =>
-        setStateRun(time, currentState.level.number),
-    );
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateRun(time, currentState.level.number));
 };
 
 export const setStateWin = (
     currentState: GameStateLevelFinished,
     time: TimeStep,
 ): void => {
+    clearLevelControls(currentState.level);
     setGameState({
         type: "win",
         start: time.t,
         level: currentState.level,
     });
-    waitForInteraction().then(() => setStateIntro(time));
+    sleep(WAIT_FOR_NEXT_STATE)
+        .then(() => waitForInteraction())
+        .then(() => setStateIntro(time));
 };
 
 export const isLastLevel = (

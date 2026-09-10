@@ -1,7 +1,7 @@
 import { includesPoint, type Area } from "./core/math/Area";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TimeStep } from "./core/time/TimeStep";
-import type { GameStateLevelSelection } from "./GameState";
+import { type GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
 import { maps } from "./maps";

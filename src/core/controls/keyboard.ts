@@ -162,7 +162,7 @@ export const waitForInteraction = (soundToPlay?: string): Promise<void> => {
                 playTune(soundToPlay);
             }
             window.removeEventListener("keydown", keyListener);
-            window.removeEventListener("mousedown", mouseListener);
+            window.removeEventListener("click", mouseListener);
             resolve();
         };
 
@@ -173,12 +173,13 @@ export const waitForInteraction = (soundToPlay?: string): Promise<void> => {
             }
         };
 
-        const mouseListener = (): void => {
+        const mouseListener = (event: MouseEvent): void => {
+            event.stopImmediatePropagation();
             finish();
         };
 
         window.addEventListener("keydown", keyListener);
-        window.addEventListener("mousedown", mouseListener);
+        window.addEventListener("click", mouseListener);
     });
 };
 
