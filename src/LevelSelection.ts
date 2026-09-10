@@ -71,7 +71,7 @@ export const drawLevelSelection = (
         cx.fillStyle = "white";
         cx.fillText(
             button.text.padStart(2, "0"),
-            button.x + iconWidth * 0.35,
+            button.x + iconWidth * 0.375,
             button.y + iconHeight * 0.6,
         );
     }
