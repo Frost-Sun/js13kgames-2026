@@ -232,6 +232,8 @@ const handleMouseMove = (event: MouseEvent): void => {
 };
 
 const handleClick = (event: MouseEvent): void => {
+    event.preventDefault();
+
     const state = getGameState();
     switch (state.type) {
         case "levels": {
