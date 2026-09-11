@@ -231,12 +231,11 @@ const addCharacter = (level: Level): void => {
         type: "character",
         x: startPos.ix * TILE_WIDTH + (TILE_WIDTH - UNICORN_WIDTH) / 2,
         y: startPos.iy * TILE_HEIGHT + (TILE_HEIGHT - UNICORN_HEIGHT) / 2,
-        width: UNICORN_WIDTH,
-        height: UNICORN_HEIGHT,
+        width: UNICORN_WIDTH * (Math.random() * 0.2 + 0.8),
+        height: UNICORN_HEIGHT * (Math.random() * 0.2 + 0.8),
         velocity: { x: CHARACTER_SPEED, y: 0 },
         action: GameObjectAction.Walk,
     };
-
     level.objects.push(character);
 };
 
@@ -263,7 +262,7 @@ export const updateLevel = (
     const isFirstCharacter = level.charactersLeft === level.characterCount;
     const currentInterval = isFirstCharacter
         ? FIRST_CHARACTER_SPAWN_INTERVAL / speedRatio
-        : CHARACTER_SPAWN_INTERVAL / speedRatio;
+        : (CHARACTER_SPAWN_INTERVAL * (Math.random() * 0.7 + 0.7)) / speedRatio;
 
     if (
         level.charactersLeft > 0 &&
@@ -301,6 +300,7 @@ export const updateLevel = (
                 direction,
                 RAINBOW_SPEED * speedRatio,
             ));
+
             const speed = length(currentVelocity);
 
             // How much (relative to the size) the unicorn should go
@@ -318,12 +318,17 @@ export const updateLevel = (
                 if (0 < speed && speed < RAINBOW_SPEED * speedRatio) {
                     o.velocity = multiply(
                         direction,
-                        RAINBOW_SPEED * speedRatio,
+                        RAINBOW_SPEED *
+                            speedRatio *
+                            (Math.random() * 0.7 + 0.7),
                     );
                 }
             } else if (speed > CHARACTER_SPEED * speedRatio) {
                 const direction = divide(o.velocity, speed);
-                o.velocity = multiply(direction, CHARACTER_SPEED * speedRatio);
+                o.velocity = multiply(
+                    direction,
+                    CHARACTER_SPEED * speedRatio * (Math.random() * 0.7 + 0.7),
+                );
             }
 
             if (
@@ -358,13 +363,25 @@ export const updateLevel = (
                 o.velocity.x >= 0 &&
                 includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
-                o.velocity = { x: -CHARACTER_SPEED * speedRatio, y: 0 };
+                o.velocity = {
+                    x:
+                        -CHARACTER_SPEED *
+                        speedRatio *
+                        (Math.random() * 0.7 + 0.7),
+                    y: 0,
+                };
             } else if (
                 tile?.arrow === Arrow.Right &&
                 o.velocity.x <= 0 &&
                 includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
-                o.velocity = { x: CHARACTER_SPEED * speedRatio, y: 0 };
+                o.velocity = {
+                    x:
+                        CHARACTER_SPEED *
+                        speedRatio *
+                        (Math.random() * 0.7 + 0.7),
+                    y: 0,
+                };
             }
         }
     }

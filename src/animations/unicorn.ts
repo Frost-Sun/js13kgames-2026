@@ -64,8 +64,8 @@ export const renderUnicorn = (
     if (highlightColor) {
         cx.strokeStyle = highlightColor;
         cx.beginPath();
-        cx.arc(0, 0, obj.width / 4, 0, Math.PI * 2);
-        cx.fillStyle = "green";
+        cx.arc(0, 0, obj.width / 2, 0, Math.PI * 2);
+        cx.fillStyle = "rgba(0, 0, 0, 0.1)";
         cx.stroke();
         cx.fill();
     }

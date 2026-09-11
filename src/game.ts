@@ -204,7 +204,7 @@ const draw = (time: TimeStep): void => {
 
             drawRainbowBackground(time, state.start);
 
-            renderText("YOU WIN!", TextSize.Huge);
+            renderText("YOU MASTERED ALL THE MAPS!", TextSize.Huge);
 
             if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
                 renderWaitForProgressInput("continue", 15.5);

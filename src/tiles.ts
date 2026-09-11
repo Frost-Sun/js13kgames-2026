@@ -709,29 +709,10 @@ export const drawMap = (
         }
     }
 
-    // PASS 4: Draw highlighted area
-    if (highlightedArea) {
-        const x = highlightedArea.ix * TILE_WIDTH;
-        const y = highlightedArea.iy * TILE_HEIGHT;
-
-        cx.save();
-        cx.strokeStyle =
-            areaHighlightMode === HighlightMode.Allow
-                ? highlightColor
-                : denyColor;
-        cx.strokeRect(
-            x + 1,
-            y + 1,
-            highlightedArea.xCount * TILE_WIDTH - 2,
-            highlightedArea.yCount * TILE_HEIGHT - 2,
-        );
-        cx.restore();
-    }
-
     objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
-    // PASS 5: Rest of the objects
+    // PASS 4: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
         switch (o.type) {
@@ -825,6 +806,36 @@ export const drawMap = (
                 cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
                 break;
             }
+        }
+    }
+
+    // PASS 5: Draw highlighted area
+    if (highlightedArea) {
+        if (highlightedArea) {
+            const w = highlightedArea.xCount * TILE_WIDTH;
+            const h = highlightedArea.yCount * TILE_HEIGHT;
+            const x = highlightedArea.ix * TILE_WIDTH;
+            const y = highlightedArea.iy * TILE_HEIGHT;
+            const isAllowed = areaHighlightMode === HighlightMode.Allow;
+
+            cx.save();
+            cx.strokeStyle = isAllowed ? highlightColor : denyColor;
+
+            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+
+            cx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            cx.fillRect(x + 2, y + 2, w - 4, h - 4);
+
+            if (!isAllowed) {
+                cx.beginPath();
+                cx.moveTo(x + 2, y + 2);
+                cx.lineTo(x + w - 2, y + h - 2);
+                cx.moveTo(x + w - 2, y + 2);
+                cx.lineTo(x + 2, y + h - 2);
+                cx.stroke();
+            }
+
+            cx.restore();
         }
     }
 

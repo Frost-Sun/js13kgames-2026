@@ -1,7 +1,7 @@
 export type Theme = "spring" | "summer" | "autumn" | "winter";
 
 export const HighlightColorByTheme: Readonly<Record<Theme, string>> = {
-    winter: "rgba(130, 130, 80, 0.9)",
+    winter: "rgba(141, 141, 105, 0.9)",
     spring: "rgba(200, 200, 150, 0.9)",
     summer: "rgba(200, 200, 150, 0.9)",
     autumn: "rgba(200, 200, 150, 0.9)",
