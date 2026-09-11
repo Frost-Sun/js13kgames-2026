@@ -35,6 +35,7 @@ import {
     core,
     coreX,
     coreY,
+    extend,
     extendDown,
     extendLeft,
     extendRight,
@@ -42,6 +43,7 @@ import {
     extendX,
     extendY,
     moveLeft,
+    moveRight,
     segment4,
     segment9,
     sliceBottom,
@@ -241,6 +243,49 @@ const createMapKeepDigging = (number: number): Level => {
 
     fill(level, coreY(sliceLeft(bottomLeft)), "start");
     fill(level, sliceTop(sliceRight(topLeft)), "finish");
+
+    return level;
+};
+
+const createMapSpiral = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Spiral",
+        xCount: 16,
+        yCount: 12,
+        characterCount: 3,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
+            [Action.RainbowHorizontal]: 1,
+        },
+        theme: "summer",
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+
+    const land1 = sliceTop(inner, 2);
+    const landStart = extendDown(sliceLeft(land1, 3));
+    const land2 = sliceRight(inner, 2);
+    const land3 = carveLeft(sliceBottom(inner, 2), inner.xCount * 0.2);
+    const land4 = extendUp(sliceLeft(land3), 3);
+    const land5 = extendRight(sliceTop(land4), 1);
+    const landfinish = extend(moveRight(sliceRight(land5), 3));
+
+    fill(level, land1, "land");
+    fill(level, landStart, "land");
+    fill(level, land2, "land");
+    fill(level, land3, "land");
+    fill(level, land4, "land");
+    fill(level, land5, "land");
+    fill(level, landfinish, "land");
+
+    fill(level, core(landStart), "start");
+    fill(level, core(landfinish), "finish");
 
     return level;
 };
@@ -642,6 +687,7 @@ export const maps: CreateMapFunction[] = [
     createMapBounceTutorial,
     createMapCombineTutorial,
     createMapKeepDigging,
+    createMapSpiral,
     createMapBaboonIsland,
     createMapRocks.bind(null, {}),
     createMapRainbowIslands,
