@@ -103,10 +103,11 @@ const createMapRockTutorial = (number: number): Level => {
     const inner = carveY(carve(level), 2);
     fill(level, inner, "land");
 
-    const [_left, right] = splitX(inner);
+    const [left, right] = splitX(inner);
+    fill(level, sliceLeft(left), "rock");
     fill(level, sliceLeft(right), "rock");
 
-    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, moveRight(coreY(sliceLeft(inner))), "start");
     fill(level, coreY(sliceRight(inner)), "finish");
 
     return level;
