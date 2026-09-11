@@ -852,6 +852,7 @@ export const drawMap = (
         const isAllowed = areaHighlightMode === HighlightMode.Allow;
 
         cx.save();
+
         cx.strokeStyle = isAllowed ? highlightColor : denyColor;
 
         cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
@@ -872,13 +873,19 @@ export const drawMap = (
                 x + w / 2,
                 y + h / 2,
             );
-        } else {
+        } else if (selectedActionIndex && selectedActionIndex < 6) {
             cx.beginPath();
             cx.moveTo(x + 2, y + 2);
             cx.lineTo(x + w - 2, y + h - 2);
             cx.moveTo(x + w - 2, y + 2);
             cx.lineTo(x + 2, y + h - 2);
             cx.stroke();
+        } else {
+            cx.fillStyle = "rgba(0, 0, 0, 0.5)";
+
+            const fontSize = Math.min(w, h) * 0.6;
+            cx.font = `${fontSize}px Courier New`;
+            cx.fillText("🦄", x + w / 8, y + h / 1.4);
         }
 
         cx.restore();
