@@ -141,6 +141,7 @@ const draw = (time: TimeStep): void => {
         }
         case "levels": {
             drawLevelSelection(time, state);
+
             break;
         }
         case "run":
@@ -173,7 +174,7 @@ const draw = (time: TimeStep): void => {
                     renderText(level.introduction, TextSize.Large, 1, 10);
                 }
             } else if (state.type === "finished") {
-                renderText("LEVEL FINISHED!", TextSize.Large);
+                renderText("MAP FINISHED!", TextSize.Large);
 
                 if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
                     if (isLastLevel(state)) {
@@ -202,9 +203,48 @@ const draw = (time: TimeStep): void => {
         case "win": {
             cx.save();
 
-            drawRainbowBackground(time, state.start);
+            drawRainbowBackground(time, state.start, true);
 
-            renderText("YOU WIN!", TextSize.Huge);
+            const currentVelocity = { x: 0, y: 0.1 };
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 12,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 3,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 3.5,
+                    height: canvas.height / 3.5,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 1.5,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
+
+            renderText("YOU MASTERED", TextSize.Huge, 1, -5);
+            renderText("ALL THE MAPS!", TextSize.Huge);
 
             if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
                 renderWaitForProgressInput("continue", 15.5);

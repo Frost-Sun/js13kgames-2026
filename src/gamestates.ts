@@ -22,7 +22,11 @@
  * SOFTWARE.
  */
 
-import { waitForKey, waitForInteraction } from "./core/controls/keyboard";
+import {
+    waitForKey,
+    waitForInteraction,
+    addEscapeListener,
+} from "./core/controls/keyboard";
 import { playTune, SFX_INTRO, SFX_RUNNING } from "./audio/sfx";
 import type { TimeStep } from "./core/time/TimeStep";
 import {
@@ -59,6 +63,7 @@ export const setStateIntro = (time: TimeStep): void => {
 };
 
 export const setStateLevelSelection = (time: TimeStep): void => {
+    cleanupCurrentState();
     const persistentState = load();
     setGameState({
         type: "levels",
@@ -66,13 +71,18 @@ export const setStateLevelSelection = (time: TimeStep): void => {
         highestLevel: persistentState.highestLevel,
     });
     playTune(SFX_INTRO);
-    waitForKey("Escape").then(() => setStateIntro(time));
+    cleanupCurrentState = addEscapeListener(() => {
+        setStateIntro(time);
+    });
 };
+
+let cleanupCurrentState = () => {};
 
 export const setStateRun = (
     time: TimeStep,
     mapIndex: number | undefined = undefined,
 ): void => {
+    cleanupCurrentState();
     const currentState = getGameState();
     playTune(SFX_RUNNING);
     setSpeedRatio(1);
@@ -82,24 +92,25 @@ export const setStateRun = (
             start: time.t,
             level: createMap(mapIndex),
         });
-        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else if (currentState.type !== "finished") {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(0),
         });
-        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else if (currentState.level.number + 1 < maps.length) {
         setGameState({
             type: "run",
             start: time.t,
             level: createMap(currentState.level.number + 1),
         });
-        waitForKey("Escape").then(() => setStateLevelSelection(time));
     } else {
         setStateWin(currentState, time);
     }
+
+    cleanupCurrentState = addEscapeListener(() => {
+        setStateLevelSelection(time);
+    });
 };
 
 export const setStateLevelFinished = (

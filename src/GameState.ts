@@ -24,7 +24,7 @@
 
 import type { Level } from "./Level";
 
-export const WAIT_FOR_NEXT_STATE = 2000;
+export const WAIT_FOR_NEXT_STATE = 1000;
 
 export type GameStateLoad = {
     type: "load";

@@ -1,6 +1,8 @@
+import { renderUnicorn } from "./animations/unicorn";
 import { includesPoint, type Area } from "./core/math/Area";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TimeStep } from "./core/time/TimeStep";
+import { CHARACTER_SPEED } from "./GameObject";
 import { type GameStateLevelSelection } from "./GameState";
 import { setStateRun } from "./gamestates";
 import { canvas, cx, drawRainbowBackground } from "./graphics";
@@ -32,6 +34,49 @@ export const drawLevelSelection = (
     cx.save();
 
     drawRainbowBackground(time, state.start);
+
+    const direction = drawRainbowBackground(time, state.start);
+
+    const currentVelocity =
+        direction > 0
+            ? { x: -CHARACTER_SPEED, y: 0 }
+            : { x: CHARACTER_SPEED, y: 0 };
+
+    renderUnicorn(
+        {
+            x: canvas.width / 12,
+            y: canvas.height / 1.4,
+            width: canvas.width / 5,
+            height: canvas.height / 5,
+            type: "character",
+            velocity: currentVelocity,
+        },
+        time,
+    );
+
+    renderUnicorn(
+        {
+            x: canvas.width / 3,
+            y: canvas.height / 1.4,
+            width: canvas.width / 4.5,
+            height: canvas.height / 4.5,
+            type: "character",
+            velocity: currentVelocity,
+        },
+        time,
+    );
+
+    renderUnicorn(
+        {
+            x: canvas.width / 1.5,
+            y: canvas.height / 1.4,
+            width: canvas.width / 5,
+            height: canvas.height / 5,
+            type: "character",
+            velocity: currentVelocity,
+        },
+        time,
+    );
 
     const iconWidth = Math.max(150, canvas.width / 10);
     const iconHeight = iconWidth;
