@@ -203,14 +203,9 @@ const draw = (time: TimeStep): void => {
         case "win": {
             cx.save();
 
-            drawRainbowBackground(time, state.start);
+            drawRainbowBackground(time, state.start, true);
 
-            const direction = drawRainbowBackground(time, state.start);
-
-            const currentVelocity =
-                direction > 0
-                    ? { x: -CHARACTER_SPEED, y: 0 }
-                    : { x: CHARACTER_SPEED, y: 0 };
+            const currentVelocity = { x: 0, y: 0.1 };
 
             renderUnicorn(
                 {
@@ -248,7 +243,8 @@ const draw = (time: TimeStep): void => {
                 time,
             );
 
-            renderText("YOU MASTERED ALL THE MAPS!", TextSize.Huge);
+            renderText("YOU MASTERED", TextSize.Huge, 1, -5);
+            renderText("ALL THE MAPS!", TextSize.Huge);
 
             if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
                 renderWaitForProgressInput("continue", 15.5);

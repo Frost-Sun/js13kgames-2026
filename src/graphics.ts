@@ -48,11 +48,12 @@ export const RainbowColors: Readonly<string[]> = [
 
 /*
  * Draws a rainbow background that fills the entire canvas.
- * Returns the direction where the rainbow is moving in the x-axis.
+ * Returns the direction where the rainbow is moving in the x-axis or zoom.
  */
 export const drawRainbowBackground = (
     time: TimeStep,
     start: number,
+    zoom?: boolean,
 ): 1 | -1 => {
     cx.save();
 
@@ -60,19 +61,35 @@ export const drawRainbowBackground = (
     const stripeWidth = canvas.width / 2;
 
     const logicalWidth = (RainbowColors.length - 2) * stripeWidth;
-    const stateStartTime = start || 0;
-    const localTime = time.t - stateStartTime;
+    const localTime = time.t - (start || 0);
 
     const rawOffset = (localTime * speed) % (logicalWidth * 2);
-
     const offset =
         rawOffset > logicalWidth ? 2 * logicalWidth - rawOffset : rawOffset;
+
+    const totalWidth = RainbowColors.length * stripeWidth;
+    const centerOffset = totalWidth / 2 - canvas.width / 2;
+
+    const xOffset = zoom ? centerOffset : offset;
+
+    if (zoom) {
+        const w2 = canvas.width / 2;
+        const targetScale = canvas.width / totalWidth;
+
+        const progress = Math.min((localTime * speed) / logicalWidth, 1.0);
+
+        const scale = 1.0 - progress * (1.0 - targetScale);
+
+        cx.translate(w2, 0);
+        cx.scale(scale, 1);
+        cx.translate(-w2, 0);
+    }
 
     for (let i = 0; i < RainbowColors.length; i++) {
         cx.fillStyle = RainbowColors[i];
 
         cx.fillRect(
-            i * stripeWidth - offset,
+            i * stripeWidth - xOffset,
             0,
             stripeWidth * 2,
             canvas.height,

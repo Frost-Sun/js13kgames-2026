@@ -351,13 +351,25 @@ export const updateLevel = (
                 o.velocity.y >= 0 &&
                 includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
-                o.velocity = { x: 0, y: -CHARACTER_SPEED * speedRatio };
+                o.velocity = {
+                    x: 0,
+                    y:
+                        -CHARACTER_SPEED *
+                        speedRatio *
+                        (Math.random() * 0.7 + 0.7),
+                };
             } else if (
                 tile?.arrow === Arrow.Down &&
                 o.velocity.y <= 0 &&
                 includesArea(tileToArea(tilePos), insideTileCheckArea)
             ) {
-                o.velocity = { x: 0, y: CHARACTER_SPEED * speedRatio };
+                o.velocity = {
+                    x: 0,
+                    y:
+                        CHARACTER_SPEED *
+                        speedRatio *
+                        (Math.random() * 0.7 + 0.7),
+                };
             } else if (
                 tile?.arrow === Arrow.Left &&
                 o.velocity.x >= 0 &&
