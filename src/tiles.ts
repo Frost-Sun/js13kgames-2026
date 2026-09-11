@@ -64,10 +64,10 @@ const tools: { text: string }[] = [
         text: "▶",
     },
     {
-        text: "🌈⟺",
+        text: "🌈",
     },
     {
-        text: "🌈⇳",
+        text: "🌈",
     },
 ];
 
