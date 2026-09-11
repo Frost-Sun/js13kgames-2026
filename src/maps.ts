@@ -42,6 +42,7 @@ import {
     extendUp,
     extendX,
     extendY,
+    moveDown,
     moveLeft,
     moveRight,
     segment4,
@@ -314,6 +315,7 @@ const createMapBaboonIsland = (number: number): Level => {
     const coreIsland = core(level, level.yCount * 0.7);
     const wider = carveY(extendX(coreIsland));
     const higher = carveX(extendY(coreIsland));
+    const start = moveDown(moveRight(sliceLeft(sliceTop(coreIsland))));
 
     const cape1 = extendRight(sliceRight(sliceTop(wider)), 6);
     const cape2 = extendDown(sliceRight(cape1, 3), 8);
@@ -345,7 +347,7 @@ const createMapBaboonIsland = (number: number): Level => {
 
     fill(level, water, "water");
 
-    fill(level, sliceLeft(sliceTop(coreIsland)), "start");
+    fill(level, start, "start");
     fill(level, sliceRight(sliceBottom(coreIsland)), "finish");
 
     return level;
@@ -375,6 +377,7 @@ const createMapReturnToBaboonIsland = (number: number): Level => {
     const coreIsland = core(level, level.yCount * 0.7);
     const wider = carveY(extendX(coreIsland));
     const higher = carveX(extendY(coreIsland));
+    const start = moveDown(moveRight(sliceLeft(sliceTop(coreIsland))));
 
     const cape1 = extendRight(sliceRight(sliceTop(wider)), 6);
     const cape2 = extendDown(sliceRight(cape1, 3), 8);
@@ -419,7 +422,7 @@ const createMapReturnToBaboonIsland = (number: number): Level => {
 
     fill(level, water, "water");
 
-    fill(level, sliceLeft(sliceTop(coreIsland)), "start");
+    fill(level, start, "start");
     fill(level, moveLeft(sliceTop(coreX(tempLower))), "finish");
 
     return level;
