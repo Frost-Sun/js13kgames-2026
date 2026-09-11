@@ -690,9 +690,9 @@ export const maps: CreateMapFunction[] = [
     createMapSpiral,
     createMapBaboonIsland,
     createMapRocks.bind(null, {}),
+    createMapRocks.bind(null, RocksMapAlternativeParameters),
     createMapRainbowIslands,
     createMapReturnToBaboonIsland,
-    createMapRocks.bind(null, RocksMapAlternativeParameters),
     createMapMoreIslands,
     createMapCaves,
 ];
