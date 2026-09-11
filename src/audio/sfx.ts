@@ -29,6 +29,7 @@ import {
     homeSfx,
     splashSfx,
     introSong,
+    digSfx,
 } from "./sfxData.ts";
 
 import { createTune, FadeOutIn, type SongData } from "../core/audio/music.js";
@@ -44,6 +45,7 @@ export const SFX_INTRO = "intro";
 export const SFX_RUNNING = "gamestarted";
 export const SFX_HOME = "home";
 export const SFX_KB = "keyboard";
+export const SFX_DIG = "dig";
 export const SFX_SPLASH = "splash";
 export const SFX_CLICK = "click";
 
@@ -126,6 +128,10 @@ export const playTune = async (tune: string, vol: number = 1) => {
         }
         case SFX_CLICK: {
             zzfx(vol, ...clickSfx);
+            break;
+        }
+        case SFX_DIG: {
+            zzfx(vol, ...digSfx);
             break;
         }
     }

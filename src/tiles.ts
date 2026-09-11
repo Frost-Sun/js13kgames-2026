@@ -46,6 +46,7 @@ import {
     StrawColorByTheme,
     type Theme,
 } from "./theme";
+import { playTune, SFX_DIG } from "./audio/sfx";
 
 const tools: { text: string }[] = [
     {
@@ -300,6 +301,13 @@ export const moveObject = (
                 digHorizontally(time, map, o, blockXDirection);
             } else if (blockYDirection) {
                 digVertically(time, map, o, blockYDirection);
+            }
+
+            const digInterval = 500 / speedRatio;
+
+            if (!o.nextDigSound || time.t >= o.nextDigSound) {
+                playTune(SFX_DIG);
+                o.nextDigSound = time.t + digInterval;
             }
         } else {
             // Go to opposite direction

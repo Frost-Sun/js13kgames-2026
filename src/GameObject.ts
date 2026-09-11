@@ -52,6 +52,7 @@ export interface GameObject extends Area {
     action?: GameObjectAction;
     createTime?: number;
     toDelete?: boolean;
+    nextDigSound?: number;
 }
 
 export const getUnicornCollisionArea = (
