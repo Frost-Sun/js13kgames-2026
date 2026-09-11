@@ -106,6 +106,7 @@ export const setStateLevelFinished = (
     currentState: GameStateRun,
     time: TimeStep,
 ): void => {
+    clearLevelControls(currentState.level);
     setGameState({
         type: "finished",
         start: time.t,
