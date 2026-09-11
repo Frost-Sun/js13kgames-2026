@@ -47,6 +47,30 @@ import {
     type Theme,
 } from "./theme";
 
+const tools: { text: string }[] = [
+    {
+        text: "",
+    },
+    {
+        text: "▲",
+    },
+    {
+        text: "▼",
+    },
+    {
+        text: "◀",
+    },
+    {
+        text: "▶",
+    },
+    {
+        text: "🌈⟺",
+    },
+    {
+        text: "🌈⇳",
+    },
+];
+
 export const enum HighlightMode {
     Allow,
     Deny,
@@ -393,6 +417,7 @@ export const drawMap = (
     highlightedArea: TileArea | undefined,
     areaHighlightMode: HighlightMode,
     highlightedCharacter: GameObject | undefined,
+    selectedActionIndex: number | undefined,
     theme: Theme,
 ): void => {
     const objectsToDraw: GameObject[] = [];
@@ -824,9 +849,22 @@ export const drawMap = (
             cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
 
             cx.fillStyle = "rgba(0, 0, 0, 0.1)";
-            cx.fillRect(x + 2, y + 2, w - 4, h - 4);
+            cx.fillRect(x, y, w, h);
 
-            if (!isAllowed) {
+            if (isAllowed) {
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.fillStyle = highlightColor;
+                const fontSize = Math.min(w, h) * 0.6;
+                cx.font = `${fontSize}px Courier New`;
+                cx.fillText(
+                    selectedActionIndex != null
+                        ? tools[selectedActionIndex].text
+                        : "",
+                    x + w / 2,
+                    y + h / 2,
+                );
+            } else {
                 cx.beginPath();
                 cx.moveTo(x + 2, y + 2);
                 cx.lineTo(x + w - 2, y + h - 2);

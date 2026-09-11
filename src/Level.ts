@@ -106,7 +106,7 @@ interface Button {
     y?: number;
 }
 
-const actionButtons: Button[] = [
+export const actionButtons: Button[] = [
     {
         text: "🗺️",
         action: Action.Back,
@@ -746,6 +746,7 @@ export const drawLevel = (
             level.highlightedArea,
             level.areaHighlightMode,
             level.highlightedCharacter,
+            level.selectedActionIndex,
             level.theme,
         );
     });
