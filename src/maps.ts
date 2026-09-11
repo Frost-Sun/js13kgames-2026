@@ -86,7 +86,7 @@ const createMapRainbowTutorial = (number: number): Level => {
 const createMapRockTutorial = (number: number): Level => {
     const level = createLevel({
         number,
-        introduction: "Select a hatch tool and click the unicorn.",
+        introduction: "Select a digging tool and click the unicorn.",
         xCount: 15,
         yCount: 9,
         characterCount: 1,

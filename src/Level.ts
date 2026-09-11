@@ -546,7 +546,14 @@ export const levelHandleMouseMove = (level: Level, event: MouseEvent): void => {
                     character.action !== GameObjectAction.Dig
                 ) {
                     level.highlightedCharacter = character;
+                    level.highlightedArea = undefined;
                 } else {
+                    level.highlightedArea = {
+                        ...tilePos,
+                        xCount: 1,
+                        yCount: 1,
+                    };
+                    level.areaHighlightMode = HighlightMode.Deny;
                     level.highlightedCharacter = undefined;
                 }
             } else {

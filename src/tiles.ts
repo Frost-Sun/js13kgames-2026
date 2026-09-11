@@ -46,6 +46,7 @@ import {
     StrawColorByTheme,
     type Theme,
 } from "./theme";
+import { Action } from "./Action";
 
 const tools: { text: string }[] = [
     {
@@ -740,6 +741,7 @@ export const drawMap = (
     // PASS 4: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
+
         switch (o.type) {
             case "character": {
                 renderUnicorn(
@@ -747,13 +749,20 @@ export const drawMap = (
                     time,
                     o === highlightedCharacter ? highlightColor : undefined,
                 );
-                if (o.action === GameObjectAction.Dig) {
+                if (
+                    o.action === GameObjectAction.Dig ||
+                    o === highlightedCharacter
+                ) {
                     cx.save();
-                    cx.fillStyle = "rgb(29, 26, 26)";
+                    cx.fillStyle =
+                        o.action === GameObjectAction.Dig
+                            ? "rgb(29, 26, 26)"
+                            : highlightColor;
                     cx.font = "3px Courier New";
                     cx.fillText("⛏︎", o.x + o.width / 2 - 1, o.y - 3);
                     cx.restore();
                 }
+
                 break;
             }
             case "splash": {
@@ -835,46 +844,45 @@ export const drawMap = (
     }
 
     // PASS 5: Draw highlighted area
+
     if (highlightedArea) {
-        if (highlightedArea) {
-            const w = highlightedArea.xCount * TILE_WIDTH;
-            const h = highlightedArea.yCount * TILE_HEIGHT;
-            const x = highlightedArea.ix * TILE_WIDTH;
-            const y = highlightedArea.iy * TILE_HEIGHT;
-            const isAllowed = areaHighlightMode === HighlightMode.Allow;
+        const w = highlightedArea.xCount * TILE_WIDTH;
+        const h = highlightedArea.yCount * TILE_HEIGHT;
+        const x = highlightedArea.ix * TILE_WIDTH;
+        const y = highlightedArea.iy * TILE_HEIGHT;
+        const isAllowed = areaHighlightMode === HighlightMode.Allow;
 
-            cx.save();
-            cx.strokeStyle = isAllowed ? highlightColor : denyColor;
+        cx.save();
+        cx.strokeStyle = isAllowed ? highlightColor : denyColor;
 
-            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+        cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
 
-            cx.fillStyle = "rgba(0, 0, 0, 0.1)";
-            cx.fillRect(x, y, w, h);
+        cx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        cx.fillRect(x, y, w, h);
 
-            if (isAllowed) {
-                cx.textAlign = "center";
-                cx.textBaseline = "middle";
-                cx.fillStyle = highlightColor;
-                const fontSize = Math.min(w, h) * 0.6;
-                cx.font = `${fontSize}px Courier New`;
-                cx.fillText(
-                    selectedActionIndex != null
-                        ? tools[selectedActionIndex].text
-                        : "",
-                    x + w / 2,
-                    y + h / 2,
-                );
-            } else {
-                cx.beginPath();
-                cx.moveTo(x + 2, y + 2);
-                cx.lineTo(x + w - 2, y + h - 2);
-                cx.moveTo(x + w - 2, y + 2);
-                cx.lineTo(x + 2, y + h - 2);
-                cx.stroke();
-            }
-
-            cx.restore();
+        if (isAllowed) {
+            cx.textAlign = "center";
+            cx.textBaseline = "middle";
+            cx.fillStyle = highlightColor;
+            const fontSize = h * 0.4;
+            cx.font = `${fontSize}px Courier New`;
+            cx.fillText(
+                selectedActionIndex != null
+                    ? tools[selectedActionIndex].text
+                    : "",
+                x + w / 2,
+                y + h / 2,
+            );
+        } else {
+            cx.beginPath();
+            cx.moveTo(x + 2, y + 2);
+            cx.lineTo(x + w - 2, y + h - 2);
+            cx.moveTo(x + w - 2, y + 2);
+            cx.lineTo(x + 2, y + h - 2);
+            cx.stroke();
         }
+
+        cx.restore();
     }
 
     cx.restore();
