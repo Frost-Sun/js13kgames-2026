@@ -23,7 +23,6 @@
  */
 
 import {
-    waitForKey,
     waitForInteraction,
     addEscapeListener,
 } from "./core/controls/keyboard";
