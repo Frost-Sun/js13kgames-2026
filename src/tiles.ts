@@ -46,7 +46,6 @@ import {
     StrawColorByTheme,
     type Theme,
 } from "./theme";
-import { Action } from "./Action";
 
 const tools: { text: string }[] = [
     {

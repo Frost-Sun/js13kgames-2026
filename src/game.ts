@@ -141,6 +141,7 @@ const draw = (time: TimeStep): void => {
         }
         case "levels": {
             drawLevelSelection(time, state);
+
             break;
         }
         case "run":
@@ -173,7 +174,7 @@ const draw = (time: TimeStep): void => {
                     renderText(level.introduction, TextSize.Large, 1, 10);
                 }
             } else if (state.type === "finished") {
-                renderText("LEVEL FINISHED!", TextSize.Large);
+                renderText("MAP FINISHED!", TextSize.Large);
 
                 if (WAIT_FOR_NEXT_STATE < time.t - state.start) {
                     if (isLastLevel(state)) {
@@ -203,6 +204,49 @@ const draw = (time: TimeStep): void => {
             cx.save();
 
             drawRainbowBackground(time, state.start);
+
+            const direction = drawRainbowBackground(time, state.start);
+
+            const currentVelocity =
+                direction > 0
+                    ? { x: -CHARACTER_SPEED, y: 0 }
+                    : { x: CHARACTER_SPEED, y: 0 };
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 12,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 3,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 3.5,
+                    height: canvas.height / 3.5,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
+
+            renderUnicorn(
+                {
+                    x: canvas.width / 1.5,
+                    y: canvas.height / 1.4,
+                    width: canvas.width / 4,
+                    height: canvas.height / 4,
+                    type: "character",
+                    velocity: currentVelocity,
+                },
+                time,
+            );
 
             renderText("YOU MASTERED ALL THE MAPS!", TextSize.Huge);
 
