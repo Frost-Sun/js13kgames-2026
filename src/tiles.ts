@@ -305,9 +305,9 @@ export const moveObject = (
 
             const digInterval = 500 / speedRatio;
 
-            if (!(o as any).nextDigSound || time.t >= (o as any).nextDigSound) {
+            if (!o.nextDigSound || time.t >= o.nextDigSound) {
                 playTune(SFX_DIG);
-                (o as any).nextDigSound = time.t + digInterval;
+                o.nextDigSound = time.t + digInterval;
             }
         } else {
             // Go to opposite direction
