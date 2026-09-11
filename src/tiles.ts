@@ -863,7 +863,7 @@ export const drawMap = (
             cx.textAlign = "center";
             cx.textBaseline = "middle";
             cx.fillStyle = highlightColor;
-            const fontSize = h * 0.4;
+            const fontSize = Math.min(w, h) * 0.4;
             cx.font = `${fontSize}px Courier New`;
             cx.fillText(
                 selectedActionIndex != null
