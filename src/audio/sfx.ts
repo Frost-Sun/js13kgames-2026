@@ -43,7 +43,7 @@ import CPlayer from "../core/audio/musicplayer.js";
 export const SFX_INTRO = "intro";
 export const SFX_RUNNING = "gamestarted";
 export const SFX_HOME = "home";
-export const SFX_CLICK = "keyboard";
+export const SFX_CLICK = "click";
 export const SFX_DIG = "dig";
 export const SFX_SPLASH = "splash";
 
