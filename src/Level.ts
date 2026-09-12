@@ -31,7 +31,6 @@ import type { TimeStep } from "./core/time/TimeStep";
 import {
     CHARACTER_SPEED,
     GameObjectAction,
-    getUnicornCollisionArea,
     RAINBOW_SPEED,
     setSpeedRatio,
     speedRatio,
@@ -85,11 +84,14 @@ import { playTune, SFX_HOME, SFX_SPLASH } from "./audio/sfx";
 import type { Theme } from "./theme";
 import { mousePositionToCanvasPosition } from "./core/platform/window";
 import type { TileArea } from "./core/tiles/TileArea";
+import { clamp } from "./core/math/number";
 
 const FIRST_CHARACTER_SPAWN_INTERVAL = 4000;
 const CHARACTER_SPAWN_INTERVAL = 3000;
 
 const MAX_CHARACTER_CLICK_DISTANCE = UNICORN_WIDTH * 1.25;
+
+const ARROW_PLACEMENT_MARGIN = 0.1 * TILE_WIDTH;
 
 // The portion of canvas on which the map is drawn.
 const levelDrawArea: Dimensions = {
@@ -304,6 +306,7 @@ export const updateLevel = (
             const center = getCenter(o);
             const tile = getTileAt(level, center);
             const tilePos = getTilePosAt(center);
+            const tileArea = tileToArea(tilePos);
             const direction = divide(o.velocity, length(o.velocity));
             const currentVelocity = (o.velocity = multiply(
                 direction,
@@ -311,16 +314,6 @@ export const updateLevel = (
             ));
 
             const speed = length(currentVelocity);
-
-            // How much (relative to the size) the unicorn should go
-            // inside an arrow for the action to take effect.
-            // Not too much or the collision area won't fit within
-            // a tile.
-            const insideTileCheckMargin = 0.4;
-            const insideTileCheckArea = getUnicornCollisionArea(
-                o,
-                insideTileCheckMargin,
-            );
 
             // Go faster on a rainbow
             if (tile?.type === "rainbow") {
@@ -345,7 +338,7 @@ export const updateLevel = (
 
             if (
                 tile?.type === "water" &&
-                includesArea(tileToArea(tilePos), o) &&
+                includesArea(tileArea, o) &&
                 !o.toDelete
             ) {
                 playTune(SFX_SPLASH);
@@ -361,8 +354,18 @@ export const updateLevel = (
             } else if (
                 tile?.arrow === Arrow.Up &&
                 o.velocity.y >= 0 &&
-                includesArea(tileToArea(tilePos), insideTileCheckArea)
+                includesArea(tileArea, o)
             ) {
+                // Make sure that the unicorn does
+                // not hit a rock wall after turn.
+                o.x = clamp(
+                    o.x,
+                    tileArea.x + ARROW_PLACEMENT_MARGIN,
+                    tileArea.x +
+                        tileArea.width -
+                        (o.width + ARROW_PLACEMENT_MARGIN),
+                );
+
                 o.velocity = {
                     x: 0,
                     y:
@@ -373,8 +376,18 @@ export const updateLevel = (
             } else if (
                 tile?.arrow === Arrow.Down &&
                 o.velocity.y <= 0 &&
-                includesArea(tileToArea(tilePos), insideTileCheckArea)
+                includesArea(tileArea, o)
             ) {
+                // Make sure that the unicorn does
+                // not hit a rock wall after turn.
+                o.x = clamp(
+                    o.x,
+                    tileArea.x + ARROW_PLACEMENT_MARGIN,
+                    tileArea.x +
+                        tileArea.width -
+                        (o.width + ARROW_PLACEMENT_MARGIN),
+                );
+
                 o.velocity = {
                     x: 0,
                     y:
@@ -385,8 +398,18 @@ export const updateLevel = (
             } else if (
                 tile?.arrow === Arrow.Left &&
                 o.velocity.x >= 0 &&
-                includesArea(tileToArea(tilePos), insideTileCheckArea)
+                includesArea(tileArea, o)
             ) {
+                // Make sure that the unicorn does
+                // not hit a rock wall after turn.
+                o.y = clamp(
+                    o.y,
+                    tileArea.y + ARROW_PLACEMENT_MARGIN,
+                    tileArea.y +
+                        tileArea.height -
+                        (o.height + ARROW_PLACEMENT_MARGIN),
+                );
+
                 o.velocity = {
                     x:
                         -CHARACTER_SPEED *
@@ -397,8 +420,18 @@ export const updateLevel = (
             } else if (
                 tile?.arrow === Arrow.Right &&
                 o.velocity.x <= 0 &&
-                includesArea(tileToArea(tilePos), insideTileCheckArea)
+                includesArea(tileArea, o)
             ) {
+                // Make sure that the unicorn does
+                // not hit a rock wall after turn.
+                o.y = clamp(
+                    o.y,
+                    tileArea.y + ARROW_PLACEMENT_MARGIN,
+                    tileArea.y +
+                        tileArea.height -
+                        (o.height + ARROW_PLACEMENT_MARGIN),
+                );
+
                 o.velocity = {
                     x:
                         CHARACTER_SPEED *
