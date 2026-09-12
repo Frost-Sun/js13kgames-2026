@@ -40,6 +40,7 @@ export type GameObjectType = "rock" | "character" | "splash" | "finish";
 export const enum GameObjectAction {
     Walk,
     Dig,
+    Finish,
 }
 
 export interface GameObject extends Area {
@@ -53,6 +54,7 @@ export interface GameObject extends Area {
     createTime?: number;
     toDelete?: boolean;
     nextDigSound?: number;
+    animScale?: number;
 }
 
 export const getUnicornCollisionArea = (

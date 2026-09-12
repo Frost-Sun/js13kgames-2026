@@ -447,7 +447,11 @@ export const drawMap = (
             if (!tile) continue;
             if (tile.object) objectsToDraw.push(tile.object);
 
-            if (tile.type === "land" || tile.type === "rock") {
+            if (
+                tile.type === "land" ||
+                tile.type === "rock" ||
+                tile?.type === "start"
+            ) {
                 const up = tileMapGet(map, ix, iy - 1)?.type;
                 const down = tileMapGet(map, ix, iy + 1)?.type;
                 const left = tileMapGet(map, ix - 1, iy)?.type;
@@ -527,6 +531,33 @@ export const drawMap = (
 
                 cx.restore();
 
+                if (tile?.type === "start") {
+                    cx.save();
+
+                    cx.beginPath();
+                    cx.roundRect(
+                        x + 1,
+                        y + 1,
+                        TILE_WIDTH - 2,
+                        TILE_HEIGHT - 2,
+                        6,
+                    );
+
+                    cx.fillStyle = "#5c94e0";
+                    cx.fill();
+
+                    cx.clip();
+
+                    const cloudX = x - 8 + ((time.t / 160) % (TILE_WIDTH + 16));
+
+                    cx.textAlign = "center";
+                    cx.textBaseline = "middle";
+                    cx.font = `${TILE_WIDTH * 0.75}px sans-serif`;
+                    cx.fillText("☁️", cloudX, y + TILE_HEIGHT / 2);
+
+                    cx.restore();
+                }
+
                 // 4. Decorations
                 if (strawColor && tile.straw) {
                     cx.fillStyle = strawColor;
@@ -550,12 +581,6 @@ export const drawMap = (
                     cx.fill();
                     cx.restore();
                 }
-            } else if (tile.type === "start") {
-                cx.fillStyle = "rgb(80, 50, 150)";
-                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-            } else if (tile.type !== "water" && tile.type !== "rainbow") {
-                cx.fillStyle = "black";
-                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
             }
         }
     }
@@ -836,22 +861,40 @@ export const drawMap = (
                 break;
             }
             case "finish": {
-                cx.fillStyle = "rgb(150, 50, 50)";
+                const hue = (time.t / 15) % 360;
+
+                cx.fillStyle = "rgba(0, 0, 0, 0.3)";
+                cx.fillRect(o.x, o.y + o.height - 4, o.width, 4);
+
+                cx.fillStyle = `hsla(${hue}, 70%, 50%, 0.6)`;
                 cx.fillRect(
                     o.x,
                     o.y - TILE_UPWARD_HEIGHT,
                     o.width,
                     o.height + TILE_UPWARD_HEIGHT,
                 );
-                cx.fillStyle = "rgb(180, 70, 70)";
+
+                cx.fillStyle = `hsla(${hue}, 70%, 65%, 0.8)`;
                 cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
+
+                const hover = Math.sin(time.t / 200) * 3;
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.font = `${o.width * 0.6}px sans-serif`;
+
+                cx.fillStyle = "rgb(180, 20, 20)";
+                cx.fillText(
+                    "❤",
+                    o.x + o.width / 2,
+                    o.y - TILE_UPWARD_HEIGHT + o.height / 2 - 4 + hover,
+                );
+
                 break;
             }
         }
     }
 
     // PASS 5: Draw highlighted area
-
     if (highlightedArea) {
         const w = highlightedArea.xCount * TILE_WIDTH;
         const h = highlightedArea.yCount * TILE_HEIGHT;
@@ -863,12 +906,11 @@ export const drawMap = (
 
         cx.strokeStyle = isAllowed ? highlightColor : denyColor;
 
-        cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-
         cx.fillStyle = "rgba(0, 0, 0, 0.1)";
-        cx.fillRect(x, y, w, h);
 
         if (isAllowed) {
+            cx.fillRect(x, y, w, h);
+            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
             cx.textAlign = "center";
             cx.textBaseline = "middle";
             cx.fillStyle = highlightColor;
@@ -881,7 +923,9 @@ export const drawMap = (
                 x + w / 2,
                 y + h / 2,
             );
-        } else if (selectedActionIndex && selectedActionIndex < 6) {
+        } else if (selectedActionIndex && selectedActionIndex < 7) {
+            cx.fillRect(x, y, w, h);
+            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
             cx.beginPath();
             cx.moveTo(x + 2, y + 2);
             cx.lineTo(x + w - 2, y + h - 2);
@@ -889,11 +933,13 @@ export const drawMap = (
             cx.lineTo(x + 2, y + h - 2);
             cx.stroke();
         } else {
-            cx.fillStyle = "rgba(0, 0, 0, 0.5)";
-
-            const fontSize = Math.min(w, h) * 0.6;
+            cx.beginPath();
+            cx.arc(x + w / 4, y + h / 2, Math.min(w, h) / 4, 0, Math.PI * 4);
+            cx.fillStyle = denyColor;
+            cx.fill();
+            const fontSize = Math.min(w, h) * 0.3;
             cx.font = `${fontSize}px Courier New`;
-            cx.fillText("🦄", x + w / 8, y + h / 1.4);
+            cx.fillText("🦄", x + w / 4, y + h / 2);
         }
 
         cx.restore();
