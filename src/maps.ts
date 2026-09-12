@@ -254,7 +254,7 @@ const createMapSpiral = (number: number): Level => {
     const level = createLevel({
         number,
         introduction: "Spiral",
-        xCount: 16,
+        xCount: 18,
         yCount: 12,
         characterCount: 3,
         charactersToFinish: 2,
@@ -263,32 +263,40 @@ const createMapSpiral = (number: number): Level => {
             [Action.Down]: 2,
             [Action.Left]: 2,
             [Action.Right]: 2,
+            [Action.Dig]: 1,
             [Action.RainbowHorizontal]: 1,
         },
-        theme: "summer",
+        theme: "spring",
     });
     fill(level, level, "water");
 
-    const inner = carve(level);
+    const inner = carveRight(carve(level), 2);
 
-    const land1 = sliceTop(inner, 2);
+    const land1 = carveLeft(sliceTop(inner, 2), 3);
     const landStart = extendDown(sliceLeft(land1, 3));
     const land2 = sliceRight(inner, 2);
-    const land3 = carveLeft(sliceBottom(inner, 2), inner.xCount * 0.2);
-    const land4 = extendUp(sliceLeft(land3), 3);
+    const land2Middle = coreY(land2, land2.yCount * 0.3);
+    const land3 = carveLeft(sliceBottom(inner, 2), inner.xCount * 0.1);
+    const land4 = extendUp(sliceLeft(land3, 2), 3);
+    const rock2 = carveTop(sliceRight(land4));
     const land5 = extendRight(sliceTop(land4), 1);
-    const landfinish = extend(moveRight(sliceRight(land5), 3));
+    const landfinish = extendLeft(extendDown(moveRight(sliceRight(land5), 4)));
 
     fill(level, land1, "land");
     fill(level, landStart, "land");
     fill(level, land2, "land");
+    fill(level, land2Middle, "water");
+    fill(level, moveRight(extendDown(extendUp(land2Middle), 2), 1), "land");
+    fill(level, sliceRight(land2Middle), "rock");
     fill(level, land3, "land");
     fill(level, land4, "land");
     fill(level, land5, "land");
+    fill(level, rock2, "rock");
+    fill(level, extendRight(sliceBottom(rock2, 2)), "rock");
     fill(level, landfinish, "land");
 
     fill(level, core(landStart), "start");
-    fill(level, core(landfinish), "finish");
+    fill(level, sliceRight(sliceTop(landfinish)), "finish");
 
     return level;
 };
