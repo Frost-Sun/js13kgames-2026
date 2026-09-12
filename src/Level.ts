@@ -736,9 +736,6 @@ const findClosestCharacter = (
     return closestCharacter;
 };
 
-let previousLevel: Level | undefined;
-let fadeStartTime = 0;
-
 export const drawLevel = (
     time: TimeStep,
     state: GameStateRun | GameStateLose | GameStateLevelFinished,
@@ -746,10 +743,6 @@ export const drawLevel = (
     const { level } = state;
     const { camera } = level;
 
-    if (previousLevel !== state.level) {
-        previousLevel = state.level;
-        fadeStartTime = time.t;
-    }
     const ButtonRowHeightFraction = 0.15;
     const buttonRowHeight = canvas.height * ButtonRowHeightFraction;
     const buttonRowY = canvas.height - buttonRowHeight;
@@ -872,7 +865,7 @@ export const drawLevel = (
         cx.restore();
     }
 
-    const fadeElapsed = time.t - fadeStartTime;
+    const fadeElapsed = time.t - state.start;
     if (fadeElapsed < 1000) {
         const alpha = 1 - fadeElapsed / 1000;
         cx.save();
