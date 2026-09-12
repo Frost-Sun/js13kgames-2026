@@ -279,14 +279,13 @@ export const updateLevel = (
         const o = level.objects[i];
 
         if (o.type === "character") {
-            if (o.action !== GameObjectAction.Finish) {
-                moveObject(time, level, o);
+            if (o.action === GameObjectAction.Finish) {
+                continue;
             }
 
-            if (
-                o.action !== GameObjectAction.Finish &&
-                includesArea(level.finishArea, o)
-            ) {
+            moveObject(time, level, o);
+
+            if (includesArea(level.finishArea, o)) {
                 level.charactersFinished++;
                 playTune(SFX_HOME);
 
@@ -325,10 +324,7 @@ export const updateLevel = (
                             (Math.random() * 0.7 + 0.7),
                     );
                 }
-            } else if (
-                o.action !== GameObjectAction.Finish &&
-                speed > CHARACTER_SPEED * speedRatio
-            ) {
+            } else if (speed > CHARACTER_SPEED * speedRatio) {
                 const direction = divide(o.velocity, speed);
                 o.velocity = multiply(
                     direction,
