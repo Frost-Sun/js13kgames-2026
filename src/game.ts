@@ -1,7 +1,6 @@
 import { renderUnicorn } from "./animations/unicorn";
 import { GAME_TITLE } from "./constants";
 import { initializeAudio, playTune, SFX_CLICK } from "./audio/sfx";
-import { initializeKeyboard } from "./core/controls/keyboard";
 import { renderGradient } from "./core/graphics/gradient";
 import type { TimeStep } from "./core/time/TimeStep";
 import { getGameState, WAIT_FOR_NEXT_STATE } from "./GameState";
@@ -296,7 +295,9 @@ const handleClick = (event: MouseEvent): void => {
 };
 
 export const start = async (): Promise<void> => {
-    initializeKeyboard();
+    // Not really needed in this game:
+    // initializeKeyboard();
+
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("click", handleClick);
 
