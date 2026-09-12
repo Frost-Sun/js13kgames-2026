@@ -191,7 +191,7 @@ const createMapCombineTutorial = (number: number): Level => {
     const inner = carve(level);
     const [left, right] = splitX(inner, inner.xCount * 0.6);
 
-    const leftIsland = carveRight(carveBottom(left, 2), 1);
+    const leftIsland = carveRight(carveBottom(left, 2));
     const rightIsland = carveTop(carveLeft(right, 2));
 
     fill(level, leftIsland, "land");
@@ -278,14 +278,14 @@ const createMapSpiral = (number: number): Level => {
     const land3 = carveLeft(sliceBottom(inner, 2), inner.xCount * 0.1);
     const land4 = extendUp(sliceLeft(land3, 2), 3);
     const rock2 = carveTop(sliceRight(land4));
-    const land5 = extendRight(sliceTop(land4), 1);
+    const land5 = extendRight(sliceTop(land4));
     const landfinish = extendLeft(extendDown(moveRight(sliceRight(land5), 4)));
 
     fill(level, land1, "land");
     fill(level, landStart, "land");
     fill(level, land2, "land");
     fill(level, land2Middle, "water");
-    fill(level, moveRight(extendDown(extendUp(land2Middle), 2), 1), "land");
+    fill(level, moveRight(extendDown(extendUp(land2Middle), 2)), "land");
     fill(level, sliceRight(land2Middle), "rock");
     fill(level, land3, "land");
     fill(level, land4, "land");
@@ -307,9 +307,9 @@ const createSpiral = (
     center?: TileType,
 ): void => {
     const inner = carveRight(carveBottom(area));
-    const land1 = sliceTop(inner, 1);
-    const land2 = sliceRight(inner, 1);
-    const land3 = sliceBottom(inner, 1);
+    const land1 = sliceTop(inner);
+    const land2 = sliceRight(inner);
+    const land3 = sliceBottom(inner);
     const land4 = extendUp(sliceLeft(land3), 2);
     const land5 = extendRight(sliceTop(land4), 2);
 
