@@ -289,7 +289,7 @@ export const updateLevel = (
                 ) {
                     setStateLevelFinished(state, time);
                 }
-                o.toDelete = true;
+                o.action = GameObjectAction.Finish;
             }
 
             const center = getCenter(o);

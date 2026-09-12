@@ -50,6 +50,7 @@ export const drawLevelSelection = (
             height: canvas.height / 5,
             type: "character",
             velocity: currentVelocity,
+            animScale: 1,
         },
         time,
     );
@@ -62,6 +63,7 @@ export const drawLevelSelection = (
             height: canvas.height / 4.5,
             type: "character",
             velocity: currentVelocity,
+            animScale: 1,
         },
         time,
     );
@@ -74,6 +76,7 @@ export const drawLevelSelection = (
             height: canvas.height / 5,
             type: "character",
             velocity: currentVelocity,
+            animScale: 1,
         },
         time,
     );

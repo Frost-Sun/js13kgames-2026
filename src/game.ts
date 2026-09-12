@@ -102,6 +102,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 4,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );
@@ -114,6 +115,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 3.5,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );
@@ -126,6 +128,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 4,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );
@@ -215,6 +218,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 4,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );
@@ -227,6 +231,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 3.5,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );
@@ -239,6 +244,7 @@ const draw = (time: TimeStep): void => {
                     height: canvas.height / 4,
                     type: "character",
                     velocity: currentVelocity,
+                    animScale: 1,
                 },
                 time,
             );

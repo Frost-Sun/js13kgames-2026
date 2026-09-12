@@ -23,7 +23,7 @@
  */
 
 import type { TimeStep } from "../core/time/TimeStep";
-import { type GameObject } from "../GameObject";
+import { GameObjectAction, type GameObject } from "../GameObject";
 import { cx, drawPart, type DrawCommand } from "../graphics";
 
 /**
@@ -35,6 +35,18 @@ export const renderUnicorn = (
     time: TimeStep,
     highlightColor?: string,
 ) => {
+    obj.animScale = obj.animScale ?? 0;
+
+    if (obj.action === GameObjectAction.Finish) {
+        obj.animScale = Math.max(0, obj.animScale - 0.1);
+        if (obj.animScale === 0) {
+            obj.toDelete = true;
+            return;
+        }
+    } else if (obj.animScale < 1) {
+        obj.animScale = Math.min(1, obj.animScale + 0.05);
+    }
+
     const age = time.t / 1000;
     const P = Math.PI;
     const scaleX = obj.velocity.x < 0 ? -1 : 1;
@@ -44,6 +56,8 @@ export const renderUnicorn = (
 
     cx.save();
     cx.translate(obj.x + obj.width / 2, obj.y + obj.height / 2);
+
+    cx.scale(obj.animScale, obj.animScale);
 
     // Shadow
     const shadowWidth = (obj.height / 4) * (1.5 - dy * 0.05);

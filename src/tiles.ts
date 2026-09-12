@@ -550,9 +550,6 @@ export const drawMap = (
                     cx.fill();
                     cx.restore();
                 }
-            } else if (tile.type === "start") {
-                cx.fillStyle = "rgb(80, 50, 150)";
-                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
             } else if (tile.type !== "water" && tile.type !== "rainbow") {
                 cx.fillStyle = "black";
                 cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
@@ -741,11 +738,42 @@ export const drawMap = (
             }
         }
     }
+    // PASS 4: Start
+    for (let iy = 0; iy < map.yCount; iy++) {
+        const y = iy * TILE_HEIGHT;
+        for (let ix = 0; ix < map.xCount; ix++) {
+            const x = ix * TILE_WIDTH;
+            const tile = tileMapGet(map, ix, iy);
+            if (tile?.type === "start") {
+                cx.save();
+
+                cx.fillStyle = "rgb(80, 70, 70)";
+                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+
+                cx.beginPath();
+                cx.roundRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2, 6);
+
+                cx.fillStyle = "#5c94e0";
+                cx.fill();
+
+                cx.clip();
+
+                const cloudX = x - 8 + ((time.t / 160) % (TILE_WIDTH + 16));
+
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.font = `${TILE_WIDTH * 0.75}px sans-serif`;
+                cx.fillText("☁️", cloudX, y + TILE_HEIGHT / 2);
+
+                cx.restore();
+            }
+        }
+    }
 
     objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
-    // PASS 4: Rest of the objects
+    // PASS 5: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
 
@@ -836,15 +864,34 @@ export const drawMap = (
                 break;
             }
             case "finish": {
-                cx.fillStyle = "rgb(150, 50, 50)";
+                const hue = (time.t / 15) % 360;
+
+                cx.fillStyle = "rgba(0, 0, 0, 0.3)";
+                cx.fillRect(o.x, o.y + o.height - 4, o.width, 4);
+
+                cx.fillStyle = `hsla(${hue}, 70%, 50%, 0.6)`;
                 cx.fillRect(
                     o.x,
                     o.y - TILE_UPWARD_HEIGHT,
                     o.width,
                     o.height + TILE_UPWARD_HEIGHT,
                 );
-                cx.fillStyle = "rgb(180, 70, 70)";
+
+                cx.fillStyle = `hsla(${hue}, 70%, 65%, 0.8)`;
                 cx.fillRect(o.x, o.y - TILE_UPWARD_HEIGHT, o.width, o.height);
+
+                const hover = Math.sin(time.t / 200) * 3;
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.font = `${o.width * 0.6}px sans-serif`;
+
+                cx.fillStyle = "rgb(180, 20, 20)";
+                cx.fillText(
+                    "❤",
+                    o.x + o.width / 2,
+                    o.y - TILE_UPWARD_HEIGHT + o.height / 2 - 4 + hover,
+                );
+
                 break;
             }
         }
