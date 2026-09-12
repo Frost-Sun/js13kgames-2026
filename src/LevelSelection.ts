@@ -81,10 +81,10 @@ export const drawLevelSelection = (
         time,
     );
 
-    const iconWidth = Math.max(150, canvas.width / 10);
+    const iconWidth = Math.max(142, canvas.width / 10);
     const iconHeight = iconWidth;
-    const marginX = 20;
-    const marginY = 20;
+    const marginX = 16;
+    const marginY = 16;
     const iconsPerRow = Math.floor(
         (canvas.width - marginX) / (iconWidth + marginX),
     );
