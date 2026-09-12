@@ -279,7 +279,10 @@ export const updateLevel = (
         if (o.type === "character") {
             moveObject(time, level, o);
 
-            if (includesArea(level.finishArea, o)) {
+            if (
+                o.action !== GameObjectAction.Finish &&
+                includesArea(level.finishArea, o)
+            ) {
                 level.charactersFinished++;
                 playTune(SFX_HOME);
 
