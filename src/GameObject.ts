@@ -57,20 +57,6 @@ export interface GameObject extends Area {
     animScale?: number;
 }
 
-export const getUnicornCollisionArea = (
-    o: GameObject,
-    marginRatio: number,
-): Area => {
-    const xMargin = marginRatio * o.width;
-    const yMargin = marginRatio * o.height;
-    return {
-        x: o.x - xMargin,
-        y: o.y - yMargin,
-        width: o.width + 2 * xMargin,
-        height: o.height + 2 * yMargin,
-    };
-};
-
 export const setSpeedRatio = (newSpeedRatio: number): void => {
     speedRatio = newSpeedRatio;
 };
