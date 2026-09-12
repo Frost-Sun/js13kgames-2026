@@ -23,7 +23,6 @@
  */
 
 import {
-    kbSfx,
     mainSong,
     clickSfx,
     homeSfx,
@@ -44,10 +43,9 @@ import CPlayer from "../core/audio/musicplayer.js";
 export const SFX_INTRO = "intro";
 export const SFX_RUNNING = "gamestarted";
 export const SFX_HOME = "home";
-export const SFX_KB = "keyboard";
+export const SFX_CLICK = "keyboard";
 export const SFX_DIG = "dig";
 export const SFX_SPLASH = "splash";
-export const SFX_CLICK = "click";
 
 type Tune = {
     songData: SongData[];
@@ -116,10 +114,6 @@ export const playTune = async (tune: string, vol: number = 1) => {
         }
         case SFX_HOME: {
             zzfx(0.5, ...homeSfx);
-            break;
-        }
-        case SFX_KB: {
-            zzfx(0.5, ...kbSfx);
             break;
         }
         case SFX_SPLASH: {
