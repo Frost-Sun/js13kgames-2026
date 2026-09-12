@@ -35,7 +35,6 @@ import {
     core,
     coreX,
     coreY,
-    extend,
     extendDown,
     extendLeft,
     extendRight,
