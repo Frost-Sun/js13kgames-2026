@@ -159,7 +159,7 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, state);
 
             renderText(
-                `🦄 IN ${level.charactersFinished.toString().padStart(2, "0")}/${level.charactersToFinish.toString().padStart(2, "0")} ❤ 🦄 OUT ${(
+                `❤ IN ${level.charactersFinished.toString().padStart(2, "0")}/${level.charactersToFinish.toString().padStart(2, "0")} 🦄 OUT ${(
                     level.characterCount -
                     level.charactersLost -
                     level.charactersFinished

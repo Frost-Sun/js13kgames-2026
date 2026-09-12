@@ -895,7 +895,6 @@ export const drawMap = (
     }
 
     // PASS 5: Draw highlighted area
-
     if (highlightedArea) {
         const w = highlightedArea.xCount * TILE_WIDTH;
         const h = highlightedArea.yCount * TILE_HEIGHT;

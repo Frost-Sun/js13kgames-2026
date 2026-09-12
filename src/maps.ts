@@ -116,8 +116,8 @@ const createMapArrowsTutorial = (number: number): Level => {
         introduction: "Place arrows on land to bypass the rock.",
         xCount: 15,
         yCount: 9,
-        characterCount: 1,
-        charactersToFinish: 1,
+        characterCount: 3,
+        charactersToFinish: 3,
         actionCounts: {
             [Action.Up]: 1,
             [Action.Down]: 1,
@@ -145,8 +145,8 @@ const createMapBounceTutorial = (number: number): Level => {
         introduction: "Please avoid the water. The unicorns hate it.",
         xCount: 15,
         yCount: 11,
-        characterCount: 1,
-        charactersToFinish: 1,
+        characterCount: 3,
+        charactersToFinish: 2,
         actionCounts: {
             [Action.Down]: 1,
         },
@@ -174,8 +174,8 @@ const createMapCombineTutorial = (number: number): Level => {
         introduction: "Combine your skills.",
         xCount: 16,
         yCount: 7,
-        characterCount: 3,
-        charactersToFinish: 2,
+        characterCount: 6,
+        charactersToFinish: 4,
         actionCounts: {
             [Action.Down]: 2,
             [Action.RainbowHorizontal]: 1,
