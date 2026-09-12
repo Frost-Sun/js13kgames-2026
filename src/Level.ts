@@ -277,7 +277,9 @@ export const updateLevel = (
         const o = level.objects[i];
 
         if (o.type === "character") {
-            moveObject(time, level, o);
+            if (o.action !== GameObjectAction.Finish) {
+                moveObject(time, level, o);
+            }
 
             if (
                 o.action !== GameObjectAction.Finish &&
@@ -293,6 +295,10 @@ export const updateLevel = (
                     setStateLevelFinished(state, time);
                 }
                 o.action = GameObjectAction.Finish;
+                o.velocity = {
+                    x: o.velocity.x > 0 ? 0.0001 : 0,
+                    y: o.velocity.y > 0 ? 0.0001 : 0,
+                };
             }
 
             const center = getCenter(o);
@@ -326,7 +332,10 @@ export const updateLevel = (
                             (Math.random() * 0.7 + 0.7),
                     );
                 }
-            } else if (speed > CHARACTER_SPEED * speedRatio) {
+            } else if (
+                o.action !== GameObjectAction.Finish &&
+                speed > CHARACTER_SPEED * speedRatio
+            ) {
                 const direction = divide(o.velocity, speed);
                 o.velocity = multiply(
                     direction,
