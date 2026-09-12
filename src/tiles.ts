@@ -923,7 +923,7 @@ export const drawMap = (
                 x + w / 2,
                 y + h / 2,
             );
-        } else if (selectedActionIndex && selectedActionIndex < 6) {
+        } else if (selectedActionIndex && selectedActionIndex < 7) {
             cx.fillRect(x, y, w, h);
             cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
             cx.beginPath();
