@@ -907,12 +907,11 @@ export const drawMap = (
 
         cx.strokeStyle = isAllowed ? highlightColor : denyColor;
 
-        cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-
         cx.fillStyle = "rgba(0, 0, 0, 0.1)";
-        cx.fillRect(x, y, w, h);
 
         if (isAllowed) {
+            cx.fillRect(x, y, w, h);
+            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
             cx.textAlign = "center";
             cx.textBaseline = "middle";
             cx.fillStyle = highlightColor;
@@ -926,6 +925,8 @@ export const drawMap = (
                 y + h / 2,
             );
         } else if (selectedActionIndex && selectedActionIndex < 6) {
+            cx.fillRect(x, y, w, h);
+            cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
             cx.beginPath();
             cx.moveTo(x + 2, y + 2);
             cx.lineTo(x + w - 2, y + h - 2);
@@ -933,11 +934,13 @@ export const drawMap = (
             cx.lineTo(x + 2, y + h - 2);
             cx.stroke();
         } else {
-            cx.fillStyle = "rgba(0, 0, 0, 0.5)";
-
-            const fontSize = Math.min(w, h) * 0.6;
+            cx.beginPath();
+            cx.arc(x + w / 4, y + h / 2, Math.min(w, h) / 4, 0, Math.PI * 4);
+            cx.fillStyle = denyColor;
+            cx.fill();
+            const fontSize = Math.min(w, h) * 0.3;
             cx.font = `${fontSize}px Courier New`;
-            cx.fillText("🦄", x + w / 8, y + h / 1.4);
+            cx.fillText("🦄", x + w / 4, y + h / 2);
         }
 
         cx.restore();
