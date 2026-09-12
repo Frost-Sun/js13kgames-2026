@@ -353,7 +353,7 @@ const digHorizontally = (
         rock.object.width -= Math.abs(dx);
 
         // Check if the current block is finished
-        const BlockFinishedThreshold = TILE_WIDTH / 10;
+        const BlockFinishedThreshold = TILE_WIDTH / 4;
         if (rock.object.width <= BlockFinishedThreshold) {
             rock.object = undefined;
             rock.type = "land";
@@ -401,7 +401,7 @@ const digVertically = (
         rock.object.height -= Math.abs(dy);
 
         // Check if the current block is finished
-        const BlockFinishedThreshold = TILE_HEIGHT / 10;
+        const BlockFinishedThreshold = TILE_HEIGHT / 4;
         if (rock.object.height <= BlockFinishedThreshold) {
             rock.object = undefined;
             rock.type = "land";
