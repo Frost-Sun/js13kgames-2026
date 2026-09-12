@@ -447,7 +447,11 @@ export const drawMap = (
             if (!tile) continue;
             if (tile.object) objectsToDraw.push(tile.object);
 
-            if (tile.type === "land" || tile.type === "rock") {
+            if (
+                tile.type === "land" ||
+                tile.type === "rock" ||
+                tile?.type === "start"
+            ) {
                 const up = tileMapGet(map, ix, iy - 1)?.type;
                 const down = tileMapGet(map, ix, iy + 1)?.type;
                 const left = tileMapGet(map, ix - 1, iy)?.type;
@@ -527,6 +531,33 @@ export const drawMap = (
 
                 cx.restore();
 
+                if (tile?.type === "start") {
+                    cx.save();
+
+                    cx.beginPath();
+                    cx.roundRect(
+                        x + 1,
+                        y + 1,
+                        TILE_WIDTH - 2,
+                        TILE_HEIGHT - 2,
+                        6,
+                    );
+
+                    cx.fillStyle = "#5c94e0";
+                    cx.fill();
+
+                    cx.clip();
+
+                    const cloudX = x - 8 + ((time.t / 160) % (TILE_WIDTH + 16));
+
+                    cx.textAlign = "center";
+                    cx.textBaseline = "middle";
+                    cx.font = `${TILE_WIDTH * 0.75}px sans-serif`;
+                    cx.fillText("☁️", cloudX, y + TILE_HEIGHT / 2);
+
+                    cx.restore();
+                }
+
                 // 4. Decorations
                 if (strawColor && tile.straw) {
                     cx.fillStyle = strawColor;
@@ -550,9 +581,6 @@ export const drawMap = (
                     cx.fill();
                     cx.restore();
                 }
-            } else if (tile.type !== "water" && tile.type !== "rainbow") {
-                cx.fillStyle = "black";
-                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
             }
         }
     }
@@ -738,42 +766,11 @@ export const drawMap = (
             }
         }
     }
-    // PASS 4: Start
-    for (let iy = 0; iy < map.yCount; iy++) {
-        const y = iy * TILE_HEIGHT;
-        for (let ix = 0; ix < map.xCount; ix++) {
-            const x = ix * TILE_WIDTH;
-            const tile = tileMapGet(map, ix, iy);
-            if (tile?.type === "start") {
-                cx.save();
-
-                cx.fillStyle = "rgb(80, 70, 70)";
-                cx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-
-                cx.beginPath();
-                cx.roundRect(x + 1, y + 1, TILE_WIDTH - 2, TILE_HEIGHT - 2, 6);
-
-                cx.fillStyle = "#5c94e0";
-                cx.fill();
-
-                cx.clip();
-
-                const cloudX = x - 8 + ((time.t / 160) % (TILE_WIDTH + 16));
-
-                cx.textAlign = "center";
-                cx.textBaseline = "middle";
-                cx.font = `${TILE_WIDTH * 0.75}px sans-serif`;
-                cx.fillText("☁️", cloudX, y + TILE_HEIGHT / 2);
-
-                cx.restore();
-            }
-        }
-    }
 
     objectsToDraw.push(...objects);
     objectsToDraw.sort((a, b) => a.y + a.height - (b.y + b.height));
 
-    // PASS 5: Rest of the objects
+    // PASS 4: Rest of the objects
     for (let i = 0; i < objectsToDraw.length; i++) {
         const o = objectsToDraw[i];
 
