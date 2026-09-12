@@ -234,6 +234,21 @@ export const moveLeft = (area: TileArea, size: number = 1): TileArea => ({
     ix: area.ix - size,
 });
 
+export const moveRight = (area: TileArea, size: number = 1): TileArea => ({
+    ...area,
+    ix: area.ix + size,
+});
+
+export const moveUp = (area: TileArea, size: number = 1): TileArea => ({
+    ...area,
+    iy: area.iy - size,
+});
+
+export const moveDown = (area: TileArea, size: number = 1): TileArea => ({
+    ...area,
+    iy: area.iy + size,
+});
+
 export const extendLeft = (area: TileArea, size: number = 1): TileArea => ({
     ...area,
     ix: area.ix - size,

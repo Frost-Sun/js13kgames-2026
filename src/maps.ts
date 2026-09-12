@@ -41,7 +41,9 @@ import {
     extendUp,
     extendX,
     extendY,
+    moveDown,
     moveLeft,
+    moveRight,
     segment4,
     segment9,
     sliceBottom,
@@ -51,8 +53,9 @@ import {
     splitX,
     splitX3,
     splitY,
+    type TileArea,
 } from "./core/tiles/TileArea";
-import { fill, findTilePosition, tileToArea } from "./tiles";
+import { fill, findTilePosition, tileToArea, type TileType } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
 
@@ -101,10 +104,11 @@ const createMapRockTutorial = (number: number): Level => {
     const inner = carveY(carve(level), 2);
     fill(level, inner, "land");
 
-    const [_left, right] = splitX(inner);
+    const [left, right] = splitX(inner);
+    fill(level, sliceLeft(left), "rock");
     fill(level, sliceLeft(right), "rock");
 
-    fill(level, coreY(sliceLeft(inner)), "start");
+    fill(level, moveRight(coreY(sliceLeft(inner))), "start");
     fill(level, coreY(sliceRight(inner)), "finish");
 
     return level;
@@ -245,6 +249,123 @@ const createMapKeepDigging = (number: number): Level => {
     return level;
 };
 
+const createMapSpiral = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Spiral",
+        xCount: 18,
+        yCount: 12,
+        characterCount: 3,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Up]: 2,
+            [Action.Down]: 2,
+            [Action.Left]: 2,
+            [Action.Right]: 2,
+            [Action.Dig]: 1,
+            [Action.RainbowHorizontal]: 1,
+        },
+        theme: "spring",
+    });
+    fill(level, level, "water");
+
+    const inner = carveRight(carve(level), 2);
+
+    const land1 = carveLeft(sliceTop(inner, 2), 3);
+    const landStart = extendDown(sliceLeft(land1, 3));
+    const land2 = sliceRight(inner, 2);
+    const land2Middle = coreY(land2, land2.yCount * 0.3);
+    const land3 = carveLeft(sliceBottom(inner, 2), inner.xCount * 0.1);
+    const land4 = extendUp(sliceLeft(land3, 2), 3);
+    const rock2 = carveTop(sliceRight(land4));
+    const land5 = extendRight(sliceTop(land4), 1);
+    const landfinish = extendLeft(extendDown(moveRight(sliceRight(land5), 4)));
+
+    fill(level, land1, "land");
+    fill(level, landStart, "land");
+    fill(level, land2, "land");
+    fill(level, land2Middle, "water");
+    fill(level, moveRight(extendDown(extendUp(land2Middle), 2), 1), "land");
+    fill(level, sliceRight(land2Middle), "rock");
+    fill(level, land3, "land");
+    fill(level, land4, "land");
+    fill(level, land5, "land");
+    fill(level, rock2, "rock");
+    fill(level, extendRight(sliceBottom(rock2, 2)), "rock");
+    fill(level, landfinish, "land");
+
+    fill(level, core(landStart), "start");
+    fill(level, sliceRight(sliceTop(landfinish)), "finish");
+
+    return level;
+};
+
+const createSpiral = (
+    level: Level,
+    area: TileArea,
+    topRight?: TileType,
+    center?: TileType,
+): void => {
+    const inner = carveRight(carveBottom(area));
+    const land1 = sliceTop(inner, 1);
+    const land2 = sliceRight(inner, 1);
+    const land3 = sliceBottom(inner, 1);
+    const land4 = extendUp(sliceLeft(land3), 2);
+    const land5 = extendRight(sliceTop(land4), 2);
+
+    fill(level, land1, "land");
+    fill(level, land2, "land");
+    fill(level, land3, "land");
+    fill(level, land4, "land");
+    fill(level, land5, "land");
+
+    if (topRight) {
+        fill(level, sliceRight(land1), topRight);
+    }
+    if (center) {
+        fill(level, sliceRight(land5), center);
+    }
+};
+
+const createMapSpiral2 = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Spiralliumish-splash",
+        xCount: 22,
+        yCount: 20,
+        characterCount: 5,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Up]: 3,
+            [Action.Down]: 3,
+            [Action.Left]: 3,
+            [Action.Right]: 3,
+            [Action.RainbowHorizontal]: 2,
+            [Action.RainbowVertical]: 2,
+        },
+        theme: "autumn",
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+
+    const [a, b, c, d, e, f, g, h, i] = segment9(inner);
+
+    createSpiral(level, a, undefined, "rock");
+    createSpiral(level, b, "rock");
+    createSpiral(level, c, undefined, "rock");
+    createSpiral(level, d, "rock");
+    createSpiral(level, e, undefined, "rock");
+    createSpiral(level, f, "rock");
+    createSpiral(level, g, undefined, "rock");
+    createSpiral(level, h, "rock");
+    createSpiral(level, i, undefined, "finish");
+
+    fill(level, sliceLeft(sliceTop(a)), "start");
+
+    return level;
+};
+
 const createMapBaboonIsland = (number: number): Level => {
     const level = createLevel({
         number,
@@ -268,6 +389,7 @@ const createMapBaboonIsland = (number: number): Level => {
     const coreIsland = core(level, level.yCount * 0.7);
     const wider = carveY(extendX(coreIsland));
     const higher = carveX(extendY(coreIsland));
+    const start = moveDown(moveRight(sliceLeft(sliceTop(coreIsland))));
 
     const cape1 = extendRight(sliceRight(sliceTop(wider)), 6);
     const cape2 = extendDown(sliceRight(cape1, 3), 8);
@@ -299,7 +421,7 @@ const createMapBaboonIsland = (number: number): Level => {
 
     fill(level, water, "water");
 
-    fill(level, sliceLeft(sliceTop(coreIsland)), "start");
+    fill(level, start, "start");
     fill(level, sliceRight(sliceBottom(coreIsland)), "finish");
 
     return level;
@@ -329,6 +451,7 @@ const createMapReturnToBaboonIsland = (number: number): Level => {
     const coreIsland = core(level, level.yCount * 0.7);
     const wider = carveY(extendX(coreIsland));
     const higher = carveX(extendY(coreIsland));
+    const start = moveDown(moveRight(sliceLeft(sliceTop(coreIsland))));
 
     const cape1 = extendRight(sliceRight(sliceTop(wider)), 6);
     const cape2 = extendDown(sliceRight(cape1, 3), 8);
@@ -373,7 +496,7 @@ const createMapReturnToBaboonIsland = (number: number): Level => {
 
     fill(level, water, "water");
 
-    fill(level, sliceLeft(sliceTop(coreIsland)), "start");
+    fill(level, start, "start");
     fill(level, moveLeft(sliceTop(coreX(tempLower))), "finish");
 
     return level;
@@ -642,11 +765,13 @@ export const maps: CreateMapFunction[] = [
     createMapBounceTutorial,
     createMapCombineTutorial,
     createMapKeepDigging,
+    createMapSpiral,
     createMapBaboonIsland,
     createMapRocks.bind(null, {}),
-    createMapRainbowIslands,
-    createMapReturnToBaboonIsland,
     createMapRocks.bind(null, RocksMapAlternativeParameters),
+    createMapRainbowIslands,
+    createMapSpiral2,
+    createMapReturnToBaboonIsland,
     createMapMoreIslands,
     createMapCaves,
 ];
