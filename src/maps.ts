@@ -54,8 +54,9 @@ import {
     splitX,
     splitX3,
     splitY,
+    type TileArea,
 } from "./core/tiles/TileArea";
-import { fill, findTilePosition, tileToArea } from "./tiles";
+import { fill, findTilePosition, tileToArea, type TileType } from "./tiles";
 
 export type CreateMapFunction = (number: number) => Level;
 
@@ -288,6 +289,72 @@ const createMapSpiral = (number: number): Level => {
 
     fill(level, core(landStart), "start");
     fill(level, core(landfinish), "finish");
+
+    return level;
+};
+
+const createSpiral = (
+    level: Level,
+    area: TileArea,
+    topRight?: TileType,
+    center?: TileType,
+): void => {
+    const inner = carveRight(carveBottom(area));
+    const land1 = sliceTop(inner, 1);
+    const land2 = sliceRight(inner, 1);
+    const land3 = sliceBottom(inner, 1);
+    const land4 = extendUp(sliceLeft(land3), 2);
+    const land5 = extendRight(sliceTop(land4), 2);
+
+    fill(level, land1, "land");
+    fill(level, land2, "land");
+    fill(level, land3, "land");
+    fill(level, land4, "land");
+    fill(level, land5, "land");
+
+    if (topRight) {
+        fill(level, sliceRight(land1), topRight);
+    }
+    if (center) {
+        fill(level, sliceRight(land5), center);
+    }
+};
+
+const createMapSpiral2 = (number: number): Level => {
+    const level = createLevel({
+        number,
+        introduction: "Spiralliumish-splash",
+        xCount: 22,
+        yCount: 20,
+        characterCount: 5,
+        charactersToFinish: 2,
+        actionCounts: {
+            [Action.Up]: 3,
+            [Action.Down]: 3,
+            [Action.Left]: 3,
+            [Action.Right]: 3,
+            [Action.RainbowHorizontal]: 2,
+            [Action.RainbowVertical]: 2,
+        },
+        theme: "autumn",
+    });
+    fill(level, level, "water");
+
+    const inner = carve(level);
+
+    const [a, b, c, d, e, f, g, h, i] = segment9(inner);
+
+    createSpiral(level, a, undefined, "rock");
+    createSpiral(level, b, "rock");
+    createSpiral(level, c, undefined, "rock");
+    createSpiral(level, d, "rock");
+    createSpiral(level, e, undefined, "rock");
+    createSpiral(level, f, "rock");
+    createSpiral(level, g, undefined, "rock");
+    createSpiral(level, h, "rock");
+    createSpiral(level, i, undefined, "finish");
+
+    fill(level, sliceLeft(sliceTop(a)), "start");
 
     return level;
 };
@@ -696,6 +763,7 @@ export const maps: CreateMapFunction[] = [
     createMapRocks.bind(null, {}),
     createMapRocks.bind(null, RocksMapAlternativeParameters),
     createMapRainbowIslands,
+    createMapSpiral2,
     createMapReturnToBaboonIsland,
     createMapMoreIslands,
     createMapCaves,
