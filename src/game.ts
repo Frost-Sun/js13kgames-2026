@@ -75,6 +75,13 @@ const draw = (time: TimeStep): void => {
             cx.fillStyle = "black";
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
+            renderText(
+                "For the JS13kGames 2026 game competition",
+                TextSize.Small,
+                0.5,
+                -8,
+            );
+
             renderText("© FROST SUN", TextSize.Huge);
             renderText("2026", TextSize.Large, 1, 4);
 
@@ -158,7 +165,7 @@ const draw = (time: TimeStep): void => {
             drawLevel(time, state);
 
             renderText(
-                `❤ IN ${level.charactersFinished.toString().padStart(2, "0")}/${level.charactersToFinish.toString().padStart(2, "0")} 🦄 OUT ${(
+                `♥️ IN ${level.charactersFinished.toString().padStart(2, "0")}/${level.charactersToFinish.toString().padStart(2, "0")} 🦄 OUT ${(
                     level.characterCount -
                     level.charactersLost -
                     level.charactersFinished
