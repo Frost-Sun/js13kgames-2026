@@ -76,7 +76,7 @@ const draw = (time: TimeStep): void => {
             cx.fillRect(0, 0, canvas.width, canvas.height);
 
             renderText(
-                "For the JS13kGames 2026 game competition",
+                "For the js13kGames 2026 game competition",
                 TextSize.Small,
                 0.5,
                 -8,
